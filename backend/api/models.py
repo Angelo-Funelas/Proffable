@@ -12,7 +12,7 @@ class User(AbstractUser):
     m_name = models.CharField(blank="True", max_length=32)
     profile_picture_url = models.CharField(blank="True", max_length=128)
     is_moderator = models.BooleanField(default=False)
-    email = models.EmailField(_("email address"), unique=True, max_length=254)
+    email = models.EmailField(unique=True, max_length=254)
     objects = CustomUserManager()
     def __str__(self):
         return f"{self.l_name} @ {self.email}"
