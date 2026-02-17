@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:17
+    container_name: proffable_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=proffable
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres_password
+    ports:
+      - "5433:5432"
+
+  backend:
+    build: ./backend
+    container_name: proffable_backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_NAME=proffable
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres_password
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+    depends_on:
+      - db
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  # Frontend Service [cite: 173, 228, 631, 633]
+  frontend:
+    build: ./frontend
+    container_name: proffable_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
