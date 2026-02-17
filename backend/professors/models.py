@@ -9,5 +9,5 @@ class Professor(models.Model):
     email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.l_name}, {self.email}"
+        return f"{self.l_name}, {self.f_name}"
     
