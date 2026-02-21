@@ -1,33 +1,28 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
-// Current Docker setup lacks CORS HEADER. 
-// Uses temporary professors json list for now.
-// The following code should be used instead (note that it is temporarily 
-// written with Fetch, must be updated to use Axios later when installed)
-//
-// const professors = ref([])
-// onMounted(()=>{
-//     fetchProfessors()
-// })
-//
-// const API_URL = 'http://localhost:8000/api/professors/'
-// async function fetchProfessors(){
-//     isLoading.value = true
-//     try{
-//         const response = await fetch(API_URL)
-//         professors.value = await response.json()
-//     } catch(error){
-//         console.log("Error with fetching professors: ",error)
-//     }
-//     isLoading.value = false
-// }
+import axios from 'axios'
+
+const professors = ref([])
+onMounted(()=>{
+    fetchProfessors()
+})
+
+const API_URL = 'http://localhost:8000/api/'
+const api = axios.create({
+    baseURL:API_URL
+})
+
+async function fetchProfessors(){
+    isLoading.value = true
+    try{
+        const response = await api.get('professors/')
+        professors.value = response.data
+    } catch(error){
+        console.log("Error with fetching professors: ",error)
+    }
+    isLoading.value = false
+}
 const isLoading = ref(false)
-const professors = [{
-    f_name: "Jane",
-    l_name: "Doe",
-    m_name: "Rat",
-    email: "2jane4doe@gmail.com"
-}]
 </script>
 
 <template>
