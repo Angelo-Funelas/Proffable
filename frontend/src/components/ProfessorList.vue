@@ -28,7 +28,7 @@ import ProfCard from './ProfCard.vue'
 </script>
 
 <template>
-<h2>Professors</h2>
+<h1 class="text-5xl font-bold text-left">Professors</h1>
 <p v-if="isLoading">Loading professors...</p>
 
 <ul>

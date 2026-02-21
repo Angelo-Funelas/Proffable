@@ -10,14 +10,20 @@ const props = defineProps({
 </script>
 
 <template>
-<div class="prof-card">
-    <h3>{{ fname }} {{ lname }}</h3>
-    <p>{{ avgScore }} ({{ numReviews }}) Reviews</p>
-    <p>Tags:</p>
-    <ul>
-        <li v-for="tag in tags" :key="id">
-            {{ tag }}
-        </li>
-    </ul>
+<div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start w-full">
+
+    <div class="flex flex-col gap-2 text-left">
+        <h3 class="text-xl font-bold">{{ fname }} {{ lname }}</h3>
+        <p class="text-sm">University of Unknown </p>
+        <p class="text-sm">⭐ {{ avgScore }} ({{ numReviews }} reviews)</p>
+        <p class="text-sm">Tags:</p>
+
+    </div>
+
+    <div class="flex flex-col items-center gap-1">
+        <span>🤍</span>
+        <span class="text-sm">{{ numReviews }}</span>
+    </div>
+
 </div>
 </template>
