@@ -23,6 +23,8 @@ async function fetchProfessors(){
     isLoading.value = false
 }
 const isLoading = ref(false)
+
+import ProfCard from './ProfCard.vue'
 </script>
 
 <template>
@@ -31,8 +33,20 @@ const isLoading = ref(false)
 
 <ul>
     <li v-for="prof in professors" :key="prof.professor_id">
-        <p>Name: {{prof.f_name}}, {{ prof.l_name }}</p> 
-        <p>Email: {{ prof.email }}</p>
+        <ProfCard
+        :lname="prof.l_name"
+        :fname="prof.f_name"
+        :avgScore="3"
+        :numReviews="128"
+        />
     </li>
 </ul>
 </template>
+
+const props = defineProps({
+    lname: String,
+    fname: String,
+    avgScore: String,
+    tags: Array,
+    numReviews: String,
+})
