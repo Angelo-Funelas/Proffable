@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-<div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start w-full">
+<div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start">
 
     <div class="flex flex-col gap-2 text-left">
         <h3 class="text-xl font-bold">{{ fname }} {{ lname }}</h3>
