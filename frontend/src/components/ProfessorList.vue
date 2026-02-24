@@ -1,6 +1,8 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
 import axios from 'axios'
+import ProfCard from './ProfCard.vue'
+import SearchFilters from './SearchFilters.vue'
 
 const professors = ref([])
 onMounted(()=>{
@@ -24,20 +26,13 @@ async function fetchProfessors(){
 }
 const isLoading = ref(false)
 
-import ProfCard from './ProfCard.vue'
+
 </script>
 
 <template>
 <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
     <!--LEFT DIV-->
-    <div class="flex flex-col gap-2 text-left">
-        <input class="rounded-xl bg-[#FFFFFF] form-text mt-[5px] h-[35px]" placeholder="INSERT SEARCH BAR HERE"/>
-        <!--QUERY/FILTERS DIV-->
-        <div class="bg-[#52848A] rounded-xl p-[18px]  flex flex-col gap-2 text-left">
-            <p>UNIVERSITY</p>
-            <p>DEPARTMENT</p>
-        </div>
-    </div>
+    <SearchFilters/>
 
     <!--RIGHT DIV-->
     <div>
@@ -58,11 +53,3 @@ import ProfCard from './ProfCard.vue'
 </div>
 
 </template>
-
-const props = defineProps({
-    lname: String,
-    fname: String,
-    avgScore: String,
-    tags: Array,
-    numReviews: String,
-})
