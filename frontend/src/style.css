@@ -38,6 +38,10 @@ h1 {
   color: #505946;
 }
 
+.form_text {
+  color: #719294;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -62,9 +66,7 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
