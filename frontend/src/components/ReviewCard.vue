@@ -1,0 +1,47 @@
+<script setup>
+import {ref} from 'vue'
+
+const props = defineProps({
+  semester: String,
+  subject: String,
+  reviewText: String,
+  grade: String,
+  rating: Number,
+  tags: Array,
+  likes: Number,
+})
+</script>
+
+<template>
+    <div class="bg-[#ffffff] rounded-xl p-5 flex flex-col gap-2 text-left text-[#719294]">
+        <div class="flex justify-between items-center">
+            <div class="flex gap-3 items-center">
+                <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
+                    👤
+                </div>
+                <span>Anonymous Student | {{ semester }} {{ subject }}</span>
+            </div>
+            <button class="text-sm">
+                🚩
+            </button>    
+        </div>
+        <div class="flex">
+            <img src="../assets/BigStar.svg" class="h-[36px]" />
+            <img src="../assets/BigStar.svg" class="h-[36px]" />
+            <img src="../assets/BigStar.svg" class="h-[36px]" />
+            <img src="../assets/BigStar.svg" class="h-[36px]" />
+            <img src="../assets/BigStar.svg" class="h-[36px]" />
+        </div>
+        <p class="text-xl"><span class="font-bold">Review</span>: {{ reviewText }}</p>
+        <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ grade }}</p>
+
+        <div class="flex flex-wrap gap-2">
+            <p class="text-sm"><span class="font-bold">Tags</span>:</p>
+            <span v-for="(tag, index) in tags" :key="index" class="text-sm underline px-1">
+                {{ tag }}
+            </span>
+        </div>
+
+        <p class="italic">👍 {{ likes }} found this helpful</p>
+    </div>
+</template>
