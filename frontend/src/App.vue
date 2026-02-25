@@ -1,8 +1,8 @@
 <template>
-  <ProfessorList />
+  <ProfessorDetail />
 </template>
 
 <script setup>
 
-import ProfessorList from './components/ProfessorList.vue';
+import ProfessorDetail from './components/ProfessorDetail.vue';
 </script>
