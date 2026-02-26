@@ -70,11 +70,12 @@
 </template>
 
 <script setup>
+  import { useRouter } from 'vue-router'
   import { ref, onMounted } from 'vue';
   import Navbar from './Navbar.vue';
+  const router = useRouter()
   const isPasswordVisible = ref(false); 
   const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
-
   // Fix: This actually runs when the form submits now
   const handleLogin = () => {
     alert("Logging in...");
@@ -120,6 +121,9 @@
 
       successMsg.value = "Login successful!";
       tokenData.value = data;
+
+      router.push('/') // redirect to homepage
+
     })
     .catch(err => {
       console.error("Login error:", err);
