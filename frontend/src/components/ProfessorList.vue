@@ -3,6 +3,7 @@ import {ref, computed, onMounted} from 'vue'
 import axios from 'axios'
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
+import { useRouter } from 'vue-router'
 
 const professors = ref([])
 onMounted(()=>{
@@ -26,6 +27,10 @@ async function fetchProfessors(){
 }
 const isLoading = ref(false)
 
+const router = useRouter()
+const goToProf = (professorId) =>{
+    router.push(`/professor/${professorId}`)
+}
 
 </script>
 
@@ -50,7 +55,8 @@ const isLoading = ref(false)
         <p v-if="isLoading">Loading professors...</p>
 
         <ul class="grid grid-cols-1 gap-y-[10px]">
-            <li  v-for="prof in professors" :key="prof.professor_id">
+            <li  v-for="prof in professors" :key="prof.professor_id" 
+            @click="goToProf(prof.professor_id)" class="cursor-pointer">
                 <ProfCard
                 :lname="prof.l_name"
                 :fname="prof.f_name"
