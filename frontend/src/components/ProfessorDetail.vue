@@ -168,7 +168,7 @@
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews (128)</h1>
-                    <button class="bg-[#52848A] rounded-xl px-[18px] py-1 w-max">
+                    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max">
                         Write a Review
                     </button>
                 </div>
