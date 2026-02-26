@@ -65,7 +65,7 @@ const togglePassword = () => {
 };
 </script>
 
-<style>
+<style scoped>
 :global(#app) {
   max-width: none !important;
   width: 100vw !important;
