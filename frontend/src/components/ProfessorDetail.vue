@@ -194,33 +194,3 @@
         </div>
     </div>
 </template>
-
-<style scoped>
-
-.navbar {
-  width: 100%;
-  background-color: #5c898d;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  padding: 0 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-}
-
-.logo-circle {
-  background-color: #d9d9d9;
-  border-radius: 9999px;
-  height: 2.5rem;
-  width: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.logo-img {
-  height: 1.75rem;
-  width: 1.75rem;
-  object-fit: contain;
-}
-</style>
