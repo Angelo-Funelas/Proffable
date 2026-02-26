@@ -98,7 +98,7 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm"><img src="../assets/Star.svg" class="h-[16px]"> {{reviewsAverage}} ({{reviews.length}} reviews)</p>
+                        <p class="text-sm"> <img src="../assets/Star.svg" class="h-[16px] inline align-middle"> {{reviewsAverage}} ({{reviews.length}} reviews)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
