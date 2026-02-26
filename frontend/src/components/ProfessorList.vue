@@ -4,6 +4,7 @@ import axios from 'axios'
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
 import { useRouter } from 'vue-router'
+import Navbar from './Navbar.vue'
 
 const professors = ref([])
 onMounted(()=>{
@@ -38,12 +39,7 @@ const goToProf = (professorId) =>{
 
 <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
     
-    <!-- Nav Bar -->
-    <nav class="navbar">
-        <div class="logo-circle">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
-        </div>
-    </nav>
+    <Navbar/>
 
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
         <!--LEFT DIV-->

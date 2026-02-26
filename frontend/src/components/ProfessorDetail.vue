@@ -4,6 +4,7 @@
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
+    import Navbar from './Navbar.vue';
 
     const professors = ref([])
     onMounted(()=>{
@@ -53,12 +54,8 @@
 </script>
 
 <template>
+    <Navbar/>
     <div class="main-container">
-        <nav class="navbar">
-            <div class="logo-circle">
-                <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
-            </div>
-        </nav>
 
         <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
             <!--LEFT DIV-->
