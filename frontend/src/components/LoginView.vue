@@ -1,55 +1,69 @@
 <template>
-  <div class="main-container">
+  <div class="min-h-screen w-full bg-[#e9e9e9] flex flex-col font-sans">
     
-    <nav class="navbar">
-      <div class="logo-circle">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
+    <nav class="w-full bg-[#5c898d] h-16 flex items-center px-6 shadow-md">
+      <div class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm">
+        <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain" />
       </div>
     </nav>
 
-    <div class="content-wrapper">
-      <div class="login-card">
+    <div class="flex-grow flex items-center justify-center p-6">
+      <div class="w-full max-w-[320px] flex flex-col items-center">
         
-        <h1 class="welcome-text">
-          Welcome to <span class="brand-subtext">Proffable</span>!
+        <h1 class="text-2xl font-bold text-[#505946] mb-10 text-center">
+          Welcome to <span class="text-gray-500">Proffable</span>!
         </h1>
 
-        <div class="input-group">
-          <div class="input-row">
-            <img src="../assets/EmailLogin.png" class="input-icon" alt="Email" />
-            <input type="email" placeholder="Email" class="text-input" />
+        <form @submit.prevent="handleLogin" class="w-full flex flex-col gap-6">
+          
+          <div class="flex items-center border-b border-gray-400 py-2 focus-within:border-[#5c898d] transition-colors">
+            <svg class="h-5 w-5 mr-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <input type="email" placeholder="Email" required class="flex-grow bg-transparent outline-none text-gray-700 text-sm border-none" />
           </div>
 
-          <div class="input-row">
-            <img src="../assets/PasswordLogin.png" class="input-icon" alt="Password" />
+          <div class="flex items-center border-b border-gray-400 py-2 focus-within:border-[#5c898d] transition-colors">
+            <svg class="h-5 w-5 mr-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
             <input 
               :type="isPasswordVisible ? 'text' : 'password'" 
               placeholder="Password" 
-              class="text-input" 
+              required
+              class="flex-grow bg-transparent outline-none text-gray-700 text-sm border-none" 
             />
-            <button @click="togglePassword" type="button" class="toggle-btn">
-              <img src="../assets/ShowPassword.png" class="toggle-icon" alt="Show" />
+            <button @click="togglePassword" type="button" class="shrink-0 p-1 flex items-center cursor-pointer border-none !bg-white rounded-md shadow-sm outline-none hover:!bg-gray-50 transition-colors">
+              <svg v-if="!isPasswordVisible" class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <svg v-else class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.076m1.903-1.903A9.952 9.952 0 0112 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
+              </svg>
             </button>
           </div>
+
+          <div class="flex justify-center">
+            <button type="submit" class="mt-12 w-full max-w-[200px] py-2.5 !bg-[#5c898d] !text-white rounded-full font-semibold cursor-pointer border-none transition-all hover:brightness-110 active:scale-95 shadow-md">
+              Sign In
+            </button>
+          </div>
+        </form>
+
+        <div class="w-full flex items-center my-8 before:flex-1 before:border-b before:border-gray-300 after:flex-1 after:border-b after:border-gray-300">
+          <span class="px-3 text-xs text-gray-400">or</span>
         </div>
 
-        <div class="link-container">
-          <a href="#" class="forgot-link">Forgot Password?</a>
-        </div>
-
-        <button class="signin-button">Sign In</button>
-
-        <div class="divider">
-          <span>or</span>
-        </div>
-        <button class="google-button" type="button">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-icon" alt="Google" />
+        <button class="w-full flex items-center justify-center gap-2.5 py-2.5 !bg-white text-gray-700 border border-gray-300 rounded-full text-sm font-medium cursor-pointer transition-colors hover:!bg-gray-50 shadow-sm" type="button">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="h-[18px] w-[18px] shrink-0" alt="Google" />
           Sign in with Google
         </button>
 
-        <p class="signup-text">
+        <p class="mt-6 text-[11px] text-gray-600">
           Don't have an account? 
-          <a href="#" class="signup-link">Sign up</a>
+          <a href="#" class="text-[#5c898d] font-bold no-underline hover:underline">Sign up</a>
         </p>
 
       </div>
@@ -59,200 +73,18 @@
 
 <script setup>
 import { ref } from 'vue';
-const isPasswordVisible = ref(false);
-const togglePassword = () => {
-  isPasswordVisible.value = !isPasswordVisible.value;
+
+const isPasswordVisible = ref(false); 
+const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
+
+// Fix: This actually runs when the form submits now
+const handleLogin = () => {
+  alert("Logging in...");
 };
 </script>
 
-<style scoped>
-:global(#app) {
-  max-width: none !important;
-  width: 100vw !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-:global(body) {
-  margin: 0 !important;
-  display: block !important;
-}
-
-.main-container {
-  min-height: 100vh;
-  width: 100%;
-  background-color: #e9e9e9;
-  display: flex;
-  flex-direction: column;
-}
-
-.navbar {
-  width: 100%;
-  background-color: #5c898d;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  padding: 0 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-}
-
-.logo-circle {
-  background-color: #d9d9d9;
-  border-radius: 9999px;
-  height: 2.5rem;
-  width: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.logo-img {
-  height: 1.75rem;
-  width: 1.75rem;
-  object-fit: contain;
-}
-
-.content-wrapper {
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.welcome-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #505946;
-  margin-bottom: 2.5rem;
-}
-
-.brand-subtext { color: #6b7280; }
-
-.input-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.input-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #9ca3af;
-  padding: 0.25rem 0;
-}
-
-.input-icon {
-  height: 1.25rem;
-  width: 1.25rem;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
-}
-
-.text-input {
-  flex-grow: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.toggle-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0 0.25rem;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.toggle-icon {
-  height: 1.25rem;
-  width: auto;
-  object-fit: contain;
-  opacity: 0.6;
-}
-
-.link-container {
-  width: 100%;
-  text-align: left;
-  margin-top: 0.5rem;
-}
-
-.forgot-link {
-  font-size: 10px;
-  color: #60a5fa;
-  text-decoration: none;
-}
-
-.signin-button {
-  margin-top: 3rem;
-  width: 100%;
-  max-width: 200px;
-  padding: 0.6rem 0;
-  background-color: #5c898d;
-  color: white;
-  border-radius: 9999px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter 0.2s;
-}
-
-.signin-button:hover { filter: brightness(1.1); }
-
-.divider {
-  width: 100%;
-  text-align: center;
-  border-bottom: 1px solid #d1d5db;
-  line-height: 0.1em;
-  margin: 2rem 0;
-}
-
-.divider span {
-  background: #e9e9e9;
-  padding: 0 10px;
-  color: #9ca3af;
-  font-size: 12px;
-}
-/* https://developers.google.com/identity/branding-guidelines */
-.google-button {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0.6rem 0;
-  background-color: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.google-button:hover {
-  background-color: #f9fafb;
-}
-
-.google-icon {
-  height: 18px;
-  width: 18px;
-}
-
-.signup-text { margin-top: 1.5rem; font-size: 11px; color: #4b5563; }
-.signup-link { color: #5c898d; font-weight: 700; text-decoration: none; }
+<style>
+/* Reset and Overrides */
+#app { max-width: none !important; width: 100vw !important; padding: 0 !important; margin: 0 !important; }
+body { margin: 0 !important; display: block !important; }
 </style>
