@@ -3,8 +3,12 @@ import {ref, computed, onMounted} from 'vue'
 import axios from 'axios'
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Navbar from './Navbar.vue'
+
+//catches the search of previous used query
+const route = useRoute()
+const searchQuery = route.query.q
 
 const professors = ref([])
 onMounted(()=>{
@@ -15,11 +19,13 @@ const API_URL = 'http://localhost:8000/api/'
 const api = axios.create({
     baseURL:API_URL
 })
-
 async function fetchProfessors(){
+
     isLoading.value = true
     try{
-        const response = await api.get('professors/')
+        const response = await api.get('professors/', {
+            params: {search: route.query.q}
+        })
         professors.value = response.data
     } catch(error){
         console.log("Error with fetching professors: ",error)
