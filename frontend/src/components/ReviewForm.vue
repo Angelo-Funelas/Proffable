@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import Navbar from './Navbar.vue';
 
 const route = useRoute()
 const message = ref('')
@@ -40,12 +41,7 @@ async function submitReview() {
 <template>
   <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
     
-    <!-- Nav Bar -->
-    <nav class="navbar">
-      <div class="logo-circle">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
-      </div>
-    </nav>
+    <Navbar/>
   
     <div class="flex-1 flex items-center justify-center px-4">
       <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6">

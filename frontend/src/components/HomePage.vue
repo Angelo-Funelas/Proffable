@@ -1,15 +1,11 @@
 <script setup>
-// NO LOGIC
+import Navbar from './Navbar.vue';
 </script>
 
 <template>
   <div class="main-container">
 
-    <nav class="navbar">
-      <div class="logo-circle">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
-      </div>
-    </nav>
+    <Navbar/>
 
     <!-- MAIN CONTENT -->
     <div class="flex flex-col items-center mt-[80px]">
