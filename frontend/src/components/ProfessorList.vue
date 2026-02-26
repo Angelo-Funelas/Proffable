@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted, watch} from 'vue'
 import axios from 'axios'
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
@@ -8,7 +8,9 @@ import Navbar from './Navbar.vue'
 
 //catches the search of previous used query
 const route = useRoute()
-const searchQuery = route.query.q
+watch(() => route.query.q, () =>{
+    fetchProfessors
+})
 
 const professors = ref([])
 onMounted(()=>{

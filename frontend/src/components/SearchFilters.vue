@@ -1,7 +1,23 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const localQuery = ref('')
+
+const handleSearch = () => {
+  router.push({ path: '/professors', query: { q: localQuery.value } })
+}
+
+</script>
+
 <template> 
 
 <div class="flex flex-col gap-2 text-left">
-        <input class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] text-center " placeholder="Search for a professor or course"/>
+        <input 
+        v-model="localQuery"
+        @keyup.enter="handleSearch"
+        class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] text-center " placeholder="Search for a professor or course"/>
         <!--QUERY/FILTERS DIV-->
 
         <!--NOTE: THE FUNCTIONS BELOW ARE OUT OF THE SCOPE IN CURRENT ITERATION AND ARE ONLY PLACEHOLDERS-->
