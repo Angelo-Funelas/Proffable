@@ -12,11 +12,13 @@ from .serializers import CustomTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import me
 from .views import register_user
+from .views import google_login
 
 urlpatterns = [
     path("token/", CustomTokenObtainPairView.as_view()),
     path("token/refresh/", TokenRefreshView.as_view()),
     path("register/", register_user),
+    path("google-login", google_login),
     path("me/", me),
     path('', include(router.urls)),
 ]
