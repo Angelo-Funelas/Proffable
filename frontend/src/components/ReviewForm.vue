@@ -38,10 +38,18 @@ async function submitReview() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#e8e8e8] flex items-center justify-center px-4">
-    <div
-      class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6"
-    >
+  <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
+    
+    <!-- Nav Bar -->
+    <nav class="navbar">
+      <div class="logo-circle">
+        <img src="../assets/ProffableLogo.png" alt="Logo" class="logo-img" />
+      </div>
+    </nav>
+  
+    <div class="flex-1 flex items-center justify-center px-4">
+      <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6">
+    
       <!-- Header -->
       <div class="text-center">
         <h1 class="text-2xl font-bold text-gray-800">
@@ -119,4 +127,37 @@ async function submitReview() {
       </form>
     </div>
   </div>
+  </div>
 </template>
+
+
+<style scoped>  
+
+.navbar {
+  width: 100%;
+  background-color: #5c898d;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.logo-circle {
+  background-color: #d9d9d9;
+  border-radius: 9999px;
+  height: 2.5rem;
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.logo-img {
+  height: 1.75rem;
+  width: 1.75rem;
+  object-fit: contain;
+}
+
+</style>
