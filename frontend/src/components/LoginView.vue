@@ -1,11 +1,7 @@
 <template>
   <div class="min-h-screen w-full bg-[#e9e9e9] flex flex-col font-sans">
     
-    <nav class="w-full bg-[#5c898d] h-16 flex items-center px-6 shadow-md">
-      <div class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain" />
-      </div>
-    </nav>
+    <Navbar/>
 
     <div class="flex-grow flex items-center justify-center p-6">
       <div class="w-full max-w-[320px] flex flex-col items-center">
@@ -73,7 +69,7 @@
 
 <script setup>
 import { ref } from 'vue';
-
+import Navbar from './Navbar.vue';
 const isPasswordVisible = ref(false); 
 const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
 
