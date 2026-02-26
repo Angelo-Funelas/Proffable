@@ -7,7 +7,7 @@ import HomePage from '../components/HomePage.vue'
 
 const routes = [
   { path: '/professors', component: ProfessorList },
-  { path: '/professor/1', component: ProfessorDetail },
+  { path: '/professor/:professorId', component: ProfessorDetail },
   { path: '/reviews/:professorId', component: ReviewForm },
   { path: '/login', component: LoginView },
   { path: '/', component: HomePage }
