@@ -83,12 +83,12 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm">⭐ 3 (128 reviews)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 (128 reviews)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
                     <div class="flex flex-col items-center gap-1">
-                        <span>🤍</span>
+                        <img src="../assets/Heart.svg" class="h-[16px]">
                         <span class="text-sm">128</span>
                     </div>
                 </div>
