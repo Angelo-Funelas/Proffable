@@ -79,7 +79,7 @@
   const handleLogin = () => {
     alert("Logging in...");
   };
-  const api = "http://127.0.0.1:8000";
+  const api = "http://127.0.0.1:8000/api";
 
   const loadingVisible = ref(false);
   const errorMsg = ref("");
@@ -99,7 +99,7 @@
     formData.append("token", response.credential);
     
     // Send token to your Django API
-    fetch(`${api}/google_login/`, {
+    fetch(`${api}/google-login/`, {
       method: "POST",
       body: formData,
     })

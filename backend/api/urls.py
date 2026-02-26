@@ -18,7 +18,7 @@ urlpatterns = [
     path("token/", CustomTokenObtainPairView.as_view()),
     path("token/refresh/", TokenRefreshView.as_view()),
     path("register/", register_user),
-    path("google-login", google_login),
+    path("google-login/", google_login),
     path("me/", me),
     path('', include(router.urls)),
 ]

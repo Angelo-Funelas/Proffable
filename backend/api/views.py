@@ -2,6 +2,9 @@ from django.shortcuts import render
 
 # Import the things to function 
 import jwt
+from django.conf import settings
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -46,18 +49,29 @@ def register_user(request):
         l_name=data.get("l_name", "")
     )
 
-    
+
     return Response({"message": "User created"}, status=status.HTTP_201_CREATED)
+
 @api_view(["POST"])
 def google_login(request):
-    id_token = request.data.get("id_token")
-    if not id_token:
-        return Response({"error": "No id_token provided"}, status=status.HTTP_400_BAD_REQUEST)
+    token = request.data.get("token")
+    if not token:
+        return Response({"error": "No token provided"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        payload = jwt.decode(id_token, options={"verify_signature": False})
+        # id_info = id_token.verify_oauth2_token(
+        #     token, 
+        #     google_requests.Request(), 
+        #     settings.GOOGLE_OAUTH_CLIENT_ID
+        # )
+        payload = jwt.decode(token, options={"verify_signature": False})
         #if payload.get("aud") != GOOGLE_CLIENT_ID:
         #    return Response({"error": "Invalid client"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # email = id_info['email']
+        # f_name = id_info.get('given_name', '')
+        # last_name = id_info.get('family_name', '')
+        # l_name = id_info.get('picture', '')
 
         email = payload.get("email")
         f_name = payload.get("given_name", "")
