@@ -17,12 +17,12 @@ const props = defineProps({
         <div class="flex justify-between items-center">
             <div class="flex gap-3 items-center">
                 <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
-                    👤
+                    <img src="../assets/User.png" class="h-[20px]">
                 </div>
                 <span>Anonymous Student | {{ semester }} {{ subject }}</span>
             </div>
             <button class="text-sm">
-                🚩
+                <img src="../assets/Flag.png" class="h-[24px]">
             </button>    
         </div>
         <div class="flex">
@@ -42,6 +42,6 @@ const props = defineProps({
             </span>
         </div>
 
-        <p class="italic">👍 {{ likes }} found this helpful</p>
+        <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ likes }} found this helpful</p>
     </div>
 </template>
