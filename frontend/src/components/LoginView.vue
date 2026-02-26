@@ -112,15 +112,12 @@
     })
     .then(data => {
       console.log("Login successful:", data);
-      
-      // Display tokens in the div
-      const tokenInfo = {
-        tokens: data.tokens,
-        full_response: data
-      };
 
       successMsg.value = "Login successful!";
       tokenData.value = data;
+
+      localStorage.setItem('access_token', data.access)
+      localStorage.setItem('refresh_token', data.refresh)
 
       router.push('/') // redirect to homepage
 
