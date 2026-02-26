@@ -19,7 +19,6 @@ Proffable is built using a modern decoupled architecture to ensure scalability a
 - Database: PostgreSQL
 - Authentication: OAuth 2.0 (Google/Social Auth)
 - API Client: Axios
-- Intelligence: LLM Integration for Review Summarization
 - Containerization: Docker & Docker Compose
 
 ## ⭐ Core Functions
