@@ -5,7 +5,7 @@ import LoginView from '../components/LoginView.vue'
 
 const routes = [
   { path: '/', component: ProfessorList },
-  { path: '/reviews/:professorId', component: ReviewForm }
+  { path: '/reviews/:professorId', component: ReviewForm },
   { path: '/login', component: LoginView }
 ]
 
