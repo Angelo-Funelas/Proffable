@@ -1,6 +1,8 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
 import axios from 'axios'
+import ProfCard from './ProfCard.vue'
+import SearchFilters from './SearchFilters.vue'
 
 const professors = ref([])
 onMounted(()=>{
@@ -24,29 +26,30 @@ async function fetchProfessors(){
 }
 const isLoading = ref(false)
 
-import ProfCard from './ProfCard.vue'
+
 </script>
 
 <template>
-<h1 class="text-5xl font-bold text-left">Professors</h1>
-<p v-if="isLoading">Loading professors...</p>
+<div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
+    <!--LEFT DIV-->
+    <SearchFilters/>
 
-<ul class="grid grid-cols-1 gap-1">
-    <li  v-for="prof in professors" :key="prof.professor_id">
-        <ProfCard
-        :lname="prof.l_name"
-        :fname="prof.f_name"
-        :avgScore="3"
-        :numReviews="128"
-        />
-    </li>
-</ul>
+    <!--RIGHT DIV-->
+    <div>
+        <h1 class="text-5xl font-bold text-left">Professors</h1>
+    <p v-if="isLoading">Loading professors...</p>
+
+    <ul class="grid grid-cols-1 gap-y-[10px]">
+        <li  v-for="prof in professors" :key="prof.professor_id">
+            <ProfCard
+            :lname="prof.l_name"
+            :fname="prof.f_name"
+            :avgScore="3"
+            :numReviews="128"
+            />
+        </li>
+    </ul>
+    </div>
+</div>
+
 </template>
-
-const props = defineProps({
-    lname: String,
-    fname: String,
-    avgScore: String,
-    tags: Array,
-    numReviews: String,
-})
