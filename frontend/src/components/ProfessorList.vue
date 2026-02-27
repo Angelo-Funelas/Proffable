@@ -3,32 +3,37 @@ import {ref, computed, onMounted} from 'vue'
 import axios from 'axios'
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import Navbar from './Navbar.vue'
 
 const professors = ref([])
-onMounted(()=>{
-    fetchProfessors()
-})
+const isLoading = ref(false)
+const route = useRoute()
+const router = useRouter()
 
 const API_URL = 'http://localhost:8000/api/'
 const api = axios.create({
     baseURL:API_URL
 })
-
-async function fetchProfessors(){
+async function fetchProfessors(term) {
     isLoading.value = true
-    try{
-        const response = await api.get('professors/')
+    const searchVal = term !== undefined ? term : (route.query.q || '')
+
+    try {
+        const response = await axios.get('http://localhost:8000/api/professors/', {
+            params: { search: searchVal }
+        })
         professors.value = response.data
-    } catch(error){
-        console.log("Error with fetching professors: ",error)
+    } catch(error) {
+        console.error("Fetch error:", error)
     }
     isLoading.value = false
 }
-const isLoading = ref(false)
 
-const router = useRouter()
+onMounted(()=>{
+    fetchProfessors()
+})
+
 const goToProf = (professorId) =>{
     router.push(`/professor/${professorId}`)
 }
@@ -43,11 +48,11 @@ const goToProf = (professorId) =>{
 
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
         <!--LEFT DIV-->
-        <SearchFilters/>
+        <SearchFilters @search="fetchProfessors" />
 
         <!--RIGHT DIV-->
         <div>
-            <h1 class="text-5xl font-bold text-left">Professors</h1>
+            <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
         <p v-if="isLoading">Loading professors...</p>
 
         <ul class="grid grid-cols-1 gap-y-[10px]">

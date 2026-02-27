@@ -4,42 +4,66 @@
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
+    import { useRoute } from 'vue-router'
     import Navbar from './Navbar.vue';
+    import { useRouter } from 'vue-router'
 
-    const professors = ref([])
-    onMounted(()=>{
-        fetchProfessors()
+    const professor = ref({})
+    const route = useRoute()
+    const reviews = ref([])
+    const router = useRouter()
+
+    const handleSearchRedirect = (searchTerm) => {
+    router.push({ 
+        path: '/professors', 
+        query: { q: searchTerm } 
     })
-
-    // Hardcoded placeholder reviews
-    const reviews = ref([
-    {
-        review_id: 1,
-        semester: 'SY 2024-2025, 2nd Sem',
-        subject: 'LIT 111',
-        comment_text: 'Lectures are very organized and easy to follow. The pacing is fast, but if you review notes after class, it’s manageable. Grading is fair and rubrics are clear.',
-        received_grade: 'A',
-        rating: 5,
-        tags: ['Fast-paced', 'Organized', 'Heavy Workload', 'Approachable'],
-        likes: 67
-    },
-    {
-        review_id: 2,
-        semester: 'SY 2025-2026, 1st Sem',
-        subject: 'LIT 112',
-        comment_text: 'Covers a lot of material each meeting, so you really have to stay updated. Exams are fair and based on lectures. Not an easy class, but you’ll learn a lot.',
-        received_grade: 'A',
-        rating: 4,
-        tags: ['Fast-paced', 'Heavy Workload', 'Lecture-heavy'],
-        likes: 42
     }
-    ])
+
+    const handleReviewRedirect = () =>{
+        router.push({
+            path: `/reviews/${route.params.professorId}`
+        })
+    }
 
     const API_URL = 'http://localhost:8000/api/'
     const api = axios.create({
         baseURL:API_URL
     })
+    
+    const reviewsAverage = computed(()=>
+    {
+        if (reviews.value.length === 0) return 0
+        let sum = 0
+        for (let i = 0; i< reviews.value.length; i++){
+            sum += reviews.value[i].review_rating
+        }
+        return (sum/reviews.value.length).toFixed(2)
+    })
+    
+    const professors = ref()
+    async function fetchProfessor(){
+        isLoading.value = true
+        try{
+            const response = await api.get(`professors/${route.params.professorId}`)
+            professor.value = response.data
+        } catch(error){
+            console.log("Error with fetching professors: ",error)
+        }
+        isLoading.value = false
+    }
 
+    async function fetchReviews(){
+    try {
+        const response = await api.get('reviews/')
+        reviews.value = response.data.filter(
+            review => Number(review.professor) === Number(route.params.professorId)
+        )
+        console.log(reviews.value)
+    } catch(error){
+        console.log("Error with fetching reviews: ", error)
+    }
+}
     async function fetchProfessors(){
         isLoading.value = true
         try{
@@ -51,6 +75,12 @@
         isLoading.value = false
     }
     const isLoading = ref(false)
+
+    onMounted(()=>{
+        fetchProfessor()
+        fetchReviews()
+        fetchProfessors()
+    })
 </script>
 
 <template>
@@ -61,7 +91,7 @@
             <!--LEFT DIV-->
             <div>
                 <!--SEARCH FILTERS-->
-                <SearchFilters/>
+                <SearchFilters @search="handleSearchRedirect" />
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
@@ -79,16 +109,16 @@
             <!--RIGHT DIV: contains hardcoded data-->
             <div>
                 <!--PROFESSOR CARD-->
-                <h1 class="text-5xl font-bold text-left">Jane Doe</h1>
+                <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm">⭐ 3 (128 reviews)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 ({{ reviews.length }} review/s)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
                     <div class="flex flex-col items-center gap-1">
-                        <span>🤍</span>
+                        <img src="../assets/Heart.svg" class="h-[16px]">
                         <span class="text-sm">128</span>
                     </div>
                 </div>
@@ -167,8 +197,8 @@
                 </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-left my-2.5">Reviews (128)</h1>
-                    <button class="bg-[#52848A] rounded-xl px-[18px] py-1 w-max">
+                    <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
+                    <button @click="handleReviewRedirect" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
                         Write a Review
                     </button>
                 </div>
@@ -180,7 +210,7 @@
                             :subject="review.subject"
                             :review-text="review.comment_text"
                             :grade="review.received_grade"
-                            :rating="review.rating"
+                            :rating="review.review_rating"
                             :tags="review.tags"
                             :likes="review.likes"
                             />

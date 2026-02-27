@@ -17,7 +17,8 @@ const form = ref({
   comment_text: '',
   received_grade: ''
 })
-
+const token = localStorage.getItem('token')
+console.log('token:', localStorage.getItem('token'))
 // Call Backend for Review 
 async function submitReview() {
   // TODO: FIX THIS SO THAT IT ACCURATELY CREATES A POST REQUEST TO THE API 
@@ -27,7 +28,10 @@ async function submitReview() {
       review_rating: form.value.review_rating,
       comment_text: form.value.comment_text,
       received_grade: form.value.received_grade
-    })
+    }, 
+    {headers: {
+      Authorization: `Token ${token}` 
+    }})
     message.value = 'Review submitted successfully!'
     isError.value = false
     form.value = { review_rating: '', comment_text: '', received_grade: '' }
@@ -39,7 +43,7 @@ async function submitReview() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
+  <div class="min-h-screen bg-[#e9e9e9] flex flex-col">
     
     <Navbar/>
   
@@ -48,10 +52,10 @@ async function submitReview() {
     
       <!-- Header -->
       <div class="text-center">
-        <h1 class="text-2xl font-bold text-gray-800">
-          Leave a <span class="text-[#719294]">Review</span>
+        <h1 class="text-2xl font-bold">
+          <span class="text-[#0B0D09]">Leave a </span>Review
         </h1>
-        <p class="text-sm text-gray-500 mt-1">
+        <p class="text-sm text-[#0B0D09] mt-1">
           Share your experience to help other students
         </p>
       </div>
@@ -61,7 +65,7 @@ async function submitReview() {
 
         <!-- Rating -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-500">Rating (1–5)</label>
+          <label class="text-sm text-[#719294]">Rating (1–5)</label>
           <div class="flex items-center border rounded-lg px-3 py-2 focus-within:border-[#719294]">
             <span class="mr-2">⭐</span>
             <input
@@ -70,35 +74,35 @@ async function submitReview() {
               min="1"
               max="5"
               required
-              class="w-full outline-none text-gray-700"
+              class="w-full outline-none text-[#719294]"
             />
           </div>
         </div>
 
         <!-- Grade -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-500">Grade Received</label>
+          <label class="text-sm text-[#719294]">Grade Received</label>
           <div class="flex items-center border rounded-lg px-3 py-2 focus-within:border-[#719294]">
             <span class="mr-2">🎓</span>
             <input
               type="text"
               v-model="form.received_grade"
               placeholder="e.g. A+, B"
-              class="w-full outline-none text-gray-700"
+              class="w-full outline-none text-[#719294]"
             />
           </div>
         </div>
 
         <!-- Comment -->
         <div class="flex flex-col gap-1">
-          <label class="text-sm text-gray-500">Comment</label>
+          <label class="text-sm text-[#719294]">Comment</label>
           <div class="flex border rounded-lg px-3 py-2 focus-within:border-[#719294]">
             <span class="mr-2 mt-1">📝</span>
             <textarea
               v-model="form.comment_text"
               required
               placeholder="What was good? What could be improved?"
-              class="w-full outline-none resize-none h-28 text-gray-700"
+              class="w-full outline-none resize-none h-28 text-[#719294]"
             />
           </div>
         </div>
