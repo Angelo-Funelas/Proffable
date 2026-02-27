@@ -52,10 +52,8 @@
           <span class="px-3 text-xs text-[#719294]">or</span>
         </div>
 
-        <button class="w-full flex items-center justify-center gap-2.5 py-2.5 !bg-white text-[#0B0D09] border border-[#719294] rounded-full text-sm font-medium cursor-pointer transition-colors hover:!bg-[#719294] shadow-sm" type="button">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="h-[18px] w-[18px] shrink-0" alt="Google" />
-          Sign in with Google
-        </button>
+        <div id="googleSignInDiv" class="google-button">
+        </div>
 
         <p class="mt-6 text-[11px] text-[#0B0D09]">
           Don't have an account? 
@@ -65,18 +63,94 @@
       </div>
     </div>
   </div>
+  <div v-if="loadingVisible" id="loading">Loading...</div>
+  <div v-if="errorMsg" id="error">{{ errorMsg }}</div>
+  <div v-if="successMsg" id="success">{{ successMsg }}</div>
+  <div v-if="tokenData" id="tokenDisplay">{{ JSON.stringify(tokenData, null, 2) }}</div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import Navbar from './Navbar.vue';
-const isPasswordVisible = ref(false); 
-const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
+  import { useRouter } from 'vue-router'
+  import { ref, onMounted } from 'vue';
+  import Navbar from './Navbar.vue';
+  const router = useRouter()
+  const isPasswordVisible = ref(false); 
+  const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
+  // Fix: This actually runs when the form submits now
+  const handleLogin = () => {
+    alert("Logging in...");
+  };
+  const api = "http://127.0.0.1:8000/api";
 
-// Fix: This actually runs when the form submits now
-const handleLogin = () => {
-  alert("Logging in...");
-};
+  const loadingVisible = ref(false);
+  const errorMsg = ref("");
+  const successMsg = ref("");
+  const tokenData = ref(null);
+
+  function handleCallbackResponse(response) {
+    console.log("Response received:", response);
+    
+    // Show loading state
+    loadingVisible.value = true;
+    errorMsg.value = "";
+    successMsg.value = "";
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append("token", response.credential);
+    
+    // Send token to your Django API
+    fetch(`${api}/google-login/`, {
+      method: "POST",
+      body: formData,
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error("Login failed. Please try again.");
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log("Login successful:", data);
+
+      successMsg.value = "Login successful!";
+      tokenData.value = data;
+
+      localStorage.setItem('access_token', data.access)
+      localStorage.setItem('refresh_token', data.refresh)
+
+      router.push('/') // redirect to homepage
+
+    })
+    .catch(err => {
+      console.error("Login error:", err);
+      errorMsg.value = "An unexpected error occurred.";
+    })
+    .finally(() => {
+      loadingVisible.value = false;
+    });
+  }
+  onMounted(() => {
+    if (window.google && window.google.accounts) {
+      window.google.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleCallbackResponse
+      });
+      
+      window.google.accounts.id.renderButton(
+        document.getElementById("googleSignInDiv"),
+        { 
+          theme: "outline", 
+          size: "large",
+          text: "sign_in_with",
+          shape: "pill"
+        }
+      );
+    } else {
+      errorMsg.value = "Google script not loaded.";
+    }
+  })
+
 </script>
 
 <style>

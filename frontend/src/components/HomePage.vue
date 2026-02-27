@@ -96,6 +96,22 @@ const handleSearch = () => {
   </div>
 </template>
 
+<script setup>
+  import { onMounted } from 'vue';
+  import api from '@/api/axios';
+  import Navbar from './Navbar.vue';
+  
+  onMounted(async () => {
+    try {
+      const response = await api.get('me');
+      console.log(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+
+  })
+</script>
+
 <style scoped>
 :global(#app) {
   max-width: none !important;
