@@ -5,6 +5,17 @@
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
     import Navbar from './Navbar.vue';
+    import { useRouter } from 'vue-router'
+
+
+    const router = useRouter()
+
+    const handleSearchRedirect = (searchTerm) => {
+  router.push({ 
+    path: '/professors', 
+    query: { q: searchTerm } 
+  })
+}
 
     const professors = ref([])
     onMounted(()=>{
@@ -61,7 +72,7 @@
             <!--LEFT DIV-->
             <div>
                 <!--SEARCH FILTERS-->
-                <SearchFilters/>
+                <SearchFilters @search="handleSearchRedirect" />
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
