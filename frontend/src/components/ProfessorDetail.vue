@@ -109,7 +109,7 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm"> <img src="../assets/Star.svg" class="h-[16px] inline align-middle"> {{reviewsAverage}} ({{reviews.length}} reviews)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 (128 reviews)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
@@ -194,7 +194,7 @@
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
-                    <button class="bg-[#52848A] rounded-xl px-[18px] py-1 w-max">
+                    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max">
                         Write a Review
                     </button>
                 </div>

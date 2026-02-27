@@ -41,7 +41,7 @@ watch(() => route.query.q, (newVal) => {
     <input 
       v-model="localQuery"
       @input="handleInput"
-      class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] text-center" 
+      class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] px-3 text-[#719294] "
       placeholder="Search for a professor or course"
     />
 
@@ -64,8 +64,8 @@ watch(() => route.query.q, (newVal) => {
       </div>
     </div>
 
-    <button class="bg-[#52848A] rounded-xl px-[18px] w-max justify-center mx-auto">
-      Add a Professor
-    </button>
+    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max justify-center mx-auto">
+            Add a Professor
+       </button>
   </div>
 </template>

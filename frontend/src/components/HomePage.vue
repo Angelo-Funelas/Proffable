@@ -27,10 +27,10 @@ const handleSearch = () => {
       <div class="flex flex-col items-center mb-[40px]">
       <div class="flex items-center">
           <img src="../assets/ProffableLogo.png" class="h-[150px]" />
-          <span class="text-gray-500 text-[100px] font-bold mb-[5px] ml-[-15px]">roffable</span>
+          <span class="text-[#505946] text-[100px] font-bold mb-[5px] ml-[-15px]">roffable</span>
       </div>
       
-      <p class="text-gray-700 text-xl italic">
+      <p class="text-[#0B0D09] text-2xl font-bold italic -mt-10 -mr-20">
         Choosing a professor made Proffable.
       </p>
     </div>
@@ -45,13 +45,11 @@ const handleSearch = () => {
             @keyup.enter="handleSearch"
             type="text"
             placeholder="Search for a professor or course"
-            class="flex-1 outline-none text-lg text-gray-600"
+            class="flex-1 outline-none text-lg text-[#719294]"
           />
 
           <!-- Filter Button -->
-          <button
-          @click="handleSearch"
-          class="ml-[20px] font-medium text-gray-700 flex items-center gap-[6px]">
+          <button class="ml-[20px] font-medium text-[#0B0D09] flex items-center gap-[6px]">
             Filter
             <span>▾</span>
           </button>
@@ -67,13 +65,13 @@ const handleSearch = () => {
         <div class="flex gap-[20px] mb-[40px]">
 
           <div class="flex-1">
-            <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-gray-600">
+            <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
               <option>University</option>
             </select>
           </div>
 
           <div class="flex-1">
-            <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-gray-600">
+            <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
               <option>Department</option>
             </select>
           </div>
@@ -84,10 +82,10 @@ const handleSearch = () => {
 
         <!-- STAR RATING -->
         <div class="flex justify-center gap-[10px] text-[40px] text-white mb-[10px]">
-          ★ ★ ★ ★ <span class="text-teal-900">★</span>
+          ★ ★ ★ ★ ★
         </div>
 
-        <p class="text-center text-white opacity-80">
+        <p class="text-center text-white opacity-80 -mt-[20px]">
           Average Rating
         </p>
 

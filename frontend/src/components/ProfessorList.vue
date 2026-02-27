@@ -52,7 +52,7 @@ const goToProf = (professorId) =>{
 
         <!--RIGHT DIV-->
         <div>
-            <h1 class="text-5xl font-bold text-left">Professors</h1>
+            <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
         <p v-if="isLoading">Loading professors...</p>
 
         <ul class="grid grid-cols-1 gap-y-[10px]">
