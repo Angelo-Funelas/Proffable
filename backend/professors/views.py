@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ProfessorSerializer, ReviewSerializer
 from .models import Professor, Review
@@ -8,6 +8,9 @@ from .models import Professor, Review
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['f_name', 'l_name']
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
