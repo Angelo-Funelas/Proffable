@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer
 from .models import Professor, Review

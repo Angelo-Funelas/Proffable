@@ -8,24 +8,28 @@
     import Navbar from './Navbar.vue';
     import { useRouter } from 'vue-router'
 
-
+    const professor = ref({})
+    const route = useRoute()
+    const reviews = ref([])
     const router = useRouter()
 
     const handleSearchRedirect = (searchTerm) => {
-  router.push({ 
-    path: '/professors', 
-    query: { q: searchTerm } 
-  })
-}
+    router.push({ 
+        path: '/professors', 
+        query: { q: searchTerm } 
+    })
+    }
+
+    const handleReviewRedirect = () =>{
+        router.push({
+            path: `/reviews/${route.params.professorId}`
+        })
+    }
 
     const API_URL = 'http://localhost:8000/api/'
     const api = axios.create({
         baseURL:API_URL
     })
-    const professor = ref({})
-    const route = useRoute()
-
-    const reviews = ref([])
     
     const reviewsAverage = computed(()=>
     {
@@ -109,7 +113,7 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 (128 reviews)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 ({{ reviews.length }} review/s)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
@@ -194,7 +198,7 @@
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
-                    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max">
+                    <button @click="handleReviewRedirect" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
                         Write a Review
                     </button>
                 </div>
