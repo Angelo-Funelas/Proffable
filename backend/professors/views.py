@@ -9,6 +9,9 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
 
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['f_name', 'l_name']
+
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer

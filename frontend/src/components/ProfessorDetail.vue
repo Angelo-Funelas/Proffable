@@ -6,6 +6,17 @@
     import SearchFilters from './SearchFilters.vue'
     import { useRoute } from 'vue-router'
     import Navbar from './Navbar.vue';
+    import { useRouter } from 'vue-router'
+
+
+    const router = useRouter()
+
+    const handleSearchRedirect = (searchTerm) => {
+  router.push({ 
+    path: '/professors', 
+    query: { q: searchTerm } 
+  })
+}
 
     const API_URL = 'http://localhost:8000/api/'
     const api = axios.create({
@@ -76,7 +87,7 @@
             <!--LEFT DIV-->
             <div>
                 <!--SEARCH FILTERS-->
-                <SearchFilters/>
+                <SearchFilters @search="handleSearchRedirect" />
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
