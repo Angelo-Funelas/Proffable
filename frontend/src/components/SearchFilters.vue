@@ -5,10 +5,18 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const localQuery = ref('')
 
-const handleSearch = () => {
-  router.push({ path: '/professors', query: { q: localQuery.value } })
-}
+let debounceTimer = null
+const emit = defineEmits(['search'])
 
+const handleInput = () => {
+  clearTimeout(debounceTimer)
+  
+  debounceTimer = setTimeout(() => {
+    router.push({ query: { q: localQuery.value || undefined } })
+    
+    emit('search', localQuery.value)
+  }, 500)
+}
 </script>
 
 <template> 
@@ -16,7 +24,7 @@ const handleSearch = () => {
 <div class="flex flex-col gap-2 text-left">
         <input 
         v-model="localQuery"
-        @keyup.enter="handleSearch"
+        @input="handleInput"
         class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] text-center " placeholder="Search for a professor or course"/>
         <!--QUERY/FILTERS DIV-->
 
