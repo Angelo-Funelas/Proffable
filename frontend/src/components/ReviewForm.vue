@@ -3,22 +3,18 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import Navbar from './Navbar.vue';
+import api from "@/api/axios"
 
 const route = useRoute()
 const message = ref('')
 const isError = ref(false)
-
-const api = axios.create({
-  baseURL: 'http://localhost:8000/api/'
-})
 
 const form = ref({
   review_rating: '',
   comment_text: '',
   received_grade: ''
 })
-const token = localStorage.getItem('token')
-console.log('token:', localStorage.getItem('token'))
+
 // Call Backend for Review 
 async function submitReview() {
   // TODO: FIX THIS SO THAT IT ACCURATELY CREATES A POST REQUEST TO THE API 
@@ -28,10 +24,7 @@ async function submitReview() {
       review_rating: form.value.review_rating,
       comment_text: form.value.comment_text,
       received_grade: form.value.received_grade
-    }, 
-    {headers: {
-      Authorization: `Token ${token}` 
-    }})
+    })
     message.value = 'Review submitted successfully!'
     isError.value = false
     form.value = { review_rating: '', comment_text: '', received_grade: '' }
