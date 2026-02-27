@@ -10,6 +10,7 @@ const props = defineProps({
   tags: Array,
   likes: Number,
 })
+
 </script>
 
 <template>
@@ -19,19 +20,23 @@ const props = defineProps({
                 <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
                     <img src="../assets/User.png" class="h-[20px]">
                 </div>
-                <span>Anonymous Student | {{ semester }} {{ subject }}</span>
+                <!-- Uses Placeholder Semester and Subject Values for Now-->
+                 <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
+                <!-- <span>Anonymous Student | {{ semester }} {{ subject }}</span> -->
             </div>
             <button class="text-sm">
                 <img src="../assets/Flag.png" class="h-[24px]">
             </button>    
         </div>
         <div class="flex">
-            <img src="../assets/BigStar.svg" class="h-[36px]" />
-            <img src="../assets/BigStar.svg" class="h-[36px]" />
-            <img src="../assets/BigStar.svg" class="h-[36px]" />
-            <img src="../assets/BigStar.svg" class="h-[36px]" />
-            <img src="../assets/BigStar.svg" class="h-[36px]" />
+            <div v-for="n in rating">
+                <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
+            </div>
+            <div v-for="n in 5-rating">
+                <img src="../assets/BigStar.svg" class="h-[36px]" />
+            </div>
         </div>
+        
         <p class="text-xl"><span class="font-bold">Review</span>: {{ reviewText }}</p>
         <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ grade }}</p>
 

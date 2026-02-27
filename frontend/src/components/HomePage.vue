@@ -1,5 +1,19 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Navbar from './Navbar.vue';
+
+//used route to detect if search bar has something
+const router = useRouter()
+//we call this in search later
+const searchQuery = ref('')
+
+//creates the route for the ref on top to use
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    router.push({ path: '/professors', query: { q: searchQuery.value } })
+  }
+}
 </script>
 
 <template>
@@ -27,6 +41,8 @@ import Navbar from './Navbar.vue';
 
           <!-- Input -->
           <input
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
             type="text"
             placeholder="Search for a professor or course"
             class="flex-1 outline-none text-lg text-[#719294]"
