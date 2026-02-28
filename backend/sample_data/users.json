@@ -1,0 +1,25 @@
+[
+{
+    "model": "api.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$E5WJhqpFzkiCti8eTOouhq$O7jrdFGqxxswkZhs0delU6D3cyi5OhJCvnNUL3vp2ss=",
+        "last_login": null,
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-02-27T14:29:52.546Z",
+        "f_name": "",
+        "l_name": "",
+        "m_name": "",
+        "profile_picture_url": "",
+        "is_moderator": false,
+        "email": "admin@example.com",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
