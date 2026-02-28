@@ -3,6 +3,7 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer
 from .models import Professor, Review
+from .permissions import IsOwner
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -20,6 +21,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # If submitting a new review, require authentication.
         if self.action == 'create':
             return [IsAuthenticated()]
+        # Only owners can update, partially update, or delete their reviews.
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsOwner()]
         return [AllowAny()]
 
     def perform_create(self, serializer):
