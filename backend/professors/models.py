@@ -21,6 +21,7 @@ class Review(models.Model):
     comment_text = models.TextField()
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
+    helpful_count = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.review_id}"
