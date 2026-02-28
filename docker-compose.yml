@@ -1,6 +1,11 @@
 services:
   db:
     image: postgres:17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     container_name: proffable_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -25,9 +30,12 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: >
       sh -c "python manage.py migrate &&
+             python manage.py loaddata sample_data/users.json &&
+             python manage.py loaddata sample_data/professors.json &&
              python manage.py runserver 0.0.0.0:8000"
 
   # Frontend Service [cite: 173, 228, 631, 633]

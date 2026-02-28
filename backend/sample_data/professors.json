@@ -1,0 +1,22 @@
+[
+{
+    "model": "professors.professor",
+    "pk": 1,
+    "fields": {
+        "f_name": "John",
+        "l_name": "Doe",
+        "m_name": "The",
+        "email": "johndoe@example.com"
+    }
+},
+{
+    "model": "professors.professor",
+    "pk": 2,
+    "fields": {
+        "f_name": "Jane",
+        "l_name": "The",
+        "m_name": "Doe",
+        "email": "janethedoe@example.com"
+    }
+}
+]
