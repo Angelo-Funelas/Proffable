@@ -3,7 +3,7 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer
 from .models import Professor, Review
-from .permissions import isOwner
+from .permissions import IsOwner
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
