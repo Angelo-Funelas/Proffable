@@ -1,20 +1,60 @@
 <script setup>
-import {useRouter} from 'vue-router';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 const router = useRouter()
 
-const goToHomePage = () => {
-    router.push('/')
+const isAuthenticated = ref(false)
+
+const checkAuth = () => {
+  isAuthenticated.value = !!localStorage.getItem('access_token')
 }
 
+onMounted(() => {
+  checkAuth()
+})
+
+const goToHomePage = () => {
+  router.push('/')
+}
+
+const goToLogin = () => {
+  router.push('/login')
+}
+
+const logout = () => {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  isAuthenticated.value = false
+  router.push('/')
+}
 </script>
 
 <template>
-<nav class="w-full bg-gradient-to-b from-[#719294] to-[#52848A] h-16 flex items-center px-6 shadow-md">
-      <div @click="goToHomePage" class="bg-[#d9d9d9] rounded-full h-10 w-10 flex 
-      items-center justify-center overflow-hidden shadow-sm cursor-pointer">
-        <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain 
-        pointer-events-none"  />
-      </div>
-    </nav>
+  <nav class="w-full bg-gradient-to-b from-[#719294] to-[#52848A] h-16 flex items-center justify-between px-6 shadow-md">
 
+    <div
+      @click="goToHomePage"
+      class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm cursor-pointer"
+    >
+      <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain pointer-events-none" />
+    </div>
+
+    <button
+      v-if="isAuthenticated"
+      @click="logout"
+      class="text-white font-semibold hover:opacity-80 transition"
+    >
+      Logout
+    </button>
+
+    <button
+      v-else
+      @click="goToLogin"
+      class="text-white font-semibold hover:opacity-80 transition"
+    >
+      Login
+    </button>
+
+  </nav>
 </template>
