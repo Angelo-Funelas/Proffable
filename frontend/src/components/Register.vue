@@ -61,9 +61,8 @@ const handleRegister = async () => {
 
 <template>
 
-  <Navbar/> 
-  
-  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6 font-sans">
+  <Navbar/>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-[#e9e9e9] p-6 font-sans">
     <h1 class="text-2xl font-bold mb-6">Register New User</h1>
 
     <form @submit.prevent="handleRegister" class="flex flex-col gap-4 w-full max-w-sm bg-white p-6 rounded-lg shadow-md">
@@ -85,6 +84,12 @@ const handleRegister = async () => {
       <p><strong>Last Name:</strong> {{ userInfo.l_name }}</p>
       <p><strong>Is Moderator:</strong> {{ userInfo.is_moderator }}</p>
     </div>
+    <p class="mt-6 text-[11px] text-[#0B0D09]">
+        Already have an account? 
+        <router-link to="/login" class="font-bold no-underline hover:underline">
+        Log In 
+        </router-link>
+    </p> 
   </div>
 </template>
 
