@@ -11,13 +11,16 @@ const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-async function fetchProfessors(term) {
+async function fetchProfessors(filters={}) {
     isLoading.value = true
-    const searchVal = term !== undefined ? term : (route.query.q || '')
+    const searchVal = filters.query !== undefined ? filters.query : (route.query.q || '')
+    const ratingVal = filters.rating || undefined
 
     try {
         const response = await api.get('professors/', {
-            params: {search: searchVal} 
+            params: {search: searchVal,
+                min_rating: ratingVal
+            } 
         })
         professors.value = response.data
 
@@ -28,7 +31,10 @@ async function fetchProfessors(term) {
 }
 
 onMounted(()=>{
-    fetchProfessors()
+    fetchProfessors({
+        query: route.query.q || '',
+        rating: route.query.min_rating || undefined
+    })
 })
 
 const goToProf = (professorId) =>{
@@ -58,7 +64,7 @@ const goToProf = (professorId) =>{
                 <ProfCard
                 :lname="prof.l_name"
                 :fname="prof.f_name"
-                :avgScore="prof.avg_rating"
+                :avgScore="prof.avg_rating || 0"
                 :numReviews="prof.review_count"
                 />
             </li>

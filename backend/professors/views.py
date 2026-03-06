@@ -15,10 +15,17 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     search_fields = ['f_name', 'l_name']
 
     def get_queryset(self):
-        return Professor.objects.annotate(
+
+        qs = Professor.objects.annotate(
             avg_rating = Avg("reviews__review_rating"),
             review_count = Count("reviews")
         )
+
+        min_rating = self.request.query_params.get("min_rating")
+        if min_rating:
+            qs = qs.filter(avg_rating__gte=min_rating)
+        return qs
+        
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
