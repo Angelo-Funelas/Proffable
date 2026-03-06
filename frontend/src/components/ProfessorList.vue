@@ -1,6 +1,6 @@
 <script setup>
 import {ref, computed, onMounted} from 'vue'
-import axios from 'axios'
+import api from "@/api/axios"
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -11,19 +11,16 @@ const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-const API_URL = 'http://localhost:8000/api/'
-const api = axios.create({
-    baseURL:API_URL
-})
 async function fetchProfessors(term) {
     isLoading.value = true
     const searchVal = term !== undefined ? term : (route.query.q || '')
 
     try {
-        const response = await axios.get('http://localhost:8000/api/professors/', {
-            params: { search: searchVal }
+        const response = await api.get('professors/', {
+            params: {search: searchVal} 
         })
         professors.value = response.data
+
     } catch(error) {
         console.error("Fetch error:", error)
     }
@@ -61,8 +58,8 @@ const goToProf = (professorId) =>{
                 <ProfCard
                 :lname="prof.l_name"
                 :fname="prof.f_name"
-                :avgScore="3"
-                :numReviews="128"
+                :avgScore="prof.avg_rating"
+                :numReviews="prof.review_count"
                 />
             </li>
         </ul>
