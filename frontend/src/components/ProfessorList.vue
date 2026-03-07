@@ -13,8 +13,6 @@ const router = useRouter()
 
 async function fetchProfessors(filters = {}) {
     isLoading.value = true
-    
-    // Merge filter event with initial route query parameters
     const params = {
         search: filters.q || route.query.q || '',
         institution: filters.institution || route.query.institution || '',
@@ -30,8 +28,6 @@ async function fetchProfessors(filters = {}) {
     isLoading.value = false
 }
 
-// Watch for changes in route query (e.g. hitting Enter on Home)
-// This will trigger whenever the URL changes to include parameters
 watch(() => route.query, () => {
     fetchProfessors()
 }, { immediate: true })

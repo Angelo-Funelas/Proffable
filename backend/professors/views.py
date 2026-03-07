@@ -39,7 +39,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_permissions(self):
-        # If submitting a new review, require authentication.
         if self.action == 'create':
             return [IsAuthenticated()]
         return [AllowAny()]

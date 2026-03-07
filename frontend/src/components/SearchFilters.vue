@@ -4,7 +4,6 @@ import api from "@/api/axios"
 
 const emit = defineEmits(['search'])
 
-// State for filters
 const localQuery = ref('')
 const selectedInstitution = ref('')
 const selectedCourse = ref('')
@@ -25,7 +24,6 @@ onMounted(async () => {
   }
 })
 
-// Real-time search/filter trigger
 const triggerSearch = () => {
   emit('search', {
     q: localQuery.value,
