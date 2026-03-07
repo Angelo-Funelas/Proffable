@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from "@/api/axios"
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
@@ -13,18 +13,16 @@ const router = useRouter()
 
 async function fetchProfessors(filters = {}) {
     isLoading.value = true
-    const searchVal = typeof filters === 'string' ? filters : (filters.q || '')
-    const instVal = filters.institution || ''
-    const courseVal = filters.course || ''
+    
+    // Merge filter event with initial route query parameters
+    const params = {
+        search: filters.q || route.query.q || '',
+        institution: filters.institution || route.query.institution || '',
+        course: filters.course || route.query.course || ''
+    }
 
     try {
-        const response = await api.get('professors/', {
-            params: {
-                search: searchVal,
-                institution: instVal,
-                course: courseVal
-            } 
-        })
+        const response = await api.get('professors/', { params })
         professors.value = response.data
     } catch(error) {
         console.error("Fetch error:", error)
@@ -32,11 +30,13 @@ async function fetchProfessors(filters = {}) {
     isLoading.value = false
 }
 
-onMounted(()=>{
+// Watch for changes in route query (e.g. hitting Enter on Home)
+// This will trigger whenever the URL changes to include parameters
+watch(() => route.query, () => {
     fetchProfessors()
-})
+}, { immediate: true })
 
-const goToProf = (professorId) =>{
+const goToProf = (professorId) => {
     router.push(`/professor/${professorId}`)
 }
 </script>
@@ -65,7 +65,7 @@ const goToProf = (professorId) =>{
 </div> 
 </template>
 
-<style scoped>  
+<style scoped>
 .navbar {
   width: 100%;
   background-color: #5c898d;
