@@ -55,10 +55,14 @@
         <div id="googleSignInDiv" class="google-button">
         </div>
 
-        <p class="mt-6 text-[11px] text-[#0B0D09]">
+         <p class="mt-6 text-[11px] text-[#0B0D09]">
           Don't have an account? 
-          <a href="#" class="font-bold no-underline hover:underline">Sign up</a>
-        </p>
+          <router-link to="/sign-up" class="font-bold no-underline hover:underline">
+            Sign Up 
+          </router-link>
+        </p> 
+
+       
 
       </div>
     </div>

@@ -8,5 +8,6 @@ import ReviewForm from './components/ReviewForm.vue';
 import LoginView from './components/LoginView.vue'; 
 import ProfessorDetail from './components/ProfessorDetail.vue'; 
 import HomePage from './components/HomePage.vue'; 
+import Register from './components/Register.vue'; 
 
 </script>

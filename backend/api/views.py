@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Import the things to function 
 import jwt
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from rest_framework.decorators import api_view, permission_classes
@@ -16,6 +17,8 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
 
 import os
+
+User = get_user_model()
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 
@@ -37,20 +40,49 @@ def me(request):
         "is_moderator": user.is_moderator,
     })
 
-# POST request for making a new user 
 @api_view(["POST"])
 def register_user(request):
     data = request.data
+    email = data.get("email")
+    username = data.get("username")
+    password = data.get("password")
+    f_name = data.get("f_name", "")
+    l_name = data.get("l_name", "")
+
+    # Check required fields
+    if not email or not username or not password:
+        return Response(
+            {"error": "Username, email, and password are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Check for duplicate email
+    if User.objects.filter(email=email).exists():
+        return Response(
+            {"error": "Email already exists."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Check for duplicate username
+    if User.objects.filter(username=username).exists():
+        return Response(
+            {"error": "Username already exists."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Create the user
     user = User.objects.create_user(
-        username=data["username"],
-        email=data["email"],
-        password=data["password"],
-        f_name=data.get("f_name", ""),
-        l_name=data.get("l_name", "")
+        username=username,
+        email=email,
+        password=password,
+        f_name=f_name,
+        l_name=l_name
     )
 
-
-    return Response({"message": "User created"}, status=status.HTTP_201_CREATED)
+    return Response(
+        {"message": "User created successfully."},
+        status=status.HTTP_201_CREATED
+    )
 
 @api_view(["POST"])
 def google_login(request):
