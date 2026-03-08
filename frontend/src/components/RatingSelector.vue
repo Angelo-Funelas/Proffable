@@ -1,5 +1,7 @@
 <script setup>
     import {ref} from 'vue'
+    const emit = defineEmits(['rate']);
+
     const starRatingHover = ref(5);
     const starRating = ref(0);
 
@@ -11,6 +13,7 @@
     }
     const setRating = (n) => {
         starRating.value = n;
+        emit('rate', n);
     }
 </script>
 

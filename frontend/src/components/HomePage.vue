@@ -15,6 +15,10 @@ const handleSearch = () => {
     router.push({ path: '/professors', query: { q: searchQuery.value } })
   }
 }
+const rating = ref(0);
+const handleRate = (value) => {
+  rating.value = value;
+};
 </script>
 
 <template>
@@ -79,7 +83,7 @@ const handleSearch = () => {
 
         </div>
 
-        <RatingSelector/>
+        <RatingSelector @rate="handleRate"/>
 
       </div>
 
