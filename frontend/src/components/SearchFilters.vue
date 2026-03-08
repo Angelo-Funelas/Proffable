@@ -89,6 +89,18 @@ const triggerSearch = () => {
         </select>
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
+              
+      <div class="relative">
+        <select 
+          v-model="selectedCourse" 
+          @change="triggerSearch" 
+          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
+        >
+          <option value="">Course</option>
+          <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>
+        </select>
+        <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
+      </div>
       <div class="text-center">
         <RatingSelector @rate="updateStarQuery"/>
         <p class="text-center">Average Rating</p>
