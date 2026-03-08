@@ -20,10 +20,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = [
-            "review_id", "student", "student_name", "professor", "professor_name",
-            "review_rating", "comment_text", "review_date", "received_grade"]
-
+        fields = ["review_id", "student", "student_name", "professor", "professor_name",
+            "review_rating", "comment_text", "review_date", "received_grade", "helpful_count"]
         extra_kwargs = {
             'student': {'read_only': True}
         }

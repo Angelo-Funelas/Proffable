@@ -1,15 +1,41 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import api from "@/api/axios"
+import { useRouter, useRoute } from 'vue-router'
+import RatingSelector from './RatingSelector.vue'
 
+const router = useRouter()
+const route = useRoute()
+const rating_query = ref(route.query.min_rating || undefined)
+
+const localQuery = ref(route.query.q || '')
+
+let debounceTimer = null
 const emit = defineEmits(['search'])
 
-const localQuery = ref('')
 const selectedInstitution = ref('')
 const selectedCourse = ref('')
-
 const institutions = ref([])
 const courses = ref([])
+
+const handleInput = () => {
+  clearTimeout(debounceTimer)
+  
+  debounceTimer = setTimeout(() => {
+    const queryPayload = { 
+        q: localQuery.value || undefined,
+        min_rating: rating_query.value || undefined
+    }
+
+    if (route.path !== '/professors') {
+      router.push({ path: '/professors', query: queryPayload })
+    } else {
+      router.push({ query: queryPayload })
+    }
+    
+    emit('search', {query: localQuery.value, rating: rating_query.value})
+  }, 500)
+}
 
 onMounted(async () => {
   try {
@@ -22,6 +48,14 @@ onMounted(async () => {
   } catch (err) {
     console.error("Failed to load filter data", err)
   }
+
+const updateStarQuery = (rating) => {
+  rating_query.value = rating
+  emit('search', {query: localQuery.value, rating: rating_query.value})
+}
+
+watch(() => route.query.q, (newVal) => {
+  localQuery.value = newVal || ''
 })
 
 const triggerSearch = () => {
@@ -54,28 +88,9 @@ const triggerSearch = () => {
         </select>
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
-      
-      <div class="relative">
-        <select 
-          v-model="selectedCourse" 
-          @change="triggerSearch" 
-          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
-        >
-          <option value="">Course</option>
-          <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>
-        </select>
-        <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
-      </div>
-
-      <div class="grid grid-cols-1 gap-1 justify-center mt-2">
-        <div class="flex justify-center">
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-        </div>
-        <p class="text-center text-white">Average Rating</p>
+      <div class="text-center">
+        <RatingSelector @rate="updateStarQuery"/>
+        <p class="text-center">Average Rating</p>
       </div>
     </div>
 

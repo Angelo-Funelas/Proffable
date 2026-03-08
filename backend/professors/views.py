@@ -3,8 +3,8 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
 from .models import Professor, Review, Institution, Course
-
 from django.db.models import Avg, Count, Q
+from .permissions import IsOwner
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -32,7 +32,11 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         if course_code:
             queryset = queryset.filter(professor_course__course__course_code__iexact=course_code)
 
+        min_rating = self.request.query_params.get("min_rating")
+        if min_rating:
+            queryset = queryset.filter(avg_rating__gte=min_rating)
         return queryset
+        
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -41,6 +45,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [IsAuthenticated()]
+        # Only owners can update, partially update, or delete their reviews.
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsOwner()]
         return [AllowAny()]
 
     def perform_create(self, serializer):

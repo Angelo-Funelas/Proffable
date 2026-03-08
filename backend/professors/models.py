@@ -38,12 +38,20 @@ class Review(models.Model):
     comment_text = models.TextField()
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
+    helpful_count = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.review_id}"
     
     class Meta:
         unique_together = ("student", "professor")
+        
+class ReviewVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_votes")
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
+
+    class Meta:
+        unique_together = ("user", "review")
 
 class ProfessorCourse(models.Model):
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="professor_course")

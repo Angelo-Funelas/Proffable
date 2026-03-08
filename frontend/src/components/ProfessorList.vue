@@ -16,11 +16,13 @@ async function fetchProfessors(filters = {}) {
     const params = {
         search: filters.q || route.query.q || '',
         institution: filters.institution || route.query.institution || '',
-        course: filters.course || route.query.course || ''
+        course: filters.course || route.query.course || '',
+        min_rating: filters.rating || undefined
     }
 
     try {
         const response = await api.get('professors/', { params })
+
         professors.value = response.data
     } catch(error) {
         console.error("Fetch error:", error)
@@ -31,6 +33,12 @@ async function fetchProfessors(filters = {}) {
 watch(() => route.query, () => {
     fetchProfessors()
 }, { immediate: true })
+onMounted(()=>{
+    fetchProfessors({
+        query: route.query.q || '',
+        rating: route.query.min_rating || undefined
+    })
+})
 
 const goToProf = (professorId) => {
     router.push(`/professor/${professorId}`)
@@ -44,18 +52,19 @@ const goToProf = (professorId) => {
         <SearchFilters @search="fetchProfessors" />
         <div>
             <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
-            <p v-if="isLoading">Loading professors...</p>
-            <ul class="grid grid-cols-1 gap-y-[10px]">
-                <li v-for="prof in professors" :key="prof.professor_id" 
-                @click="goToProf(prof.professor_id)" class="cursor-pointer">
-                    <ProfCard
-                    :lname="prof.l_name"
-                    :fname="prof.f_name"
-                    :avgScore="prof.avg_rating"
-                    :numReviews="prof.review_count"
-                    />
-                </li>
-            </ul>
+        <p v-if="isLoading">Loading professors...</p>
+
+        <ul class="grid grid-cols-1 gap-y-[10px]">
+            <li  v-for="prof in professors" :key="prof.professor_id" 
+            @click="goToProf(prof.professor_id)" class="cursor-pointer">
+                <ProfCard
+                :lname="prof.l_name"
+                :fname="prof.f_name"
+                :avgScore="prof.avg_rating || 0"
+                :numReviews="prof.review_count"
+                />
+            </li>
+        </ul>
         </div>
     </div>
 </div> 

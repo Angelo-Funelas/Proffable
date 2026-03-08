@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from "@/api/axios"
 import Navbar from './Navbar.vue';
+import RatingSelector from './RatingSelector.vue';
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -26,6 +27,10 @@ const handleSearch = () => {
     query: { q: searchQuery.value, institution: selectedInstitution.value, course: selectedCourse.value } 
   })
 }
+const rating = ref(0);
+const handleRate = (value) => {
+  rating.value = value;
+};
 </script>
 
 <template>
@@ -48,7 +53,10 @@ const handleSearch = () => {
       </div>
 
       <div class="w-[720px] bg-[#5c898d] rounded-[18px] pt-[60px] pb-[30px] px-[40px] shadow-lg">
-        <div class="flex gap-[20px] mb-[40px]">
+
+        <!-- DROPDOWNS -->
+        <div class="flex gap-[20px] mb-[10px]">
+
           <div class="flex-1">
             <select v-model="selectedInstitution" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
               <option value="">University</option>
@@ -61,9 +69,11 @@ const handleSearch = () => {
               <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>
             </select>
           </div>
+
         </div>
-        <div class="flex justify-center gap-[10px] text-[40px] text-white mb-[10px]">★ ★ ★ ★ ★</div>
-        <p class="text-center text-white opacity-80 -mt-[20px]">Average Rating</p>
+
+        <RatingSelector @rate="handleRate"/>
+        <p class="text-center text-white opacity-80">Average Rating</p>
       </div>
     </div>
   </div>
