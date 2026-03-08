@@ -17,7 +17,6 @@ const form = ref({
 
 // Call Backend for Review 
 async function submitReview() {
-  // TODO: FIX THIS SO THAT IT ACCURATELY CREATES A POST REQUEST TO THE API 
   try {
     await api.post('reviews/', {
       professor: route.params.professorId,

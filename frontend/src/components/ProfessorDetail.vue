@@ -13,10 +13,12 @@
     const reviews = ref([])
     const router = useRouter()
 
-    const handleSearchRedirect = (searchTerm) => {
+    const handleSearchRedirect = (filters) => {
     router.push({ 
         path: '/professors', 
-        query: { q: searchTerm } 
+        query: { q: searchTerm,
+            min_rating: filters.rating
+        } 
     })
     }
 
