@@ -1,9 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import RatingSelector from './RatingSelector.vue'
+import FilledStar from "../assets/StarFilled.svg"
+import UnfilledStar from "../assets/BigStar.svg"
 
 const router = useRouter()
 const route = useRoute()
+const star_values = [1,2,3,4,5]
+const rating_query = ref(route.query.min_rating || undefined)
 
 // Initialize with current query so the text doesn't disappear on refresh
 const localQuery = ref(route.query.q || '')
@@ -15,7 +20,10 @@ const handleInput = () => {
   clearTimeout(debounceTimer)
   
   debounceTimer = setTimeout(() => {
-    const queryPayload = { q: localQuery.value || undefined }
+    const queryPayload = { 
+        q: localQuery.value || undefined,
+        min_rating: rating_query.value || undefined
+    }
 
     // If we are NOT on the list page, push to the list page with the query
     // Update '/professors' to match your actual list route path
@@ -26,8 +34,13 @@ const handleInput = () => {
       router.push({ query: queryPayload })
     }
     
-    emit('search', localQuery.value)
+    emit('search', {query: localQuery.value, rating: rating_query.value})
   }, 500)
+}
+
+const updateStarQuery = (rating) => {
+  rating_query.value = rating
+  emit('search', {query: localQuery.value, rating: rating_query.value})
 }
 
 // Sync the input if the URL query changes externally
@@ -52,14 +65,8 @@ watch(() => route.query.q, (newVal) => {
         </select>
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
-      <div class="grid grid-cols-1 gap-1 justify-center">
-        <div class="flex justify-center">
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-        </div>
+      <div class="text-center">
+        <RatingSelector @rate="updateStarQuery"/>
         <p class="text-center">Average Rating</p>
       </div>
     </div>

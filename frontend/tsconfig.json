@@ -3,5 +3,14 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "ESNext", 
+      "DOM"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "node",
+  }
 }
