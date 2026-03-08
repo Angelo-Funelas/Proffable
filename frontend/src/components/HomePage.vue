@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from './Navbar.vue';
+import RatingSelector from './RatingSelector.vue';
 
 //used route to detect if search bar has something
 const router = useRouter()
@@ -78,16 +79,7 @@ const handleSearch = () => {
 
         </div>
 
-
-
-        <!-- STAR RATING -->
-        <div class="flex justify-center gap-[10px] text-[40px] text-white mb-[10px]">
-          ★ ★ ★ ★ ★
-        </div>
-
-        <p class="text-center text-white opacity-80 -mt-[20px]">
-          Average Rating
-        </p>
+        <RatingSelector/>
 
       </div>
 
