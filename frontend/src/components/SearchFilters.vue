@@ -48,6 +48,7 @@ onMounted(async () => {
   } catch (err) {
     console.error("Failed to load filter data", err)
   }
+})
 
 const updateStarQuery = (rating) => {
   rating_query.value = rating
