@@ -18,20 +18,16 @@
 </script>
 
 <template>
-    <div class="flex justify-center text-[40px] text-white mb-[10px]">
-        <span v-for="n in 5" :key="n" class="cursor-pointer px-1" :class="{ 'text-[#cbcb7c]': starRatingHover >= n && starRating < n, 'star-active': starRating >= n }" @mouseenter="handleMouseEnter(n)" @mouseleave="handleMouseLeave(n)" @click="setRating(n)">
-            ★
-        </span>
+    <div class="min-w-auto text-[40px] text-white">
+        <svg width="48" height="48" viewBox="0 0 48 48" v-for="n in 5" :key="n" class="inline fill-[#505946] h-[48px] cursor-pointer px-1" :class="{ 'fill-[#cbcb7c]': starRatingHover >= n && starRating < n, 'star-active': starRating >= n }" @mouseenter="handleMouseEnter(n)" @mouseleave="handleMouseLeave(n)" @click="setRating(n)">
+            <path d="M24 4L30.18 16.52L44 18.54L34 28.28L36.36 42.04L24 35.54L11.64 42.04L14 28.28L4 18.54L17.82 16.52L24 4Z"/>
+        </svg>
     </div>
-
-    <p class="text-center text-white opacity-80 -mt-[20px]">
-        Average Rating
-    </p>
 </template>
 
 <style>
 .star-active {
-    @apply text-[#ffe51f];
+    @apply fill-[#ffe51f];
     animation: pulse .2s cubic-bezier(.02,1.68,.95,.99);
 }
 @keyframes pulse {

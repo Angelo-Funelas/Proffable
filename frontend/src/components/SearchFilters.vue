@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import RatingSelector from './RatingSelector.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -52,14 +53,8 @@ watch(() => route.query.q, (newVal) => {
         </select>
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
-      <div class="grid grid-cols-1 gap-1 justify-center">
-        <div class="flex justify-center">
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-          <img src="../assets/BigStar.svg" class="h-[48px]" />
-        </div>
+      <div class="text-center">
+        <RatingSelector/>
         <p class="text-center">Average Rating</p>
       </div>
     </div>

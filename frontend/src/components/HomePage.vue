@@ -67,7 +67,7 @@ const handleRate = (value) => {
       <div class="w-[720px] bg-[#5c898d] rounded-[18px] pt-[60px] pb-[30px] px-[40px] shadow-lg">
 
         <!-- DROPDOWNS -->
-        <div class="flex gap-[20px] mb-[40px]">
+        <div class="flex gap-[20px] mb-[10px]">
 
           <div class="flex-1">
             <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
@@ -84,7 +84,7 @@ const handleRate = (value) => {
         </div>
 
         <RatingSelector @rate="handleRate"/>
-
+        <p class="text-center text-white opacity-80">Average Rating</p>
       </div>
 
     </div>
