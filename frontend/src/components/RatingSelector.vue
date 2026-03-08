@@ -18,9 +18,9 @@
 </script>
 
 <template>
-    <div class="min-w-auto text-[40px] text-white">
-        <svg width="48" height="48" viewBox="0 0 48 48" v-for="n in 5" :key="n" class="inline fill-[#505946] h-[48px] cursor-pointer px-1" :class="{ 'fill-[#cbcb7c]': starRatingHover >= n && starRating < n, 'star-active': starRating >= n }" @mouseenter="handleMouseEnter(n)" @mouseleave="handleMouseLeave(n)" @click="setRating(n)">
-            <path d="M24 4L30.18 16.52L44 18.54L34 28.28L36.36 42.04L24 35.54L11.64 42.04L14 28.28L4 18.54L17.82 16.52L24 4Z"/>
+    <div class="min-w-auto text-white">
+        <svg width="40" height="38" viewBox="0 0 40 38" v-for="n in 5" :key="n" class="inline fill-[#505946] cursor-pointer px-1 mx-0.5" :class="{ 'fill-[#cbcb7c]': starRatingHover >= n && starRating < n, 'star-active': starRating >= n }" @mouseenter="handleMouseEnter(n)" @mouseleave="handleMouseLeave(n)" @click="setRating(n)">
+            <path class="cls-1" d="M20,0l6.2,12.5,13.8,2-10,9.7,2.4,13.8-12.4-6.5-12.4,6.5,2.4-13.8L0,14.5l13.8-2L20,0Z"/>
         </svg>
     </div>
 </template>
