@@ -3,8 +3,25 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from api.models import User
 
 # Create your models here.
+class Institution(models.Model):
+    institution_id = models.AutoField(primary_key=True)
+    name = models.CharField(blank=False, max_length=255)
+    domain = models.CharField(blank=False, max_length=255)
+    def __str__(self):
+        return f"{self.name}"
+
+class Course(models.Model):
+    course_id = models.AutoField(primary_key=True)
+    course_code = models.CharField(blank=False, max_length=50)
+    course_name = models.CharField(blank=False, max_length=255)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="courses")
+
+    def __str__(self):
+        return f"{self.course_code}"
+
 class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="professors", null=True, blank=True)
     f_name = models.CharField(blank=False, max_length=32)
     l_name = models.CharField(blank=False, max_length=32)
     m_name = models.CharField(blank=True, max_length=32)
@@ -28,31 +45,17 @@ class Review(models.Model):
     
     class Meta:
         unique_together = ("student", "professor")
-
+        
 class ReviewVote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_votes")
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
 
     class Meta:
         unique_together = ("user", "review")
-        
-class Institution(models.Model):
-    institution_id = models.AutoField(primary_key=True)
-    name = models.CharField(blank=False)
-    domain = models.CharField(blank=False)
-    def __str__(self):
-        return f"{self.institution_id}"
-
-class Course(models.Model):
-    course_id = models.AutoField(primary_key=True)
-    course_code = models.CharField(blank=False)
-    course_name = models.CharField(blank=False)
-    institution_id = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="course")
-
-    def __str__(self):
-        return f"{self.course_code}"
 
 class ProfessorCourse(models.Model):
-    professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="professor_course")
-    course_id = models.ForeignKey(Course,on_delete=models.CASCADE, related_name="professor_course")
-    pk = models.CompositePrimaryKey("professor_id", "course_id")
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="professor_course")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="professor_course")
+
+    class Meta:
+        unique_together = ("professor", "course")

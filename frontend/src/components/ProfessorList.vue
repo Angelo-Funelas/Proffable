@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted} from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from "@/api/axios"
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
@@ -11,25 +11,28 @@ const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
 
-async function fetchProfessors(filters={}) {
+async function fetchProfessors(filters = {}) {
     isLoading.value = true
-    const searchVal = filters.query !== undefined ? filters.query : (route.query.q || '')
-    const ratingVal = filters.rating || undefined
+    const params = {
+        search: filters.q || route.query.q || '',
+        institution: filters.institution || route.query.institution || '',
+        course: filters.course || route.query.course || '',
+        min_rating: filters.rating || undefined
+    }
 
     try {
-        const response = await api.get('professors/', {
-            params: {search: searchVal,
-                min_rating: ratingVal
-            } 
-        })
-        professors.value = response.data
+        const response = await api.get('professors/', { params })
 
+        professors.value = response.data
     } catch(error) {
         console.error("Fetch error:", error)
     }
     isLoading.value = false
 }
 
+watch(() => route.query, () => {
+    fetchProfessors()
+}, { immediate: true })
 onMounted(()=>{
     fetchProfessors({
         query: route.query.q || '',
@@ -37,23 +40,16 @@ onMounted(()=>{
     })
 })
 
-const goToProf = (professorId) =>{
+const goToProf = (professorId) => {
     router.push(`/professor/${professorId}`)
 }
-
 </script>
 
 <template>
-
 <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
-    
     <Navbar/>
-
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
-        <!--LEFT DIV-->
         <SearchFilters @search="fetchProfessors" />
-
-        <!--RIGHT DIV-->
         <div>
             <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
         <p v-if="isLoading">Loading professors...</p>
@@ -72,12 +68,9 @@ const goToProf = (professorId) =>{
         </div>
     </div>
 </div> 
-
 </template>
 
-
-<style scoped>  
-
+<style scoped>
 .navbar {
   width: 100%;
   background-color: #5c898d;
@@ -87,7 +80,6 @@ const goToProf = (professorId) =>{
   padding: 0 1.5rem;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
-
 .logo-circle {
   background-color: #d9d9d9;
   border-radius: 9999px;
@@ -98,11 +90,9 @@ const goToProf = (professorId) =>{
   justify-content: center;
   overflow: hidden;
 }
-
 .logo-img {
   height: 1.75rem;
   width: 1.75rem;
   object-fit: contain;
 }
-
 </style>

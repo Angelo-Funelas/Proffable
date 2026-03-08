@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import ProfessorSerializer, ReviewSerializer
-from .models import Professor, Review
+from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
+from .models import Professor, Review, Institution, Course
+from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
-from django.db.models import Avg, Count
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -15,16 +15,27 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     search_fields = ['f_name', 'l_name']
 
     def get_queryset(self):
-
-        qs = Professor.objects.annotate(
-            avg_rating = Avg("reviews__review_rating"),
-            review_count = Count("reviews")
+        queryset = Professor.objects.annotate(
+            avg_rating=Avg("reviews__review_rating"),
+            review_count=Count("reviews")
         )
+        search = self.request.query_params.get('search')
+        inst_name = self.request.query_params.get('institution')
+        course_code = self.request.query_params.get('course')
+
+        if search:
+            queryset = queryset.filter(Q(f_name__icontains=search) | Q(l_name__icontains=search))
+        
+        if inst_name:
+            queryset = queryset.filter(institution__name__iexact=inst_name)
+            
+        if course_code:
+            queryset = queryset.filter(professor_course__course__course_code__iexact=course_code)
 
         min_rating = self.request.query_params.get("min_rating")
         if min_rating:
-            qs = qs.filter(avg_rating__gte=min_rating)
-        return qs
+            queryset = queryset.filter(avg_rating__gte=min_rating)
+        return queryset
         
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -32,7 +43,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_permissions(self):
-        # If submitting a new review, require authentication.
         if self.action == 'create':
             return [IsAuthenticated()]
         # Only owners can update, partially update, or delete their reviews.
@@ -42,3 +52,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
+
+class InstitutionViewSet(viewsets.ModelViewSet):
+    queryset = Institution.objects.all()
+    serializer_class = InstitutionSerializer
+    permission_classes = [AllowAny]
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [AllowAny]
