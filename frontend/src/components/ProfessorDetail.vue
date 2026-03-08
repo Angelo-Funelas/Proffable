@@ -203,9 +203,6 @@
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
-                    <button @click="handleReviewRedirect" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
-                        Write a Review
-                    </button>
                 </div>
                 <div>
                     <ul class="grid grid-cols-1 gap-2.5">
