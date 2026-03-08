@@ -21,6 +21,7 @@ class Review(models.Model):
     comment_text = models.TextField()
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
+    helpful_count = models.IntegerField(default=0)
     
     def __str__(self):
         return f"{self.review_id}"
@@ -28,6 +29,13 @@ class Review(models.Model):
     class Meta:
         unique_together = ("student", "professor")
 
+class ReviewVote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_votes")
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
+
+    class Meta:
+        unique_together = ("user", "review")
+        
 class Institution(models.Model):
     institution_id = models.AutoField(primary_key=True)
     name = models.CharField(blank=False)
