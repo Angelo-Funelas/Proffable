@@ -7,6 +7,8 @@
     import { useRoute } from 'vue-router'
     import Navbar from './Navbar.vue';
     import { useRouter } from 'vue-router'
+    import RatingSelector from './RatingSelector.vue'
+    import ReviewFormNew from './ReviewFormNew.vue'
 
     const professor = ref({})
     const route = useRoute()
@@ -197,12 +199,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
+                    <ReviewFormNew @submitReview="fetchReviews"/>
+                </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
-                    <button @click="handleReviewRedirect" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
-                        Write a Review
-                    </button>
                 </div>
                 <div>
                     <ul class="grid grid-cols-1 gap-2.5">

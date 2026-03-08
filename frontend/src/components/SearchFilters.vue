@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import RatingSelector from './RatingSelector.vue'
 import FilledStar from "../assets/StarFilled.svg"
 import UnfilledStar from "../assets/BigStar.svg"
 
@@ -64,16 +65,8 @@ watch(() => route.query.q, (newVal) => {
         </select>
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
-      <div class="grid grid-cols-1 gap-1 justify-center">
-        <div class="flex justify-center">
-          <div v-for="val in star_values" class="cursor-pointer" @click=updateStarQuery(val)>
-            <div>
-              <img :src="val <= rating_query ? FilledStar : UnfilledStar" class="h-[48px] pointer-events-none" />
-            </div>
-           
-          </div>
-          
-        </div>
+      <div class="text-center">
+        <RatingSelector @rate="updateStarQuery"/>
         <p class="text-center">Average Rating</p>
       </div>
     </div>

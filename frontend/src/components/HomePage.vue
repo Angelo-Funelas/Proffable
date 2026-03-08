@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from './Navbar.vue';
+import RatingSelector from './RatingSelector.vue';
 
 //used route to detect if search bar has something
 const router = useRouter()
@@ -14,6 +15,10 @@ const handleSearch = () => {
     router.push({ path: '/professors', query: { q: searchQuery.value } })
   }
 }
+const rating = ref(0);
+const handleRate = (value) => {
+  rating.value = value;
+};
 </script>
 
 <template>
@@ -62,7 +67,7 @@ const handleSearch = () => {
       <div class="w-[720px] bg-[#5c898d] rounded-[18px] pt-[60px] pb-[30px] px-[40px] shadow-lg">
 
         <!-- DROPDOWNS -->
-        <div class="flex gap-[20px] mb-[40px]">
+        <div class="flex gap-[20px] mb-[10px]">
 
           <div class="flex-1">
             <select class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
@@ -78,17 +83,8 @@ const handleSearch = () => {
 
         </div>
 
-
-
-        <!-- STAR RATING -->
-        <div class="flex justify-center gap-[10px] text-[40px] text-white mb-[10px]">
-          ★ ★ ★ ★ ★
-        </div>
-
-        <p class="text-center text-white opacity-80 -mt-[20px]">
-          Average Rating
-        </p>
-
+        <RatingSelector @rate="handleRate"/>
+        <p class="text-center text-white opacity-80">Average Rating</p>
       </div>
 
     </div>
