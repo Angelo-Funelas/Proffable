@@ -3,8 +3,9 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
 from .models import Professor, Review, Institution, Course
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, Value
 from .permissions import IsOwner
+from django.db.models.functions import Concat
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -17,14 +18,15 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Professor.objects.annotate(
             avg_rating=Avg("reviews__review_rating"),
-            review_count=Count("reviews")
+            review_count=Count("reviews"),
+            full_name = Concat('f_name', Value(' '), 'l_name')
         )
         search = self.request.query_params.get('search')
         inst_name = self.request.query_params.get('institution')
         course_code = self.request.query_params.get('course')
 
         if search:
-            queryset = queryset.filter(Q(f_name__icontains=search) | Q(l_name__icontains=search))
+            queryset = queryset.filter(full_name__icontains=search)
         
         if inst_name:
             queryset = queryset.filter(institution__name__iexact=inst_name)
