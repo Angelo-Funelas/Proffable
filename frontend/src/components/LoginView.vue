@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import { ref, onMounted } from 'vue';
   import Navbar from './Navbar.vue';
   const router = useRouter()
@@ -117,7 +117,9 @@
     localStorage.setItem('access_token', data.access);
     localStorage.setItem('refresh_token', data.refresh);
     successMsg.value = "Login successful!";
-    router.push('/');
+    
+    const nextPage = route.query.next || '/'
+    router.push(nextPage)
 
     } catch (err) {
       errorMsg.value = "An unexpected error occurred.";
@@ -127,6 +129,7 @@
   };
   const api = "http://127.0.0.1:8000/api";
 
+  const route = useRoute()
   const loadingVisible = ref(false);
   const errorMsg = ref("");
   const successMsg = ref("");
@@ -160,14 +163,14 @@
     })
     .then(data => {
       console.log("Login successful:", data);
-
       successMsg.value = "Login successful!";
       tokenData.value = data;
 
       localStorage.setItem('access_token', data.access)
       localStorage.setItem('refresh_token', data.refresh)
 
-      router.push('/') // redirect to homepage
+      const nextPage = route.query.next || '/'
+      router.push(nextPage)
 
     })
     .catch(err => {

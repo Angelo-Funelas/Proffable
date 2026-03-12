@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 
@@ -9,6 +9,8 @@ const isAuthenticated = ref(false)
 const checkAuth = () => {
   isAuthenticated.value = !!localStorage.getItem('access_token')
 }
+
+
 
 onMounted(() => {
   checkAuth()
@@ -19,7 +21,10 @@ const goToHomePage = () => {
 }
 
 const goToLogin = () => {
-  router.push('/login')
+  router.push({ 
+    path: '/login', 
+    query: { next: router.currentRoute.value.fullPath } 
+  })
 }
 
 const logout = () => {
