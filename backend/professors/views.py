@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
-from .models import Professor, Review, Institution, Course
+from .models import Professor, Review, Institution, Course, ReviewVote
 from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
 # Create your views here.
@@ -52,6 +54,22 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def helpful(self, request, pk=None):
+        review = self.get_object()
+        user = request.user
+
+        vote, created = ReviewVote.objects.get_or_create(
+            user=user,
+            review=review,
+            defaults={'is_helpful': True}
+        )
+        if not created:
+            vote.is_helpful = not vote.is_helpful
+            vote.save()
+
+        return Response({'helpful_count': review.votes.filter(is_helpful=True).count()})
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()
