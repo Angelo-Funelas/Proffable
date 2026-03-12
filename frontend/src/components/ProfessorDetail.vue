@@ -1,6 +1,6 @@
 <script setup>
     import {ref, computed, onMounted} from 'vue'
-    import axios from 'axios'
+    import api from "@/api/axios"
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
@@ -29,11 +29,6 @@
             path: `/reviews/${route.params.professorId}`
         })
     }
-
-    const API_URL = 'http://localhost:8000/api/'
-    const api = axios.create({
-        baseURL:API_URL
-    })
     
     const reviewsAverage = computed(()=>
     {

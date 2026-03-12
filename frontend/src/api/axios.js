@@ -1,4 +1,3 @@
-// src/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
@@ -40,7 +39,6 @@ api.interceptors.response.use(
           const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
             refresh: refreshToken,
           });
-
           // Save the new access token
           localStorage.setItem('access_token', response.data.access);
 
