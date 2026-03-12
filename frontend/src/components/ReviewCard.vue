@@ -1,6 +1,10 @@
 <script setup>
 import {ref, watch} from 'vue'
+import { useFloating, offset, flip, shift } from '@floating-ui/vue'
+import { onClickOutside } from '@vueuse/core'
+import api from "@/api/axios"
 import ReviewFormNew from './ReviewFormNew.vue'
+
 const props = defineProps({
   reviewId: Number,
   semester: String,
@@ -39,6 +43,24 @@ const handleEdit = (rating, grade_received, comment_text) => {
 }
 const isEditing = ref(false) 
 
+const reference = ref(null)
+const floating = ref(null)
+const showModal = ref(false)
+
+onClickOutside(floating, () => (showModal.value = false))
+const { floatingStyles } = useFloating(reference, floating, {
+  placement: 'top', 
+  middleware: [
+    offset(10),
+    flip(),
+    shift()
+  ],
+})
+const emit = defineEmits(['delete'])
+const handleDelete = async () => {
+    await api.delete(`reviews/${props.reviewId}/`);
+    emit('delete');
+}
 </script>
 
 <template>
@@ -56,9 +78,19 @@ const isEditing = ref(false)
                 <button class="text-sm" v-if="isOwner" @click="isEditing = true">
                     <img src="../assets/edit.svg" class="h-[24px]">
                 </button>
-                <button class="text-sm" v-if="isOwner">
+                <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
                     <img src="../assets/delete.svg" class="h-[24px]">
                 </button>
+                <div
+                    v-if="showModal"
+                    ref="floating"
+                    :style="floatingStyles"
+                    class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50 shadow-md"
+                >
+                    <p class="mb-2">Are you sure you want to permanently delete this review?</p>
+                    <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
+                    <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
+                </div>
                 <button class="text-sm" v-if="!isOwner">
                     <img src="../assets/Flag.png" class="h-[24px]">
                 </button>
