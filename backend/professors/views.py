@@ -42,6 +42,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+    def get_queryset(self):
+        queryset = Review.objects.all()
+        professor_id = self.request.query_params.get('professor')
+        if professor_id:
+            queryset = queryset.filter(professor_id=professor_id)
+        print(f"{queryset.count()}")
+        return queryset
+
     def get_permissions(self):
         if self.action == 'create':
             return [IsAuthenticated()]

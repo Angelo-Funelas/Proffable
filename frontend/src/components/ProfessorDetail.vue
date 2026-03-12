@@ -59,11 +59,9 @@
 
     async function fetchReviews(){
     try {
-        const response = await api.get('reviews/')
-        reviews.value = response.data.filter(
-            review => Number(review.professor) === Number(route.params.professorId)
-        )
-        console.log(reviews.value)
+        const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
+        reviews.value = response.data
+        console.log(response.data)
     } catch(error){
         console.log("Error with fetching reviews: ", error)
     }
