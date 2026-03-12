@@ -23,21 +23,22 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         inst_name = self.request.query_params.get('institution')
         course_code = self.request.query_params.get('course')
 
-        if search:
+        if search and search != 'undefined':
             queryset = queryset.filter(Q(f_name__icontains=search) | Q(l_name__icontains=search))
         
-        if inst_name:
-            queryset = queryset.filter(institution__name__iexact=inst_name)
+        if inst_name and inst_name != 'undefined':
+            queryset = queryset.filter(professor_course__course__institution__name__iexact=inst_name)
             
-        if course_code:
+        if course_code and course_code != 'undefined':
             queryset = queryset.filter(professor_course__course__course_code__iexact=course_code)
 
         min_rating = self.request.query_params.get("min_rating")
         if min_rating:
             queryset = queryset.filter(avg_rating__gte=min_rating)
+
+        print("Final Query: ", str(queryset.query))
         return queryset
         
-
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer

@@ -22,7 +22,6 @@ async function fetchProfessors(filters = {}) {
 
     try {
         const response = await api.get('professors/', { params })
-
         professors.value = response.data
     } catch(error) {
         console.error("Fetch error:", error)
@@ -33,11 +32,9 @@ async function fetchProfessors(filters = {}) {
 watch(() => route.query, () => {
     fetchProfessors()
 }, { immediate: true })
-onMounted(()=>{
-    fetchProfessors({
-        query: route.query.q || '',
-        rating: route.query.min_rating || undefined
-    })
+
+onMounted(() => {
+    fetchProfessors()
 })
 
 const goToProf = (professorId) => {
@@ -49,7 +46,7 @@ const goToProf = (professorId) => {
 <div class="min-h-screen bg-[#e8e8e8] flex flex-col">
     <Navbar/>
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
-        <SearchFilters @search="fetchProfessors" />
+        <SearchFilters />
         <div>
             <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
         <p v-if="isLoading">Loading professors...</p>
