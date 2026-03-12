@@ -17,7 +17,8 @@ class ProfessorSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
-    
+    helpful_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Review
         fields = ["review_id", "professor", "professor_name", "is_owner",
