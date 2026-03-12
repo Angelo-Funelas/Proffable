@@ -24,9 +24,17 @@ const props = defineProps({
                  <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
                 <!-- <span>Anonymous Student | {{ semester }} {{ subject }}</span> -->
             </div>
-            <button class="text-sm">
-                <img src="../assets/Flag.png" class="h-[24px]">
-            </button>    
+            <div class="flex align-middle gap-3">
+                <button class="text-sm">
+                    <img src="../assets/edit.svg" class="h-[24px]">
+                </button>
+                <button class="text-sm">
+                    <img src="../assets/delete.svg" class="h-[24px]">
+                </button>
+                <button class="text-sm">
+                    <img src="../assets/Flag.png" class="h-[24px]">
+                </button>
+            </div>
         </div>
         <div class="flex">
             <div v-for="n in rating">
