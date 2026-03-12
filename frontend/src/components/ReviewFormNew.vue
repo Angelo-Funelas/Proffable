@@ -6,6 +6,7 @@ import api from "@/api/axios"
 import RatingSelector from './RatingSelector.vue'
 
 const props = defineProps({
+  reviewId: Number,
   editing: Boolean,
   review_rating: Number,
   grade_received: String,
@@ -37,16 +38,26 @@ async function submitReview() {
       received_grade: form.value.received_grade
     })
   try {
-    await api.post('reviews/', {
-      professor: route.params.professorId,
-      review_rating: form.value.review_rating,
-      comment_text: form.value.comment_text,
-      received_grade: form.value.received_grade
-    })
-    message.value = 'Review submitted successfully!'
+    if (props.editing) {
+      await api.put(`reviews/${props.reviewId}/`, {
+        professor: route.params.professorId,
+        review_rating: form.value.review_rating,
+        comment_text: form.value.comment_text,
+        received_grade: form.value.received_grade
+      })
+      message.value = 'Edited Review!'
+    } else {
+      await api.post('reviews/', {
+        professor: route.params.professorId,
+        review_rating: form.value.review_rating,
+        comment_text: form.value.comment_text,
+        received_grade: form.value.received_grade
+      })
+      message.value = 'Submitted Review!'
+    }
     isError.value = false
+    emit('submitReview', form.value.review_rating, form.value.received_grade, form.value.comment_text)
     form.value = { review_rating: '', comment_text: '', received_grade: '' }
-    emit('submitReview')
   } catch (err) {
     // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
     message.value = JSON.stringify(err.response?.data)
