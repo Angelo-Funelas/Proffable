@@ -4,6 +4,7 @@ from django.shortcuts import render
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.views import TokenObtainPairView
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token
 from rest_framework.decorators import api_view, permission_classes
@@ -15,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
+from .serializers import UsernameOrEmailTokenSerializer
 
 import os
 
@@ -84,6 +86,9 @@ def register_user(request):
         status=status.HTTP_201_CREATED
     )
 
+class LoginView(TokenObtainPairView):
+    serializer_class = UsernameOrEmailTokenSerializer 
+    
 @api_view(["POST"])
 def google_login(request):
     token = request.data.get("token")
