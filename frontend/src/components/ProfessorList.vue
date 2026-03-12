@@ -17,7 +17,7 @@ async function fetchProfessors(filters = {}) {
         search: filters.q || route.query.q || '',
         institution: filters.institution || route.query.institution || '',
         course: filters.course || route.query.course || '',
-        min_rating: filters.rating || undefined
+        min_rating: filters.min_rating || undefined
     }
 
     try {
@@ -36,7 +36,7 @@ watch(() => route.query, () => {
 onMounted(()=>{
     fetchProfessors({
         query: route.query.q || '',
-        rating: route.query.min_rating || undefined
+        min_rating: route.query.min_rating || undefined
     })
 })
 

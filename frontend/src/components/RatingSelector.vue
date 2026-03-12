@@ -1,9 +1,10 @@
 <script setup>
     import {ref} from 'vue'
     const emit = defineEmits(['rate']);
+    const props = defineProps({initialRating:{default:0}})
 
-    const starRatingHover = ref(5);
-    const starRating = ref(0);
+    const starRatingHover = ref(0);
+    const starRating = ref(props.initialRating);
 
     const handleMouseEnter = (n) => {
         starRatingHover.value = n;

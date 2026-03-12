@@ -15,34 +15,9 @@
     const reviews = ref([])
     const router = useRouter()
 
-    const handleSearchRedirect = (filters) => {
-    router.push({ 
-        path: '/professors', 
-        query: { q: searchTerm,
-            min_rating: filters.rating
-        } 
-    })
-    }
-
-    const handleReviewRedirect = () =>{
-        router.push({
-            path: `/reviews/${route.params.professorId}`
-        })
-    }
-
     const API_URL = 'http://localhost:8000/api/'
     const api = axios.create({
         baseURL:API_URL
-    })
-    
-    const reviewsAverage = computed(()=>
-    {
-        if (reviews.value.length === 0) return 0
-        let sum = 0
-        for (let i = 0; i< reviews.value.length; i++){
-            sum += reviews.value[i].review_rating
-        }
-        return (sum/reviews.value.length).toFixed(2)
     })
     
     const professors = ref()
@@ -95,7 +70,7 @@
             <!--LEFT DIV-->
             <div>
                 <!--SEARCH FILTERS-->
-                <SearchFilters @search="handleSearchRedirect" />
+                <SearchFilters />
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
