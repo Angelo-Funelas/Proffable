@@ -103,8 +103,8 @@
                         <ProfCard
                         :lname="prof.l_name"
                         :fname="prof.f_name"
-                        :avgScore="3"
-                        :numReviews="128"
+                        :avgScore="prof.avg_rating || 0"
+                        :numReviews="prof.review_count"
                         />
                     </li>
                 </ul>
@@ -117,13 +117,14 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 ({{ reviews.length }} review/s)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
+                            {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
                     <div class="flex flex-col items-center gap-1">
                         <img src="../assets/Heart.svg" class="h-[16px]">
-                        <span class="text-sm">128</span>
+                        <span class="text-sm">{{professor.review_count}}</span>
                     </div>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
