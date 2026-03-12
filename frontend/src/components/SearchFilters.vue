@@ -24,7 +24,7 @@ const handleInput = () => {
   debounceTimer = setTimeout(() => {
     const queryPayload = { 
         q: localQuery.value || undefined,
-        min_rating: rating_query.value || 0
+        min_rating: rating_query.value || undefined
     }
 
     if (route.path !== '/professors') {
@@ -50,6 +50,7 @@ onMounted(async () => {
 
 const updateStarQuery = (rating) => {
   rating_query.value = rating
+  handleInput()
 }
 
 watch(() => route.query.q, (newVal) => {

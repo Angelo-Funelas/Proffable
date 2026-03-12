@@ -21,6 +21,7 @@ async function fetchProfessors(filters = {}) {
     }
 
     try {
+        console.log('params:', params)
         const response = await api.get('professors/', { params })
 
         professors.value = response.data
@@ -30,9 +31,10 @@ async function fetchProfessors(filters = {}) {
     isLoading.value = false
 }
 
-watch(() => route.query, () => {
-    fetchProfessors()
+watch(() => route.query, (newQuery) => {
+    fetchProfessors(newQuery)
 }, { immediate: true })
+
 onMounted(()=>{
     fetchProfessors({
         query: route.query.q || '',

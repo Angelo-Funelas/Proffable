@@ -24,7 +24,7 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search')
         inst_name = self.request.query_params.get('institution')
         course_code = self.request.query_params.get('course')
-
+    
         if search:
             queryset = queryset.filter(full_name__icontains=search)
         

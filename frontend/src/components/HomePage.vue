@@ -24,7 +24,8 @@ onMounted(async () => {
 const handleSearch = () => {
   router.push({ 
     path: '/professors', 
-    query: { q: searchQuery.value, institution: selectedInstitution.value, course: selectedCourse.value } 
+    query: { q: searchQuery.value, institution: selectedInstitution.value, 
+      course: selectedCourse.value, min_rating:rating.value|| undefined}
   })
 }
 const rating = ref(0);
