@@ -210,6 +210,7 @@
                             :rating="review.review_rating"
                             :tags="review.tags"
                             :likes="review.likes"
+                            :is-owner="review.is_owner"
                             />
                         </li>
                     </ul>

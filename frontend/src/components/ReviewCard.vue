@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from 'vue'
-
+import ReviewFormNew from './ReviewFormNew.vue'
 const props = defineProps({
   semester: String,
   subject: String,
@@ -9,7 +9,10 @@ const props = defineProps({
   rating: Number,
   tags: Array,
   likes: Number,
+  isOwner: Boolean,
 })
+
+const isEditing = ref(false) 
 
 </script>
 
@@ -25,36 +28,41 @@ const props = defineProps({
                 <!-- <span>Anonymous Student | {{ semester }} {{ subject }}</span> -->
             </div>
             <div class="flex align-middle gap-3">
-                <button class="text-sm">
+                <button class="text-sm" v-if="isOwner" @click="isEditing = true">
                     <img src="../assets/edit.svg" class="h-[24px]">
                 </button>
-                <button class="text-sm">
+                <button class="text-sm" v-if="isOwner">
                     <img src="../assets/delete.svg" class="h-[24px]">
                 </button>
-                <button class="text-sm">
+                <button class="text-sm" v-if="!isOwner">
                     <img src="../assets/Flag.png" class="h-[24px]">
                 </button>
             </div>
         </div>
-        <div class="flex">
-            <div v-for="n in rating">
-                <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
+        <div v-if="!isEditing">
+            <div class="flex">
+                <div v-for="n in rating">
+                    <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
+                </div>
+                <div v-for="n in 5-rating">
+                    <img src="../assets/BigStar.svg" class="h-[36px]" />
+                </div>
             </div>
-            <div v-for="n in 5-rating">
-                <img src="../assets/BigStar.svg" class="h-[36px]" />
+            
+            <p class="text-xl"><span class="font-bold">Review</span>: {{ reviewText }}</p>
+            <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ grade }}</p>
+
+            <div class="flex flex-wrap gap-2">
+                <p class="text-sm"><span class="font-bold">Tags</span>:</p>
+                <span v-for="(tag, index) in tags" :key="index" class="text-sm underline px-1">
+                    {{ tag }}
+                </span>
             </div>
-        </div>
-        
-        <p class="text-xl"><span class="font-bold">Review</span>: {{ reviewText }}</p>
-        <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ grade }}</p>
 
-        <div class="flex flex-wrap gap-2">
-            <p class="text-sm"><span class="font-bold">Tags</span>:</p>
-            <span v-for="(tag, index) in tags" :key="index" class="text-sm underline px-1">
-                {{ tag }}
-            </span>
+            <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ likes }} found this helpful</p>
         </div>
-
-        <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ likes }} found this helpful</p>
+        <div v-if="isEditing">
+            <ReviewFormNew @cancelReview="isEditing = false" :editing="isEditing" :review_rating="rating" :comment_text="reviewText" :grade_received="grade"/>
+        </div>
     </div>
 </template>
