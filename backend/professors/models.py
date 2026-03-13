@@ -22,7 +22,6 @@ class Course(models.Model):
 
 class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
-    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="professors", null=True, blank=True)
     f_name = models.CharField(blank=False, max_length=32)
     l_name = models.CharField(blank=False, max_length=32)
     m_name = models.CharField(blank=True, max_length=32)
