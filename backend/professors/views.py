@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
 from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote
 from django.db.models import Avg, Count, Q, Case, When, Value, BooleanField
+
+from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
 # Create your views here.
 
