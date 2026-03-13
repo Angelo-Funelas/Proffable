@@ -1,9 +1,5 @@
 <script setup>
-import {ref, watch, onMounted} from 'vue'
-import { useFloating, offset, flip, shift } from '@floating-ui/vue'
-import { onClickOutside } from '@vueuse/core'
-import api from "@/api/axios"
-import ReviewFormNew from './ReviewFormNew.vue'
+import {ref, onMounted} from 'vue'
 
 const props = defineProps({
   reviewId: Number,
@@ -148,7 +144,7 @@ const toggleHelpful = async () => {
                 </div>
                 <!-- Uses Placeholder Semester and Subject Values for Now-->
                  <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
-                <!-- <span>Anonymous Student | {{ review_data.semester }} {{ review_data.subject }}</span> -->
+                <!-- <span>Anonymous Student | {{ semester }} {{ subject }}</span> -->
             </div>
             <div class="flex align-middle gap-3">
                 <button class="text-sm" @click="showReportModal = true" v-if="isOwner" @click="isEditing = true">
@@ -173,25 +169,24 @@ const toggleHelpful = async () => {
                 </button>
             </div>
         </div>
-        <div v-if="!isEditing">
-            <div class="flex">
-                <div v-for="n in review_data.rating">
-                    <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
-                </div>
-                <div v-for="n in 5-review_data.rating">
-                    <img src="../assets/BigStar.svg" class="h-[36px]" />
-                </div>
+        <div class="flex">
+            <div v-for="n in rating">
+                <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
             </div>
-            
-            <p class="text-xl"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
-            <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ review_data.grade }}</p>
+            <div v-for="n in 5-rating">
+                <img src="../assets/BigStar.svg" class="h-[36px]" />
+            </div>
+        </div>
+        
+        <p class="text-xl"><span class="font-bold">Review</span>: {{ reviewText }}</p>
+        <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ grade }}</p>
 
-            <div class="flex flex-wrap gap-2">
-                <p class="text-sm"><span class="font-bold">Tags</span>:</p>
-                <span v-for="(tag, index) in review_data.tags" :key="index" class="text-sm underline px-1">
-                    {{ tag }}
-                </span>
-            </div>
+        <div class="flex flex-wrap gap-2">
+            <p class="text-sm"><span class="font-bold">Tags</span>:</p>
+            <span v-for="(tag, index) in tags" :key="index" class="text-sm underline px-1">
+                {{ tag }}
+            </span>
+        </div>
 
             <p class="italic flex items-center gap-[2px]">
             <img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ review_data.likes }} found this helpful</p>
