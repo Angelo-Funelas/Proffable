@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import {ref, onMounted} from 'vue'
 
 const props = defineProps({
   reviewId: Number,
@@ -10,12 +10,13 @@ const props = defineProps({
   rating: Number,
   tags: Array,
   likes: Number,
-})
+})  
 
 const showReportModal = ref(false)
 const reason = ref("")
 const description = ref("")
 const helpfulCountLocal = ref(props.likes) 
+const hasVoted = ref(false) 
 
 const submitReport = async () => {
 
