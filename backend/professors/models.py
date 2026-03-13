@@ -39,7 +39,7 @@ class Review(models.Model):
     comment_text = models.TextField()
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
-    helpful_count = models.IntegerField(default=0)
+    helpful_count = models.PositiveIntegerField(default=0)
     
     def __str__(self):
         return f"{self.review_id}"
@@ -47,16 +47,14 @@ class Review(models.Model):
     class Meta:
         unique_together = ("student", "professor")
 
-    @property
-    def helpful_count(self):
-        return self.votes.count()
         
 class ReviewVote(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_votes")
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("user", "review")
+        unique_together = ("review", "user")
 
 class ReviewReport(models.Model):
     REPORT_REASON_CHOICES = [
