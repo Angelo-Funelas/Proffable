@@ -1,15 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
-<<<<<<< HEAD
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
 from .models import Professor, Review, Institution, Course, ReviewReport
-=======
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
-from .models import Professor, Review, Institution, Course, ReviewVote
->>>>>>> 64a30427e3d9e19ab385b4f08e22ff8d0764064d
+
 from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
 # Create your views here.
@@ -60,7 +56,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(student=self.request.user)
 
-<<<<<<< HEAD
+
 class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()
     serializer_class = ReviewReportSerializer
@@ -68,7 +64,7 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         reporter = self.request.user if self.request.user.is_authenticated else None
         serializer.save(reporter=reporter)
-=======
+
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def helpful(self, request, pk=None):
         review = self.get_object()
@@ -84,7 +80,6 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
             vote.save()
 
         return Response({'helpful_count': review.votes.filter(is_helpful=True).count()})
->>>>>>> 64a30427e3d9e19ab385b4f08e22ff8d0764064d
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()
