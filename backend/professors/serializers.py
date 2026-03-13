@@ -15,13 +15,13 @@ class ProfessorSerializer(serializers.ModelSerializer):
         ]
 
 class ReviewSerializer(serializers.ModelSerializer):
-    student_name = serializers.StringRelatedField(source="student", read_only=True)
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    is_owner = serializers.BooleanField(read_only=True)
     helpful_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Review
-        fields = ["review_id", "student", "student_name", "professor", "professor_name",
+        fields = ["review_id", "professor", "professor_name", "is_owner",
             "review_rating", "comment_text", "review_date", "received_grade", "helpful_count"]
         extra_kwargs = {
             'student': {'read_only': True}

@@ -1,6 +1,6 @@
 <script setup>
     import {ref, computed, onMounted} from 'vue'
-    import axios from 'axios'
+    import api from "@/api/axios"
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
@@ -29,11 +29,6 @@
             path: `/reviews/${route.params.professorId}`
         })
     }
-
-    const API_URL = 'http://localhost:8000/api/'
-    const api = axios.create({
-        baseURL:API_URL
-    })
     
     const reviewsAverage = computed(()=>
     {
@@ -56,18 +51,20 @@
         }
         isLoading.value = false
     }
-
+    const professor_reviewed = ref(false)
     async function fetchReviews(){
-    try {
-        const response = await api.get('reviews/')
-        reviews.value = response.data.filter(
-            review => Number(review.professor) === Number(route.params.professorId)
-        )
-        console.log(reviews.value)
-    } catch(error){
-        console.log("Error with fetching reviews: ", error)
+        try {
+            const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
+            reviews.value = response.data
+            for (const review of response.data) {
+                if (review.is_owner) professor_reviewed.value = true
+                break
+            }
+            console.log(response.data)
+        } catch(error){
+            console.log("Error with fetching reviews: ", error)
+        }
     }
-}
     async function fetchProfessors(){
         isLoading.value = true
         try{
@@ -79,6 +76,11 @@
         isLoading.value = false
     }
     const isLoading = ref(false)
+
+    const handleDelete = () => {
+        professor_reviewed.value = false;
+        fetchReviews();
+    }
 
     onMounted(()=>{
         fetchProfessor()
@@ -199,7 +201,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
+                <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="fetchReviews"/>
                 </div>
                 <!--REVIEW CARDS-->
@@ -210,14 +212,16 @@
                     <ul class="grid grid-cols-1 gap-2.5">
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
-                                :review-id="review.review_id"
-                                :semester="review.semester"
-                                :subject="review.subject"
-                                :review-text="review.comment_text"
-                                :grade="review.received_grade"
-                                :rating="review.review_rating"
-                                :tags="review.tags"
-                                :likes="review.helpful_count"
+                            @delete="handleDelete"
+                            :reviewId="review.review_id"
+                            :semester="review.semester"
+                            :subject="review.subject"
+                            :review-text="review.comment_text"
+                            :grade="review.received_grade"
+                            :rating="review.review_rating"
+                            :tags="review.tags"
+                            :likes="review.helpful_count"
+                            :is-owner="review.is_owner"
                             />
                         </li>
                     </ul>
