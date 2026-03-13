@@ -210,13 +210,14 @@
                     <ul class="grid grid-cols-1 gap-2.5">
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
-                            :semester="review.semester"
-                            :subject="review.subject"
-                            :review-text="review.comment_text"
-                            :grade="review.received_grade"
-                            :rating="review.review_rating"
-                            :tags="review.tags"
-                            :likes="review.likes"
+                                :review-id="review.review_id"
+                                :semester="review.semester"
+                                :subject="review.subject"
+                                :review-text="review.comment_text"
+                                :grade="review.received_grade"
+                                :rating="review.review_rating"
+                                :tags="review.tags"
+                                :likes="review.likes"
                             />
                         </li>
                     </ul>
