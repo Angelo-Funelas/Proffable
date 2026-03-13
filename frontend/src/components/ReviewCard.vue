@@ -61,6 +61,41 @@ const handleDelete = async () => {
     await api.delete(`reviews/${props.reviewId}/`);
     emit('delete');
 }
+const showReportModal = ref(false)
+const reason = ref("")
+const description = ref("")
+
+const submitReport = async () => {
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/review-reports/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        review: props.reviewId,
+        reason: reason.value,
+        description: description.value
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to submit report")
+    }
+
+    alert("Report submitted.")
+
+    showReportModal.value = false
+    reason.value = ""
+    description.value = ""
+
+  } catch (error) {
+    console.error(error)
+    alert("Error submitting report.")
+  }
+
+}
 </script>
 
 <template>
@@ -75,7 +110,7 @@ const handleDelete = async () => {
                 <!-- <span>Anonymous Student | {{ review_data.semester }} {{ review_data.subject }}</span> -->
             </div>
             <div class="flex align-middle gap-3">
-                <button class="text-sm" v-if="isOwner" @click="isEditing = true">
+                <button class="text-sm" @click="showReportModal = true" v-if="isOwner" @click="isEditing = true">
                     <img src="../assets/edit.svg" class="h-[24px]">
                 </button>
                 <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
@@ -116,7 +151,8 @@ const handleDelete = async () => {
                 </span>
             </div>
 
-            <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ review_data.likes }} found this helpful</p>
+            <p class="italic flex items-center gap-[2px]">
+            <img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ review_data.likes }} found this helpful</p>
         </div>
         <div v-if="isEditing">
             <ReviewFormNew
@@ -129,5 +165,75 @@ const handleDelete = async () => {
                 :grade_received="grade"
             />
         </div>
+    </div>
+
+
+    <div 
+    v-if="showReportModal" 
+    class="fixed inset-0 flex items-center justify-center bg-black/30 z-20"
+    >
+    <div class="bg-white p-6 rounded-xl w-[320px] shadow-lg z-30 text-[#719294]" >
+        <h2 class="text-lg font-bold mb-4 text-[#0B0D09]">Report Review</h2>
+
+        <select v-model="reason" class="border border-[#719294] p-2 w-full mb-3 rounded-lg text-sm text-[#0B0D09] outline-none focus:border-[#5c898d]">
+        <option disabled value="">Select reason</option>
+        <option value="offensive">Offensive Language</option>
+        <option value="spam">Spam</option>
+        <option value="fake">Fake Review</option>
+        <option value="harassment">Harassment</option>
+        <option value="irrelevant">Irrelevant Content</option>
+        <option value="other">Other</option>
+        </select>
+
+        <textarea
+        v-model="description"
+        placeholder="Additional details (optional)"
+        class="border border-[#719294] p-2 w-full mb-4 rounded-lg text-sm text-[#0B0D09] placeholder:text-[#719294] outline-none focus:border-[#5c898d] resize-none h-24"
+        ></textarea>
+
+        <div class="flex justify-end gap-2">
+        <button @click="showReportModal = false" class="border border-[#719294] text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+            Cancel
+        </button>
+        <button @click="submitReport" class="bg-[#719294] text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+            Submit
+        </button>
+        </div>
+    </div>
+    </div>
+
+
+    <div 
+    v-if="showReportModal" 
+    class="fixed inset-0 flex items-center justify-center bg-black/30 z-20"
+    >
+    <div class="bg-white p-6 rounded-xl w-[320px] shadow-lg z-30 text-[#719294]" >
+        <h2 class="text-lg font-bold mb-4 text-[#0B0D09]">Report Review</h2>
+
+        <select v-model="reason" class="border border-[#719294] p-2 w-full mb-3 rounded-lg text-sm text-[#0B0D09] outline-none focus:border-[#5c898d]">
+        <option disabled value="">Select reason</option>
+        <option value="offensive">Offensive Language</option>
+        <option value="spam">Spam</option>
+        <option value="fake">Fake Review</option>
+        <option value="harassment">Harassment</option>
+        <option value="irrelevant">Irrelevant Content</option>
+        <option value="other">Other</option>
+        </select>
+
+        <textarea
+        v-model="description"
+        placeholder="Additional details (optional)"
+        class="border border-[#719294] p-2 w-full mb-4 rounded-lg text-sm text-[#0B0D09] placeholder:text-[#719294] outline-none focus:border-[#5c898d] resize-none h-24"
+        ></textarea>
+
+        <div class="flex justify-end gap-2">
+        <button @click="showReportModal = false" class="border border-[#719294] text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+            Cancel
+        </button>
+        <button @click="submitReport" class="bg-[#719294] text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+            Submit
+        </button>
+        </div>
+    </div>
     </div>
 </template>
