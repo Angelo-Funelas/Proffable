@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer
-from .models import Professor, Review, Institution, Course
-from django.db.models import Avg, Count, Q, Case, When, Value, BooleanField
+
+from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
+from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db import IntegrityError
+from django.db.models import Avg, Count, Case, When, Value, BooleanField
 from .permissions import IsOwner
 from django.db.models.functions import Concat
 # Create your views here.
@@ -74,7 +78,61 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return [AllowAny()]
 
     def perform_create(self, serializer):
-        serializer.save(student=self.request.user)
+        try:
+            serializer.save(student=self.request.user)
+        except IntegrityError:
+            raise serializers.ValidationError("You have already reviewed this professor.")
+    
+    
+    @action(detail=True, methods=["post"])
+    def vote(self, request, pk=None):
+        review = self.get_object()
+        user = request.user if request.user.is_authenticated else None
+
+        existing_vote = ReviewVote.objects.filter(review=review, user=user).first()
+
+        if existing_vote:
+            existing_vote.delete()
+            review.helpful_count = max(0, review.helpful_count - 1)
+            review.save()
+            return Response({"helpful_count": review.helpful_count, "voted": False})
+        else:
+            ReviewVote.objects.create(review=review, user=user)
+            review.helpful_count += 1
+            review.save()
+            return Response({"helpful_count": review.helpful_count, "voted": True})
+   
+    @action(detail=True, methods=["get"])
+    def has_voted(self, request, pk=None):
+        review = self.get_object()
+        user = request.user if request.user.is_authenticated else None
+        voted = ReviewVote.objects.filter(review=review, user=user).exists()
+        return Response({"voted": voted})
+
+
+class ReviewReportViewSet(viewsets.ModelViewSet):
+    queryset = ReviewReport.objects.all()
+    serializer_class = ReviewReportSerializer
+
+    def perform_create(self, serializer):
+        reporter = self.request.user if self.request.user.is_authenticated else None
+        serializer.save(reporter=reporter)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def helpful(self, request, pk=None):
+        review = self.get_object()
+        user = request.user
+
+        vote, created = ReviewVote.objects.get_or_create(
+            user=user,
+            review=review,
+            defaults={'is_helpful': True}
+        )
+        if not created:
+            vote.is_helpful = not vote.is_helpful
+            vote.save()
+
+        return Response({'helpful_count': review.votes.filter(is_helpful=True).count()})
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()

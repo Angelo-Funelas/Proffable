@@ -1,13 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from professors.views import ProfessorViewSet, ReviewViewSet, InstitutionViewSet, CourseViewSet
+from professors.views import ProfessorViewSet, ReviewViewSet, InstitutionViewSet, CourseViewSet, ReviewReportViewSet
 
 router = DefaultRouter()
 router.register(r"professors",ProfessorViewSet)
 router.register(r"reviews",ReviewViewSet)
+router.register(r"review-reports", ReviewReportViewSet)
 router.register(r"institutions", InstitutionViewSet)
 router.register(r"courses", CourseViewSet)
+
 
 #include logic for jwt 
 from .serializers import CustomTokenObtainPairView
@@ -15,9 +17,10 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import me
 from .views import register_user
 from .views import google_login
+from .views import LoginView
 
 urlpatterns = [
-    path("token/", CustomTokenObtainPairView.as_view()),
+    path("token/", LoginView.as_view()),
     path("token/refresh/", TokenRefreshView.as_view()),
     path("register/", register_user),
     path("google-login/", google_login),

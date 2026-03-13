@@ -16,7 +16,10 @@
             <svg class="h-5 w-5 mr-3 text-[#719294] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <input type="email" placeholder="Email" required class="flex-grow bg-transparent outline-none text-[#0B0D09] placeholder:text-[#719294] text-sm border-none" />
+            <input
+              v-model="login" 
+              placeholder="username or email" 
+              required class="flex-grow bg-transparent outline-none text-[#0B0D09] placeholder:text-[#719294] text-sm border-none" />
           </div>
 
           <div class="flex items-center border-b border-[#719294] py-2 focus-within:border-[#5c898d] transition-colors">
@@ -24,6 +27,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <input 
+              v-model="password"
               :type="isPasswordVisible ? 'text' : 'password'" 
               placeholder="Password" 
               required
@@ -41,9 +45,16 @@
             </button>
           </div>
 
+          <div v-if="errorMsg" class="text-center text-xs text-red-500 -mt-2">{{ errorMsg }}</div>
+          <div v-if="successMsg" class="text-center text-xs text-green-600 -mt-2">{{ successMsg }}</div>
+
           <div class="flex justify-center">
-            <button type="submit" class="w-full max-w-[200px] py-2.5 !bg-[#5c898d] !text-white rounded-full font-semibold cursor-pointer border-none transition-all hover:brightness-110 active:scale-95 shadow-md">
-              Sign In
+            <button 
+              type="submit" 
+              :disabled="loadingVisible"
+              class="w-full max-w-[200px] py-2.5 !bg-[#5c898d] !text-white rounded-full font-semibold cursor-pointer border-none transition-all hover:brightness-110 active:scale-95 shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {{ loadingVisible ? 'Signing in...' : 'Sign In' }}
             </button>
           </div>
         </form>
@@ -74,22 +85,58 @@
 </template>
 
 <script setup>
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import { ref, onMounted } from 'vue';
   import Navbar from './Navbar.vue';
   const router = useRouter()
   const isPasswordVisible = ref(false); 
   const togglePassword = () => { isPasswordVisible.value = !isPasswordVisible.value; };
   // Fix: This actually runs when the form submits now
-  const handleLogin = () => {
-    alert("Logging in...");
+  const handleLogin = async () => {
+  loadingVisible.value = true;
+  errorMsg.value = "";
+  successMsg.value = "";
+
+  try {
+    const res = await fetch(`${api}/token/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        username: login.value, 
+        password: password.value 
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      errorMsg.value = data.detail || "Invalid credentials.";
+      return;
+    }
+
+    const data = await res.json();
+    localStorage.setItem('access_token', data.access);
+    localStorage.setItem('refresh_token', data.refresh);
+    successMsg.value = "Login successful!";
+    
+    const nextPage = route.query.next || '/'
+    router.push(nextPage)
+
+    } catch (err) {
+      errorMsg.value = "An unexpected error occurred.";
+    } finally {
+      loadingVisible.value = false;
+    }
   };
   const api = "http://127.0.0.1:8000/api";
 
+  const route = useRoute()
   const loadingVisible = ref(false);
   const errorMsg = ref("");
   const successMsg = ref("");
   const tokenData = ref(null);
+
+  const login = ref("")
+  const password = ref("")
 
   function handleCallbackResponse(response) {
     console.log("Response received:", response);
@@ -116,14 +163,14 @@
     })
     .then(data => {
       console.log("Login successful:", data);
-
       successMsg.value = "Login successful!";
       tokenData.value = data;
 
       localStorage.setItem('access_token', data.access)
       localStorage.setItem('refresh_token', data.refresh)
 
-      router.push('/') // redirect to homepage
+      const nextPage = route.query.next || '/'
+      router.push(nextPage)
 
     })
     .catch(err => {

@@ -188,16 +188,16 @@
                     <ul class="grid grid-cols-1 gap-2.5">
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
-                            @delete="handleDelete"
-                            :reviewId="review.review_id"
-                            :semester="review.semester"
-                            :subject="review.subject"
-                            :review-text="review.comment_text"
-                            :grade="review.received_grade"
-                            :rating="review.review_rating"
-                            :tags="review.tags"
-                            :likes="review.likes"
-                            :is-owner="review.is_owner"
+                                @delete="handleDelete"
+                                :reviewId="review.review_id"
+                                :semester="review.semester"
+                                :subject="review.subject"
+                                :review-text="review.comment_text"
+                                :grade="review.received_grade"
+                                :rating="review.review_rating"
+                                :tags="review.tags"
+                                :is-owner="review.is_owner"
+                                :likes="review.helpful_count"
                             />
                         </li>
                     </ul>

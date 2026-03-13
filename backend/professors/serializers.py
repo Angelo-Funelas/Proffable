@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Professor, Review, Institution, Course
+from .models import Professor, Review, Institution, Course, ReviewReport
 
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
@@ -14,6 +14,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    helpful_count = serializers.IntegerField(read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
     
     class Meta:
@@ -33,3 +34,18 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['course_id', 'course_code']
+
+class ReviewReportSerializer(serializers.ModelSerializer):
+    reporter_name = serializers.StringRelatedField(source="reporter", read_only=True)
+
+    class Meta:
+        model = ReviewReport
+        fields = [
+            "report_id",
+            "review",
+            "reason",
+            "description",
+            "created_at",
+            "reporter_name"
+        ]
+        read_only_fields = ["report_id", "created_at"]
