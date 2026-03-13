@@ -14,11 +14,6 @@
     const route = useRoute()
     const reviews = ref([])
     const router = useRouter()
-
-    const API_URL = 'http://localhost:8000/api/'
-    const api = axios.create({
-        baseURL:API_URL
-    })
     
     const professors = ref()
     async function fetchProfessor(){
