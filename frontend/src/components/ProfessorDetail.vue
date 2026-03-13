@@ -214,15 +214,14 @@
                             <ReviewCard
                                 @delete="handleDelete"
                                 :reviewId="review.review_id"
-                                :review-id="review.review_id"
                                 :semester="review.semester"
                                 :subject="review.subject"
                                 :review-text="review.comment_text"
                                 :grade="review.received_grade"
                                 :rating="review.review_rating"
                                 :tags="review.tags"
-                                :likes="review.likes"
                                 :is-owner="review.is_owner"
+                                :likes="review.helpful_count"
                             />
                         </li>
                     </ul>
