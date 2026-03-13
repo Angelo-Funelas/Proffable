@@ -166,6 +166,7 @@ const handleDelete = async () => {
                     <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
                     <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
                 </div>
+                <!-- FIX THIS BUG HERE-->
                 <button class="text-sm" v-if="!isOwner">
                     <img src="../assets/Flag.png" class="h-[24px]">
                 </button>
