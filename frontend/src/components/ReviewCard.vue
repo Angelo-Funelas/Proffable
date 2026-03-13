@@ -150,37 +150,28 @@ const handleDelete = async () => {
                  <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
                 <!-- <span>Anonymous Student | {{ review_data.semester }} {{ review_data.subject }}</span> -->
             </div>
-            <button class="text-sm" @click="showReportModal = true">
-                <img src="../assets/Flag.png" class="h-[24px]">
-            </button>    
-        </div>
-        <div class="flex">
-            <div v-for="n in rating">
-                <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
-            </div>
-            <div v-for="n in 5-rating">
-                <img src="../assets/BigStar.svg" class="h-[36px]" />
-              <div class="flex align-middle gap-3">
-                  <button class="text-sm" v-if="isOwner" @click="isEditing = true">
-                      <img src="../assets/edit.svg" class="h-[24px]">
-                  </button>
-                  <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
-                      <img src="../assets/delete.svg" class="h-[24px]">
-                  </button>
-                  <div
-                      v-if="showModal"
-                      ref="floating"
-                      :style="floatingStyles"
-                      class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50 shadow-md"
-                  >
-                      <p class="mb-2">Are you sure you want to permanently delete this review?</p>
-                      <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
-                      <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
-                  </div>
-                  <button class="text-sm" v-if="!isOwner">
-                      <img src="../assets/Flag.png" class="h-[24px]">
-                  </button>
-              </div>
+            <div class="flex">
+                <div class="flex align-middle gap-3">
+                    <button class="text-sm" v-if="isOwner" @click="isEditing = true">
+                        <img src="../assets/edit.svg" class="h-[24px]">
+                    </button>
+                    <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
+                        <img src="../assets/delete.svg" class="h-[24px]">
+                    </button>
+                    <div
+                        v-if="showModal"
+                        ref="floating"
+                        :style="floatingStyles"
+                        class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50 shadow-md"
+                    >
+                        <p class="mb-2">Are you sure you want to permanently delete this review?</p>
+                        <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
+                        <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
+                    </div>
+                    <button class="text-sm" v-if="!isOwner" @click="showReportModal = true">
+                        <img src="../assets/Flag.png" class="h-[24px]">
+                    </button>
+                </div>
             </div>
         </div>
         <div v-if="!isEditing">
@@ -203,30 +194,30 @@ const handleDelete = async () => {
                 </span>
             </div>
 
-        <div class="flex items-center gap-[2px]">
-        <button 
-            @click="toggleHelpful"
-            class="flex items-center gap-1 text-sm transition-colors"
-            :class="hasVoted ? 'text-[#5c898d]' : 'text-[#719294] hover:text-[#5c898d]'"
-        >
-            <svg 
-                :fill="hasVoted ? '#5c898d' : 'none'"
-                :stroke="hasVoted ? '#5c898d' : '#719294'"
-                class="h-[16px] w-[16px]"
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+            <div class="flex items-center gap-[2px]">
+                <button 
+                    @click="toggleHelpful"
+                    class="flex items-center gap-1 text-sm transition-colors"
+                    :class="hasVoted ? 'text-[#5c898d]' : 'text-[#719294] hover:text-[#5c898d]'"
                 >
-                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
-                <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
-            </svg>
-            {{ helpfulCountLocal }}
-        </button>
-        <span class="text-sm text-[#719294]">found this helpful</span>
+                    <svg 
+                        :fill="hasVoted ? '#5c898d' : 'none'"
+                        :stroke="hasVoted ? '#5c898d' : '#719294'"
+                        class="h-[16px] w-[16px]"
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        >
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+                        <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+                    </svg>
+                    {{ helpfulCountLocal }}
+                </button>
+                <span class="text-sm text-[#719294]">found this helpful</span>
+            </div>
         </div>
-    </div>
 
 
     <div 
