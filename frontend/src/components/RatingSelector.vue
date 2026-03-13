@@ -14,7 +14,7 @@
     }
 
     const setRating = (n) => {
-        if (last_n > 0 && starRating.value == n) return clearRating();
+        if (starRating.value > 0 && starRating.value == n) return clearRating();
         starRating.value = n;
         last_n = n;
         emit('rate', n);
