@@ -74,6 +74,7 @@ const handleRate = (value) => {
         </div>
 
         <RatingSelector @rate="handleRate"/>
+        <p class="text-center text-white opacity-80">Average Rating</p>
       </div>
     </div>
   </div>

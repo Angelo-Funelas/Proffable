@@ -88,6 +88,7 @@ const updateStarQuery = (rating) => {
       </div>
       <div class="text-center">
         <RatingSelector :initialRating="rating_query" @rate="updateStarQuery"/>
+        <p class="text-center">Average Rating</p>
       </div>
     </div>
 
