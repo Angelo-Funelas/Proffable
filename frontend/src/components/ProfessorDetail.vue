@@ -217,7 +217,7 @@
                                 :grade="review.received_grade"
                                 :rating="review.review_rating"
                                 :tags="review.tags"
-                                :likes="review.likes"
+                                :likes="review.helpful_count"
                             />
                         </li>
                     </ul>

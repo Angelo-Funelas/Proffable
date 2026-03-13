@@ -15,6 +15,7 @@ const props = defineProps({
 const showReportModal = ref(false)
 const reason = ref("")
 const description = ref("")
+const helpfulCountLocal = ref(props.likes) 
 
 const submitReport = async () => {
 
@@ -47,6 +48,45 @@ const submitReport = async () => {
   }
 
 }
+
+onMounted(async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/reviews/${props.reviewId}/has_voted/`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      hasVoted.value = data.voted
+    }
+  } catch (error) {
+    console.error("Could not check vote status", error)
+  }
+})
+
+const toggleHelpful = async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/reviews/${props.reviewId}/vote/`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to vote");
+
+    const data = await response.json()
+    helpfulCountLocal.value = data.helpful_count
+    hasVoted.value = data.voted
+
+  } catch (error) {
+    console.error(error);
+    alert("Error updating vote");
+  }
+};
+
 </script>
 
 <template>
@@ -83,7 +123,29 @@ const submitReport = async () => {
             </span>
         </div>
 
-        <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ likes }} found this helpful</p>
+        <div class="flex items-center gap-[2px]">
+        <button 
+            @click="toggleHelpful"
+            class="flex items-center gap-1 text-sm transition-colors"
+            :class="hasVoted ? 'text-[#5c898d]' : 'text-[#719294] hover:text-[#5c898d]'"
+        >
+            <svg 
+                :fill="hasVoted ? '#5c898d' : 'none'"
+                :stroke="hasVoted ? '#5c898d' : '#719294'"
+                class="h-[16px] w-[16px]"
+                viewBox="0 0 24 24" 
+                xmlns="http://www.w3.org/2000/svg"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                >
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
+                <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
+            </svg>
+            {{ helpfulCountLocal }}
+        </button>
+        <span class="text-sm text-[#719294]">found this helpful</span>
+        </div>
     </div>
 
 
