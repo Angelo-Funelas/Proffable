@@ -12,10 +12,9 @@
     const handleMouseLeave = (n) => {
         starRatingHover.value = 0;
     }
-    
-    let last_n = 0;
+
     const setRating = (n) => {
-        if (last_n > 0 && last_n == starRating.value) return clearRating();
+        if (last_n > 0 && starRating.value == n) return clearRating();
         starRating.value = n;
         last_n = n;
         emit('rate', n);
