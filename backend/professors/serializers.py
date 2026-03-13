@@ -4,14 +4,12 @@ from .models import Professor, Review, Institution, Course, ReviewReport
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
     review_count = serializers.IntegerField(read_only=True)
-    # Add this line to pull the name from the related Institution model
-    institution_name = serializers.CharField(source='institution.name', read_only=True)
 
     class Meta:
         model = Professor
         fields = [
             "professor_id", "f_name", "l_name", "m_name", "email", 
-            "institution_name", "avg_rating", "review_count"
+            "avg_rating", "review_count"
         ]
 
 class ReviewSerializer(serializers.ModelSerializer):

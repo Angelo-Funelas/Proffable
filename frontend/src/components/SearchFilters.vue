@@ -6,35 +6,31 @@ import RatingSelector from './RatingSelector.vue'
 
 const router = useRouter()
 const route = useRoute()
-const rating_query = ref(route.query.min_rating || undefined)
 
+const rating_query = ref(route.query.min_rating || undefined)
 const localQuery = ref(route.query.q || '')
+const selectedInstitution = ref(route.query.institution || '')
+const selectedCourse = ref(route.query.course || '')
 
 let debounceTimer = null
-const emit = defineEmits(['search'])
-
-const selectedInstitution = ref('')
-const selectedCourse = ref('')
 const institutions = ref([])
 const courses = ref([])
 
+const updateURL = () =>{
+  router.push({
+    path: '/professors',
+    query: {
+      q: localQuery.value || undefined,
+      institution: selectedInstitution.value || undefined,
+      course: selectedCourse.value || undefined,
+      min_rating: rating_query.value || undefined
+    }
+  })
+}
+
 const handleInput = () => {
   clearTimeout(debounceTimer)
-  
-  debounceTimer = setTimeout(() => {
-    const queryPayload = { 
-        q: localQuery.value || undefined,
-        min_rating: rating_query.value || undefined
-    }
-
-    if (route.path !== '/professors') {
-      router.push({ path: '/professors', query: queryPayload })
-    } else {
-      router.push({ query: queryPayload })
-    }
-    
-    emit('search', {query: localQuery.value, rating: rating_query.value})
-  }, 500)
+  debounceTimer = setTimeout(updateURL, 500)
 }
 
 onMounted(async () => {
@@ -52,27 +48,16 @@ onMounted(async () => {
 
 const updateStarQuery = (rating) => {
   rating_query.value = rating
-  emit('search', {query: localQuery.value, rating: rating_query.value})
+  updateURL()
 }
 
-watch(() => route.query.q, (newVal) => {
-  localQuery.value = newVal || ''
-})
-
-const triggerSearch = () => {
-  emit('search', {
-    q: localQuery.value,
-    institution: selectedInstitution.value,
-    course: selectedCourse.value
-  })
-}
 </script>
 
 <template> 
   <div class="flex flex-col gap-2 text-left">
     <input 
       v-model="localQuery"
-      @input="triggerSearch"
+      @input="handleInput"
       class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] px-3 text-[#719294]"
       placeholder="Search for a professor or course"
     />
@@ -81,7 +66,7 @@ const triggerSearch = () => {
       <div class="relative">
         <select 
           v-model="selectedInstitution" 
-          @change="triggerSearch" 
+          @change="updateURL" 
           class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
         >
           <option value="">University</option>
@@ -93,7 +78,7 @@ const triggerSearch = () => {
       <div class="relative">
         <select 
           v-model="selectedCourse" 
-          @change="triggerSearch" 
+          @change="updateURL" 
           class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
         >
           <option value="">Course</option>
@@ -102,7 +87,7 @@ const triggerSearch = () => {
         <img src="../assets/DropdownArrow.svg" class="h-[5px] absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"/>
       </div>
       <div class="text-center">
-        <RatingSelector @rate="updateStarQuery"/>
+        <RatingSelector :initialRating="rating_query" @rate="updateStarQuery"/>
         <p class="text-center">Average Rating</p>
       </div>
     </div>
