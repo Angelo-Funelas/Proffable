@@ -1,11 +1,14 @@
 from django.contrib import admin
-from .models import Professor, Review, Institution, Course, ProfessorCourse
+from .models import Professor, Review, Institution, Course, ProfessorCourse, ReviewReport
 
 class ProfessorAdmin(admin.ModelAdmin):
     model = Professor
 
 class ReviewAdmin(admin.ModelAdmin):
     model = Review
+
+class ReviewReport(admin.ModelAdmin): 
+    mode = ReviewReport
 
 class InstitutionAdmin(admin.ModelAdmin):
     model = Institution
