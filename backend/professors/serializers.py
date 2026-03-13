@@ -17,6 +17,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     student_name = serializers.StringRelatedField(source="student", read_only=True)
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    helpful_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Review

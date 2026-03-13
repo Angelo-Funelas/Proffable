@@ -46,6 +46,10 @@ class Review(models.Model):
     
     class Meta:
         unique_together = ("student", "professor")
+
+    @property
+    def helpful_count(self):
+        return self.votes.count()
         
 class ReviewVote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="review_votes")
