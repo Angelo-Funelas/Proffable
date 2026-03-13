@@ -1,5 +1,5 @@
 <script setup>
-import {ref, watch} from 'vue'
+import {ref, watch, onMounted} from 'vue'
 import { useFloating, offset, flip, shift } from '@floating-ui/vue'
 import { onClickOutside } from '@vueuse/core'
 import api from "@/api/axios"
@@ -65,6 +65,7 @@ const showReportModal = ref(false)
 const reason = ref("")
 const description = ref("")
 const helpfulCountLocal = ref(props.likes) 
+const hasVoted = ref(false) 
 
 const submitReport = async () => {
 
