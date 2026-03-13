@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from api.models import User
+from django.conf import settings
 
 # Create your models here.
 class Institution(models.Model):
@@ -52,6 +53,23 @@ class ReviewVote(models.Model):
 
     class Meta:
         unique_together = ("user", "review")
+
+class ReviewReport(models.Model):
+    REPORT_REASON_CHOICES = [
+        ("offensive", "Offensive Language"),
+        ("spam", "Spam or Advertising"),
+        ("fake", "Fake Review"),
+        ("harassment", "Harassment or Hate Speech"),
+        ("irrelevant", "Irrelevant Content"),
+        ("other", "Other"),
+    ]
+
+    report_id = models.AutoField(primary_key=True)
+    review = models.ForeignKey("Review", on_delete=models.CASCADE, related_name="reports")
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    reason = models.CharField(max_length=50, choices=REPORT_REASON_CHOICES)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class ProfessorCourse(models.Model):
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="professor_course")
