@@ -2,9 +2,10 @@ from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport
+from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.db import IntegrityError
 
 from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
@@ -54,7 +55,36 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return [AllowAny()]
 
     def perform_create(self, serializer):
-        serializer.save(student=self.request.user)
+        try:
+            serializer.save(student=self.request.user)
+        except IntegrityError:
+            raise serializers.ValidationError("You have already reviewed this professor.")
+    
+    
+    @action(detail=True, methods=["post"])
+    def vote(self, request, pk=None):
+        review = self.get_object()
+        user = request.user if request.user.is_authenticated else None
+
+        existing_vote = ReviewVote.objects.filter(review=review, user=user).first()
+
+        if existing_vote:
+            existing_vote.delete()
+            review.helpful_count = max(0, review.helpful_count - 1)
+            review.save()
+            return Response({"helpful_count": review.helpful_count, "voted": False})
+        else:
+            ReviewVote.objects.create(review=review, user=user)
+            review.helpful_count += 1
+            review.save()
+            return Response({"helpful_count": review.helpful_count, "voted": True})
+   
+    @action(detail=True, methods=["get"])
+    def has_voted(self, request, pk=None):
+        review = self.get_object()
+        user = request.user if request.user.is_authenticated else None
+        voted = ReviewVote.objects.filter(review=review, user=user).exists()
+        return Response({"voted": voted})
 
 
 class ReviewReportViewSet(viewsets.ModelViewSet):
