@@ -10,53 +10,85 @@ const props = defineProps({
   rating: Number,
   tags: Array,
   likes: Number,
-  isOwner: Boolean,
-})
+  isOwner:Boolean,
+})  
 
-const review_data = ref({
-  reviewId: null,
-  semester: '',
-  subject: '',
-  reviewText: '',
-  grade: '',
-  rating: 0,
-  tags: [],
-  likes: 0,
-  isOwner: false,
-})
+const showReportModal = ref(false)
+const reason = ref("")
+const description = ref("")
+const helpfulCountLocal = ref(props.likes) 
+const hasVoted = ref(false) 
 
-watch(() => props, (newProps) => {
-  review_data.value = {
-    ...newProps,
+const submitReport = async () => {
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/review-reports/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        review: props.reviewId,
+        reason: reason.value,
+        description: description.value
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error("Failed to submit report")
+    }
+
+    alert("Report submitted.")
+
+    showReportModal.value = false
+    reason.value = ""
+    description.value = ""
+
+  } catch (error) {
+    console.error(error)
+    alert("Error submitting report.")
   }
-}, { immediate: true, deep: true })
 
-const handleEdit = (rating, grade_received, comment_text) => {
-    review_data.value.rating = rating;
-    review_data.value.grade_received = grade_received;
-    review_data.value.reviewText = comment_text;
-    isEditing.value = false;
 }
-const isEditing = ref(false) 
 
-const reference = ref(null)
-const floating = ref(null)
-const showModal = ref(false)
-
-onClickOutside(floating, () => (showModal.value = false))
-const { floatingStyles } = useFloating(reference, floating, {
-  placement: 'top', 
-  middleware: [
-    offset(10),
-    flip(),
-    shift()
-  ],
+onMounted(async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/reviews/${props.reviewId}/has_voted/`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      hasVoted.value = data.voted
+    }
+  } catch (error) {
+    console.error("Could not check vote status", error)
+  }
 })
-const emit = defineEmits(['delete'])
-const handleDelete = async () => {
-    await api.delete(`reviews/${props.reviewId}/`);
-    emit('delete');
-}
+
+const toggleHelpful = async () => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/reviews/${props.reviewId}/vote/`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to vote");
+
+    const data = await response.json()
+    helpfulCountLocal.value = data.helpful_count
+    hasVoted.value = data.voted
+
+  } catch (error) {
+    console.error(error);
+    alert("Error updating vote");
+  }
+};
+
 const showReportModal = ref(false)
 const reason = ref("")
 const description = ref("")
@@ -146,28 +178,9 @@ const toggleHelpful = async () => {
                  <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
                 <!-- <span>Anonymous Student | {{ semester }} {{ subject }}</span> -->
             </div>
-            <div class="flex align-middle gap-3">
-                <button class="text-sm" @click="showReportModal = true" v-if="isOwner" @click="isEditing = true">
-                    <img src="../assets/edit.svg" class="h-[24px]">
-                </button>
-                <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
-                    <img src="../assets/delete.svg" class="h-[24px]">
-                </button>
-                <div
-                    v-if="showModal"
-                    ref="floating"
-                    :style="floatingStyles"
-                    class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50 shadow-md"
-                >
-                    <p class="mb-2">Are you sure you want to permanently delete this review?</p>
-                    <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
-                    <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
-                </div>
-                <!-- FIX THIS BUG HERE-->
-                <button class="text-sm" v-if="!isOwner">
-                    <img src="../assets/Flag.png" class="h-[24px]">
-                </button>
-            </div>
+            <button class="text-sm" @click="showReportModal = true">
+                <img src="../assets/Flag.png" class="h-[24px]">
+            </button>    
         </div>
         <div class="flex">
             <div v-for="n in rating">
@@ -188,55 +201,6 @@ const toggleHelpful = async () => {
             </span>
         </div>
 
-            <p class="italic flex items-center gap-[2px]">
-            <img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ review_data.likes }} found this helpful</p>
-        </div>
-        <div v-if="isEditing">
-            <ReviewFormNew
-                @cancelReview="isEditing = false"
-                @submitReview="handleEdit"
-                :reviewId="reviewId"
-                :editing="isEditing"
-                :review_rating="rating"
-                :comment_text="reviewText"
-                :grade_received="grade"
-                />
-            </div>
-        </div>
-
-
-        <div 
-        v-if="showReportModal" 
-        class="fixed inset-0 flex items-center justify-center bg-black/30 z-20"
-        >
-        <div class="bg-white p-6 rounded-xl w-[320px] shadow-lg z-30 text-[#719294]" >
-            <h2 class="text-lg font-bold mb-4 text-[#0B0D09]">Report Review</h2>
-
-            <select v-model="reason" class="border border-[#719294] p-2 w-full mb-3 rounded-lg text-sm text-[#0B0D09] outline-none focus:border-[#5c898d]">
-            <option disabled value="">Select reason</option>
-            <option value="offensive">Offensive Language</option>
-            <option value="spam">Spam</option>
-            <option value="fake">Fake Review</option>
-            <option value="harassment">Harassment</option>
-            <option value="irrelevant">Irrelevant Content</option>
-            <option value="other">Other</option>
-            </select>
-
-            <textarea
-            v-model="description"
-            placeholder="Additional details (optional)"
-            class="border border-[#719294] p-2 w-full mb-4 rounded-lg text-sm text-[#0B0D09] placeholder:text-[#719294] outline-none focus:border-[#5c898d] resize-none h-24"
-            ></textarea>
-
-            <div class="flex justify-end gap-2">
-            <button @click="showReportModal = false" class="border border-[#719294] text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
-                Cancel
-            </button>
-            <button @click="submitReport" class="bg-[#719294] text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
-                Submit
-            </button>
-            </div>
-        </div>
         <div class="flex items-center gap-[2px]">
         <button 
             @click="toggleHelpful"

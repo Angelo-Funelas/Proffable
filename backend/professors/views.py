@@ -3,9 +3,13 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote
-from django.db.models import Avg, Count, Q, Case, When, Value, BooleanField
+from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer, ReviewReportSerializer
+from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, ReviewReport, ReviewVote
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db import IntegrityError
+
+from django.db.models import Avg, Count, Q
 
 from django.db import IntegrityError
 
@@ -87,6 +91,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         user = request.user if request.user.is_authenticated else None
         voted = ReviewVote.objects.filter(review=review, user=user).exists()
         return Response({"voted": voted})
+
 
 class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()

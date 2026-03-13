@@ -2,12 +2,8 @@
     import {ref} from 'vue'
     const emit = defineEmits(['rate']);
 
-    const props = defineProps({
-        rating: Number
-    })
-
-    const starRatingHover = ref(0);
-    const starRating = ref(props.rating || 0);
+    const starRatingHover = ref(5);
+    const starRating = ref(0);
 
     const handleMouseEnter = (n) => {
         starRatingHover.value = n;

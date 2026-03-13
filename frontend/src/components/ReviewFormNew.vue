@@ -1,27 +1,20 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import axios from 'axios'
 import api from "@/api/axios"
 import RatingSelector from './RatingSelector.vue'
-
-const props = defineProps({
-  reviewId: Number,
-  editing: Boolean,
-  review_rating: Number,
-  grade_received: String,
-  comment_text: String,
-})
 
 const route = useRoute()
 const message = ref('')
 const isError = ref(false)
 
-const emit = defineEmits(['submitReview', 'cancelReview']);
+const emit = defineEmits(['submitReview']);
 
 const form = ref({
-  review_rating: props.review_rating,
-  comment_text: props.comment_text,
-  received_grade: props.grade_received,
+  review_rating: '',
+  comment_text: '',
+  received_grade: ''
 })
 const handleRate = (value) => {
   form.value.review_rating = value;
@@ -37,26 +30,16 @@ async function submitReview() {
       received_grade: form.value.received_grade
     })
   try {
-    if (props.editing) {
-      await api.put(`reviews/${props.reviewId}/`, {
-        professor: route.params.professorId,
-        review_rating: form.value.review_rating,
-        comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade
-      })
-      message.value = 'Edited Review!'
-    } else {
-      await api.post('reviews/', {
-        professor: route.params.professorId,
-        review_rating: form.value.review_rating,
-        comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade
-      })
-      message.value = 'Submitted Review!'
-    }
+    await api.post('reviews/', {
+      professor: route.params.professorId,
+      review_rating: form.value.review_rating,
+      comment_text: form.value.comment_text,
+      received_grade: form.value.received_grade
+    })
+    message.value = 'Review submitted successfully!'
     isError.value = false
-    emit('submitReview', form.value.review_rating, form.value.received_grade, form.value.comment_text)
     form.value = { review_rating: '', comment_text: '', received_grade: '' }
+    emit('submitReview')
   } catch (err) {
     // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
     message.value = JSON.stringify(err.response?.data)
@@ -66,16 +49,12 @@ async function submitReview() {
 
 <template>
     <form @submit.prevent="submitReview">
-        <h1 class="text-2xl font-bold text-left my-2.5 mb-0" v-if="!editing">Write a Review</h1>
-        <RatingSelector @rate="handleRate" :rating="review_rating"/>
+        <h1 class="text-2xl font-bold text-left my-2.5 mb-0">Write a Review</h1>
+        <RatingSelector @rate="handleRate"/>
         <input type="text" v-model="form.received_grade" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60" placeholder="Grade Received: e.g. A+, 92, 1.75">
         <textarea v-model="form.comment_text" class="border-[#e9e9e9] border-2 rounded-xl resize-none w-full text-[#719294] p-2" placeholder="What was good? What could be improved?"></textarea>
-        <button type="submit" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
-          <span v-if="!editing">Submit Review</span>  
-          <span v-if="editing">Save</span>  
-        </button>
-        <button v-if="editing" @click="$emit('cancelReview')" type="button" class="bg-[#a2a2a2] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
-          Cancel
+        <button type="submit" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
+            Submit Review
         </button>
         <!-- Feedback -->
         <p
@@ -87,3 +66,35 @@ async function submitReview() {
         </p>
     </form>
 </template>
+
+
+<style scoped>  
+
+.navbar {
+  width: 100%;
+  background-color: #5c898d;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.logo-circle {
+  background-color: #d9d9d9;
+  border-radius: 9999px;
+  height: 2.5rem;
+  width: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.logo-img {
+  height: 1.75rem;
+  width: 1.75rem;
+  object-fit: contain;
+}
+
+</style>
