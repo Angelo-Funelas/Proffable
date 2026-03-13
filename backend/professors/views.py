@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
 
-from django.db.models import Avg, Count, Q, Case, When, Value, BooleanField
+from django.db.models import Avg, Count, Q
 from .permissions import IsOwner
 # Create your views here.
 
@@ -45,26 +45,6 @@ class ProfessorViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Review.objects.all()
-        professor_id = self.request.query_params.get('professor')
-        if professor_id:
-            queryset = queryset.filter(professor_id=professor_id)
-        if user.is_authenticated:
-            queryset = queryset.annotate(
-                is_owner=Case(
-                    When(student=user, then=Value(True)),
-                    default=Value(False),
-                    output_field=BooleanField(),
-                )
-            )
-        else:
-            queryset = queryset.annotate(
-                is_owner=Value(False, output_field=BooleanField())
-            )
-        return queryset
 
     def get_permissions(self):
         if self.action == 'create':
