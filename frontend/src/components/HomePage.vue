@@ -24,7 +24,8 @@ onMounted(async () => {
 const handleSearch = () => {
   router.push({ 
     path: '/professors', 
-    query: { q: searchQuery.value, institution: selectedInstitution.value, course: selectedCourse.value } 
+    query: { q: searchQuery.value, institution: selectedInstitution.value, 
+      course: selectedCourse.value, min_rating:rating.value|| undefined}
   })
 }
 const rating = ref(0);
@@ -65,7 +66,7 @@ const handleRate = (value) => {
           </div>
           <div class="flex-1">
             <select v-model="selectedCourse" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
-              <option value="">Department</option>
+              <option value="">Courses</option>
               <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>
             </select>
           </div>
