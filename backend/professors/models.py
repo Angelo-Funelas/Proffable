@@ -1,8 +1,25 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from api.models import User
+from django.conf import settings
 
 # Create your models here.
+class Institution(models.Model):
+    institution_id = models.AutoField(primary_key=True)
+    name = models.CharField(blank=False, max_length=255)
+    domain = models.CharField(blank=False, max_length=255)
+    def __str__(self):
+        return f"{self.name}"
+
+class Course(models.Model):
+    course_id = models.AutoField(primary_key=True)
+    course_code = models.CharField(blank=False, max_length=50)
+    course_name = models.CharField(blank=False, max_length=255)
+    institution = models.ForeignKey(Institution, on_delete=models.CASCADE, related_name="courses")
+
+    def __str__(self):
+        return f"{self.course_code}"
+
 class Professor(models.Model):
     professor_id = models.AutoField(primary_key=True)
     f_name = models.CharField(blank=False, max_length=32)
@@ -21,9 +38,43 @@ class Review(models.Model):
     comment_text = models.TextField()
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
+    helpful_count = models.PositiveIntegerField(default=0)
     
     def __str__(self):
         return f"{self.review_id}"
     
     class Meta:
         unique_together = ("student", "professor")
+
+        
+class ReviewVote(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="votes")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("review", "user")
+
+class ReviewReport(models.Model):
+    REPORT_REASON_CHOICES = [
+        ("offensive", "Offensive Language"),
+        ("spam", "Spam or Advertising"),
+        ("fake", "Fake Review"),
+        ("harassment", "Harassment or Hate Speech"),
+        ("irrelevant", "Irrelevant Content"),
+        ("other", "Other"),
+    ]
+
+    report_id = models.AutoField(primary_key=True)
+    review = models.ForeignKey("Review", on_delete=models.CASCADE, related_name="reports")
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    reason = models.CharField(max_length=50, choices=REPORT_REASON_CHOICES)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class ProfessorCourse(models.Model):
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="professor_course")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="professor_course")
+
+    class Meta:
+        unique_together = ("professor", "course")

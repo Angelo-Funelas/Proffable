@@ -17,7 +17,6 @@ const form = ref({
 
 // Call Backend for Review 
 async function submitReview() {
-  // TODO: FIX THIS SO THAT IT ACCURATELY CREATES A POST REQUEST TO THE API 
   try {
     await api.post('reviews/', {
       professor: route.params.professorId,
@@ -29,9 +28,14 @@ async function submitReview() {
     isError.value = false
     form.value = { review_rating: '', comment_text: '', received_grade: '' }
   } catch (err) {
-    // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
-    message.value = JSON.stringify(err.response?.data)
+  const data = err.response?.data
+  if (data?.non_field_errors || data?.detail) {
+    message.value = data.non_field_errors?.[0] || data.detail
+  } else {
+    message.value = 'You have already reviewed this professor.'
   }
+  isError.value = true
+}
 }
 </script>
 

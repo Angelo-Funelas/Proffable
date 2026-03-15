@@ -1,45 +1,19 @@
 <script setup>
     import {ref, computed, onMounted} from 'vue'
-    import axios from 'axios'
+    import api from "@/api/axios"
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
     import SearchFilters from './SearchFilters.vue'
     import { useRoute } from 'vue-router'
     import Navbar from './Navbar.vue';
     import { useRouter } from 'vue-router'
+    import RatingSelector from './RatingSelector.vue'
+    import ReviewFormNew from './ReviewFormNew.vue'
 
     const professor = ref({})
     const route = useRoute()
     const reviews = ref([])
     const router = useRouter()
-
-    const handleSearchRedirect = (searchTerm) => {
-    router.push({ 
-        path: '/professors', 
-        query: { q: searchTerm } 
-    })
-    }
-
-    const handleReviewRedirect = () =>{
-        router.push({
-            path: `/reviews/${route.params.professorId}`
-        })
-    }
-
-    const API_URL = 'http://localhost:8000/api/'
-    const api = axios.create({
-        baseURL:API_URL
-    })
-    
-    const reviewsAverage = computed(()=>
-    {
-        if (reviews.value.length === 0) return 0
-        let sum = 0
-        for (let i = 0; i< reviews.value.length; i++){
-            sum += reviews.value[i].review_rating
-        }
-        return (sum/reviews.value.length).toFixed(2)
-    })
     
     const professors = ref()
     async function fetchProfessor(){
@@ -52,18 +26,20 @@
         }
         isLoading.value = false
     }
-
+    const professor_reviewed = ref(false)
     async function fetchReviews(){
-    try {
-        const response = await api.get('reviews/')
-        reviews.value = response.data.filter(
-            review => Number(review.professor) === Number(route.params.professorId)
-        )
-        console.log(reviews.value)
-    } catch(error){
-        console.log("Error with fetching reviews: ", error)
+        try {
+            const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
+            reviews.value = response.data
+            for (const review of response.data) {
+                if (review.is_owner) professor_reviewed.value = true
+                break
+            }
+            console.log(response.data)
+        } catch(error){
+            console.log("Error with fetching reviews: ", error)
+        }
     }
-}
     async function fetchProfessors(){
         isLoading.value = true
         try{
@@ -75,6 +51,11 @@
         isLoading.value = false
     }
     const isLoading = ref(false)
+
+    const handleDelete = () => {
+        professor_reviewed.value = false;
+        fetchReviews();
+    }
 
     onMounted(()=>{
         fetchProfessor()
@@ -91,7 +72,7 @@
             <!--LEFT DIV-->
             <div>
                 <!--SEARCH FILTERS-->
-                <SearchFilters @search="handleSearchRedirect" />
+                <SearchFilters />
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
@@ -99,8 +80,8 @@
                         <ProfCard
                         :lname="prof.l_name"
                         :fname="prof.f_name"
-                        :avgScore="3"
-                        :numReviews="128"
+                        :avgScore="prof.avg_rating || 0"
+                        :numReviews="prof.review_count"
                         />
                     </li>
                 </ul>
@@ -113,13 +94,14 @@
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
-                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 3 ({{ reviews.length }} review/s)</p>
+                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
+                            {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
                         <p class="text-sm">Tags:</p>
                     </div>
 
                     <div class="flex flex-col items-center gap-1">
                         <img src="../assets/Heart.svg" class="h-[16px]">
-                        <span class="text-sm">128</span>
+                        <span class="text-sm">{{professor.review_count}}</span>
                     </div>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
@@ -195,24 +177,27 @@
                         </div>
                     </div>
                 </div>
+                <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
+                    <ReviewFormNew @submitReview="fetchReviews"/>
+                </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
                     <h1 class="text-2xl font-bold text-left my-2.5">Reviews ({{reviews.length}})</h1>
-                    <button @click="handleReviewRedirect" class="bg-[#52848A] rounded-full px-[18px] py-1 w-max cursor-pointer">
-                        Write a Review
-                    </button>
                 </div>
                 <div>
                     <ul class="grid grid-cols-1 gap-2.5">
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
-                            :semester="review.semester"
-                            :subject="review.subject"
-                            :review-text="review.comment_text"
-                            :grade="review.received_grade"
-                            :rating="review.review_rating"
-                            :tags="review.tags"
-                            :likes="review.likes"
+                                @delete="handleDelete"
+                                :reviewId="review.review_id"
+                                :semester="review.semester"
+                                :subject="review.subject"
+                                :review-text="review.comment_text"
+                                :grade="review.received_grade"
+                                :rating="review.review_rating"
+                                :tags="review.tags"
+                                :is-owner="review.is_owner"
+                                :likes="review.helpful_count"
                             />
                         </li>
                     </ul>

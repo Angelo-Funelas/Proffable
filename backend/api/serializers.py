@@ -13,6 +13,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return token
 
+class UsernameOrEmailTokenSerializer(TokenObtainPairSerializer):
+    
+    def validate(self, attrs):
+
+        login = attrs.get("username")   # field sent from frontend
+        password = attrs.get("password")
+
+        user = None
+
+        # Check if login looks like an email
+        if "@" in login:
+            try:
+                user = User.objects.get(email=login)
+                attrs["username"] = user.username
+            except User.DoesNotExist:
+                pass
+
+        return super().validate(attrs)
+
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
