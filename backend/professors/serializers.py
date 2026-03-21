@@ -20,26 +20,52 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ReviewTagSerializer(serializers.ModelSerializer):
-    tag = TagSerializer(source="tag_id")
+    tag_name = serializers.ReadOnlyField(source="tag_id.tag_name")
+
     class Meta:
         model = ReviewTag
-        fields = ["tag"]
+        fields = ["tag_name"]
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     helpful_count = serializers.IntegerField(read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
-    tags = ReviewTagSerializer(source="review_tag",many=True)
-    
+    tags = serializers.PrimaryKeyRelatedField(
+        source="review_tag",
+        many=True,
+        queryset=Tag.objects.all(),
+        write_only=True
+    )
+    read_tags = ReviewTagSerializer(source="review_tag", many=True, read_only=True)
+
     class Meta:
         model = Review
-        fields = ["review_id", "professor", "professor_name", "is_owner",
-            "review_rating", "comment_text", "review_date", "received_grade", "helpful_count",
-            "tags"]
+        fields = [
+            "review_id", "professor", "professor_name", "is_owner",
+            "review_rating", "comment_text", "review_date", "received_grade", 
+            "helpful_count", "tags", "read_tags"
+        ]
         extra_kwargs = {
             'student': {'read_only': True}
         }
+
+    def create(self, validated_data):
+        tags = validated_data.pop('review_tag', [])
+        review = super().create(validated_data)
+        for tag in tags:
+            ReviewTag.objects.create(review_id=review, tag_id=tag)
+        return review
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('review_tag', None)
+        review = super().update(instance, validated_data)
+        if tags is not None:
+            instance.review_tag.all().delete()
+            for tag in tags:
+                ReviewTag.objects.create(review_id=instance, tag_id=tag)
+        return review
 
 
 class InstitutionSerializer(serializers.ModelSerializer):
