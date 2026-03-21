@@ -33,10 +33,12 @@
             reviews.value = response.data
             console.log(reviews.value)
             for (const review of response.data) {
-                if (review.is_owner) professor_reviewed.value = true
-                break
+                if (review.is_owner) {
+                    professor_reviewed.value = true
+                    break
+                }
+                
             }
-            console.log(response.data)
         } catch(error){
             console.log("Error with fetching reviews: ", error)
         }
@@ -196,7 +198,7 @@
                                 :review-text="review.comment_text"
                                 :grade="review.received_grade"
                                 :rating="review.review_rating"
-                                :tags="review.tags"
+                                :tags="review.read_tags"
                                 :is-owner="review.is_owner"
                                 :likes="review.helpful_count"
                             />

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 import Navbar from './Navbar.vue';
@@ -9,10 +9,25 @@ const route = useRoute()
 const message = ref('')
 const isError = ref(false)
 
+const tags = ref([])
+
+onMounted(async () => {
+  try {
+    const [tagRes] = await Promise.all([
+      api.get('tags/'),
+    ])
+    tags.value = tagRes.data
+    console.log(tags.value)
+  } catch (err) {
+    console.error("Failed to load tags data", err)
+  }
+})
+
 const form = ref({
   review_rating: '',
   comment_text: '',
-  received_grade: ''
+  received_grade: '',
+  tags: []
 })
 
 // Call Backend for Review 
@@ -22,7 +37,8 @@ async function submitReview() {
       professor: route.params.professorId,
       review_rating: form.value.review_rating,
       comment_text: form.value.comment_text,
-      received_grade: form.value.received_grade
+      received_grade: form.value.received_grade,
+      tags: form.value.tags
     })
     message.value = 'Review submitted successfully!'
     isError.value = false
@@ -73,6 +89,7 @@ async function submitReview() {
               required
               class="w-full outline-none text-[#719294]"
             />
+            
           </div>
         </div>
 
@@ -102,6 +119,12 @@ async function submitReview() {
               class="w-full outline-none resize-none h-28 text-[#719294]"
             />
           </div>
+        </div>
+
+        <div>
+          <select v-model="form.tags" multiple>
+              <option v-for="t in tags" :key="t.tag.tag_id">{{ t.tag.tag_name }}</option>
+            </select>
         </div>
 
         <!-- Submit -->
