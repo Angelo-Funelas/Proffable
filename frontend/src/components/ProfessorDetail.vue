@@ -31,6 +31,7 @@
         try {
             const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
             reviews.value = response.data
+            console.log(reviews.value)
             for (const review of response.data) {
                 if (review.is_owner) professor_reviewed.value = true
                 break
