@@ -2,13 +2,14 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from professors.views import ProfessorViewSet, ReviewViewSet, InstitutionViewSet, CourseViewSet, ReviewReportViewSet
-
+from professors.views import TagViewSet
 router = DefaultRouter()
 router.register(r"professors",ProfessorViewSet)
 router.register(r"reviews",ReviewViewSet)
 router.register(r"review-reports", ReviewReportViewSet)
 router.register(r"institutions", InstitutionViewSet)
 router.register(r"courses", CourseViewSet)
+router.register(r"tags",TagViewSet)
 
 
 #include logic for jwt 

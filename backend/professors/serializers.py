@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Professor, Review, Institution, Course, ReviewReport
+from .models import Professor, Review, Institution, Course, ReviewReport, Tag, ReviewTag
 
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
@@ -12,28 +12,73 @@ class ProfessorSerializer(serializers.ModelSerializer):
             "avg_rating", "review_count"
         ]
 
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields=["tag_id","tag_name"]
+
+
+class ReviewTagSerializer(serializers.ModelSerializer):
+    tag_name = serializers.ReadOnlyField(source="tag_id.tag_name")
+
+    class Meta:
+        model = ReviewTag
+        fields = ["tag_name"]
+
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     helpful_count = serializers.IntegerField(read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
-    
+    tags = serializers.PrimaryKeyRelatedField(
+        source="review_tag",
+        many=True,
+        queryset=Tag.objects.all(),
+        write_only=True
+    )
+    read_tags = ReviewTagSerializer(source="review_tag", many=True, read_only=True)
+
     class Meta:
         model = Review
-        fields = ["review_id", "professor", "professor_name", "is_owner",
-            "review_rating", "comment_text", "review_date", "received_grade", "helpful_count"]
+        fields = [
+            "review_id", "professor", "professor_name", "is_owner",
+            "review_rating", "comment_text", "review_date", "received_grade", 
+            "helpful_count", "tags", "read_tags"
+        ]
         extra_kwargs = {
             'student': {'read_only': True}
         }
+
+    def create(self, validated_data):
+        tags = validated_data.pop('review_tag', [])
+        review = super().create(validated_data)
+        for tag in tags:
+            ReviewTag.objects.create(review_id=review, tag_id=tag)
+        return review
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('review_tag', None)
+        review = super().update(instance, validated_data)
+        if tags is not None:
+            instance.review_tag.all().delete()
+            for tag in tags:
+                ReviewTag.objects.create(review_id=instance, tag_id=tag)
+        return review
+
 
 class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = ['institution_id', 'name']
 
+
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ['course_id', 'course_code']
+
 
 class ReviewReportSerializer(serializers.ModelSerializer):
     reporter_name = serializers.StringRelatedField(source="reporter", read_only=True)
@@ -49,3 +94,4 @@ class ReviewReportSerializer(serializers.ModelSerializer):
             "reporter_name"
         ]
         read_only_fields = ["report_id", "created_at"]
+

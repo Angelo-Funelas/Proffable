@@ -189,8 +189,8 @@ const handleDelete = async () => {
 
             <div class="flex flex-wrap gap-2">
                 <p class="text-sm"><span class="font-bold">Tags</span>:</p>
-                <span v-for="(tag, index) in review_data.tags" :key="index" class="text-sm underline px-1">
-                    {{ tag }}
+                <span v-for="tag in review_data.tags" :key="tag.tag_name" class="text-sm underline px-1">
+                    {{ tag.tag_name }}
                 </span>
             </div>
 

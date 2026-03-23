@@ -78,3 +78,16 @@ class ProfessorCourse(models.Model):
 
     class Meta:
         unique_together = ("professor", "course")
+
+
+class Tag(models.Model):
+    tag_id = models.AutoField(primary_key=True)
+    tag_name = models.CharField(blank=False, max_length=32)
+
+
+class ReviewTag(models.Model):
+    review_id = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="review_tag")
+    tag_id = models.ForeignKey(Tag,on_delete=models.CASCADE, related_name="review_tag")
+
+    class Meta:
+        unique_together = ("review_id", "tag_id")

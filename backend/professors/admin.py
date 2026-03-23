@@ -1,14 +1,10 @@
 from django.contrib import admin
-from .models import Professor, Review, Institution, Course, ProfessorCourse, ReviewReport, ReviewVote
+from .models import Professor, Review, Institution, Course, ProfessorCourse, ReviewReport, ReviewVote, Tag, ReviewTag
 
 class ProfessorAdmin(admin.ModelAdmin):
     model = Professor
 
-class ReviewAdmin(admin.ModelAdmin):
-    model = Review
 
-class ReviewReport(admin.ModelAdmin): 
-    mode = ReviewReport
 
 class InstitutionAdmin(admin.ModelAdmin):
     model = Institution
@@ -19,9 +15,25 @@ class CourseAdmin(admin.ModelAdmin):
 class ProfessorCourseAdmin(admin.ModelAdmin):
     model = ProfessorCourse
 
+class TagAdmin(admin.ModelAdmin):
+    model = Tag
+
+class ReviewTagInline(admin.StackedInline):
+    model = ReviewTag
+
+class ReviewReport(admin.ModelAdmin): 
+    model = ReviewReport
+
+class ReviewAdmin(admin.ModelAdmin):
+    model = Review
+    inlines = [ReviewTagInline]
+
+
 admin.site.register(Professor, ProfessorAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(ProfessorCourse, ProfessorCourseAdmin)
 admin.site.register(ReviewVote)
+admin.site.register(Tag,TagAdmin)
+admin.site.register(ReviewTag)
