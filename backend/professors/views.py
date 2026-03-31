@@ -3,8 +3,8 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
-from .serializers import TagSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag
+from .serializers import TagSerializer, FavoriteProfSerializer
+from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
@@ -150,3 +150,17 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [AllowAny]
+
+
+class FavoriteProfViewset(viewsets.ModelViewSet):
+    queryset = FavoriteProf.objects.all()
+    serializer_class = FavoriteProfSerializer
+
+    def perform_create(self, serializer):
+        student = self.request.user if self.request.user.is_authenticated else None
+        serializer.save(student=student)
+    
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsAuthenticated()]
+        return []

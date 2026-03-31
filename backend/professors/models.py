@@ -95,8 +95,8 @@ class ReviewTag(models.Model):
 
 
 class FavoriteProf(models.Model):
-    professor_id = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="fave_prof")
-    student_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="fave_prof")
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="fave_prof")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="fave_prof")
 
     class Meta:
-        unique_together = ("professor_id","student_id")
+        unique_together = ("professor","student")
