@@ -43,3 +43,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "f_name", "m_name", "l_name", "profile_picture_url", "is_moderator"]
