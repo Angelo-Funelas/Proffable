@@ -60,6 +60,7 @@ const goToProf = (professorId) => {
                 :fname="prof.f_name"
                 :avgScore="prof.avg_rating || 0"
                 :numReviews="prof.review_count"
+                :favoriteCount="prof.favorite_count"
                 />
             </li>
         </ul>

@@ -23,8 +23,9 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Professor.objects.annotate(
             avg_rating=Avg("reviews__review_rating"),
-            review_count=Count("reviews"),
-            full_name = Concat('f_name', Value(' '), 'l_name')
+            review_count=Count("reviews", distinct=True),
+            full_name=Concat('f_name', Value(' '), 'l_name'),
+            favorite_count=Count("fave_prof", distinct=True)
         )
         search = self.request.query_params.get('search')
         inst_name = self.request.query_params.get('institution')

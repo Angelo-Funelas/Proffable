@@ -6,6 +6,7 @@ const props = defineProps({
     avgScore: Number,
     tags: Array,
     numReviews: Number,
+    favoriteCount: Number,
 })
 </script>
 
@@ -22,7 +23,7 @@ const props = defineProps({
 
     <div class="flex flex-col items-center gap-1">
         <img src="../assets/Heart.svg" class="h-[16px]">
-        <span class="text-sm">{{ numReviews }}</span>
+        <span class="text-sm">{{ favoriteCount }}</span>
     </div>
 
 </div>

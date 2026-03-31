@@ -65,6 +65,22 @@
         fetchReviews()
         fetchProfessors()
     })
+
+    async function toggleFavorite() {
+        try{
+            if (professor.value.is_favorited){
+                await api.delete(`favorite-prof/${professor.value.favorite_id}/`)
+            } else {
+                const response = await api.post('favorite-prof/' ,{
+                professor_id: route.params.professorId
+            })
+            
+            }
+            fetchProfessor()
+        } catch(error){
+            console.log("Error toggling favorite: ",error)
+        }
+    }
 </script>
 
 <template>
@@ -102,9 +118,10 @@
                         <p class="text-sm">Tags:</p>
                     </div>
 
-                    <div class="flex flex-col items-center gap-1">
+                    <!-- FAVORITE PROF-->
+                    <div @click=toggleFavorite class="flex flex-col items-center gap-1 cursor-pointer">
                         <img src="../assets/Heart.svg" class="h-[16px]">
-                        <span class="text-sm">{{professor.review_count}}</span>
+                        <span class="text-sm">{{professor.favorite_count}}</span>
                     </div>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">

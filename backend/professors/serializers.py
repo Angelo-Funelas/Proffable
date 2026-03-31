@@ -4,13 +4,27 @@ from .models import Professor, Review, Institution, Course, ReviewReport, Tag, R
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
     review_count = serializers.IntegerField(read_only=True)
+    favorite_count = serializers.IntegerField(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+    favorite_id = serializers.SerializerMethodField()
+
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return FavoriteProf.objects.filter(professor=obj, student=request.user).exists()
+        return False
+
+    def get_favorite_id(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            fav = FavoriteProf.objects.filter(professor=obj, student=request.user).first()
+            return fav.id if fav else None
+        return None
 
     class Meta:
         model = Professor
-        fields = [
-            "professor_id", "f_name", "l_name", "m_name", "email", 
-            "avg_rating", "review_count"
-        ]
+        fields = ["professor_id", "f_name", "l_name", "m_name", "email", 
+                  "avg_rating", "review_count", "favorite_count", "is_favorited", "favorite_id"]
 
 
 class TagSerializer(serializers.ModelSerializer):
