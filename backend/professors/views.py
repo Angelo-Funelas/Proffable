@@ -9,13 +9,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField
-from .permissions import IsOwner
+from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
+    permission_classes = [IsModeratorOrReadOnly]
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['f_name', 'l_name']
@@ -75,7 +76,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         # Only owners can update, partially update, or delete their reviews.
         elif self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsOwner()]
+            return [IsAuthenticated(), (IsOwner | IsModerator)()]
         return [AllowAny()]
 
     def perform_create(self, serializer):
@@ -115,6 +116,12 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()
     serializer_class = ReviewReportSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAuthenticated()]
+        else:
+            return [IsModerator()]
+
     def perform_create(self, serializer):
         reporter = self.request.user if self.request.user.is_authenticated else None
         serializer.save(reporter=reporter)
@@ -134,6 +141,12 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
             vote.save()
 
         return Response({'helpful_count': review.votes.filter(is_helpful=True).count()})
+    
+    @action(detail=True, methods=['post'])
+    def dismiss(self, request, pk=None):
+        report = self.get_object()
+        report.delete()
+        return Response({'status': 'report dismissed'})
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()

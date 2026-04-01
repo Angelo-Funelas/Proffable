@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import { useFloating, offset, flip, shift } from '@floating-ui/vue'
 import { onClickOutside } from '@vueuse/core'
 import api from "@/api/axios"
@@ -15,6 +15,7 @@ const props = defineProps({
   tags: Array,
   likes: Number,
   isOwner: Boolean,
+  isModerator: Boolean,
 })  
 
 const showReportModal = ref(false)
@@ -133,6 +134,23 @@ const { floatingStyles } = useFloating(reference, floating, {
   ],
 })
 const emit = defineEmits(['delete'])
+
+const canDelete = computed(() => props.isOwner || props.isModerator)
+
+const deleteReview = async () => {
+  const confirmMsg = "MODERATOR ACTION: Are you sure you want to delete this user's review?";
+  
+  if (confirm(confirmMsg)) {
+    try {
+      await api.delete(`reviews/${props.reviewId}/`);
+      emit('delete');
+    } catch (error) {
+      console.error("Failed to delete review:", error);
+    }
+  }
+}
+
+
 const handleDelete = async () => {
     await api.delete(`reviews/${props.reviewId}/`);
     emit('delete');
@@ -146,29 +164,41 @@ const handleDelete = async () => {
                 <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
                     <img src="../assets/User.png" class="h-[20px]">
                 </div>
-                <!-- Uses Placeholder Semester and Subject Values for Now-->
                  <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
-                <!-- <span>Anonymous Student | {{ review_data.semester }} {{ review_data.subject }}</span> -->
             </div>
+            
             <div class="flex">
                 <div class="flex align-middle gap-3">
                     <button class="text-sm" v-if="isOwner" @click="isEditing = true">
                         <img src="../assets/edit.svg" class="h-[24px]">
                     </button>
+                    
                     <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
                         <img src="../assets/delete.svg" class="h-[24px]">
                     </button>
+
+                    <button 
+                        v-if="isModerator && !isOwner" 
+                        @click="deleteReview" 
+                        class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-200 transition-colors"
+                    >
+                        MOD DELETE
+                    </button>
+
                     <div
                         v-if="showModal"
                         ref="floating"
                         :style="floatingStyles"
-                        class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50 shadow-md"
+                        class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50"
                     >
-                        <p class="mb-2">Are you sure you want to permanently delete this review?</p>
-                        <button @click="handleDelete" class="bg-[#919191] hover:bg-[#9b3838] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Yes, Delete</button>
-                        <button @click="showModal = false" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">Cancel</button>
+                        <p class="mb-2 text-[#0B0D09]">Are you sure you want to permanently delete your review?</p>
+                        <div class="flex justify-end gap-2">
+                            <button @click="handleDelete" class="bg-red-600 text-white rounded-full px-4 py-1 text-sm">Yes, Delete</button>
+                            <button @click="showModal = false" class="bg-[#52848A] text-white rounded-full px-4 py-1 text-sm">Cancel</button>
+                        </div>
                     </div>
-                    <button class="text-sm" v-if="!isOwner" @click="showReportModal = true">
+
+                    <button class="text-sm" v-if="!isOwner && !isModerator" @click="showReportModal = true">
                         <img src="../assets/Flag.png" class="h-[24px]">
                     </button>
                 </div>
