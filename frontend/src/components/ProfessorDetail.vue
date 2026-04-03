@@ -1,5 +1,5 @@
 <script setup>
-    import {ref, computed, onMounted} from 'vue'
+    import {ref, computed, onMounted, watch} from 'vue'
     import api from "@/api/axios"
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
@@ -81,6 +81,16 @@
             console.log("Error toggling favorite: ",error)
         }
     }
+    const goToProf = (professorId) => {
+        console.log('navigating to', professorId)
+        router.push(`/professor/${professorId}`)
+    }
+    watch(() => route.params.professorId, () => {
+        professor_reviewed.value = false
+        fetchProfessor()
+        fetchReviews()
+        fetchSimilar()
+    })
 </script>
 
 <template>
@@ -95,7 +105,8 @@
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
-                    <li  v-for="prof in professors" :key="prof.professor_id">
+                    <li  v-for="prof in professors" :key="prof.professor_id" @click="goToProf(prof.professor_id)"
+                    class="cursor-pointer">
                         <ProfCard
                         :lname="prof.l_name"
                         :fname="prof.f_name"
