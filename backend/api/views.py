@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
-from .serializers import UsernameOrEmailTokenSerializer, ProfileSerializer
+from .serializers import UsernameOrEmailTokenSerializer, ProfileSerializer, UpdateProfileSerializer
 
 import os
 
@@ -141,3 +141,15 @@ def google_login(request):
 def me(request):
     serializer = ProfileSerializer(request.user)
     return Response(serializer.data)
+
+# Update user profile
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    serializer = UpdateProfileSerializer(request.user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    
+    return Response(serializer.errors, status=400)
