@@ -62,6 +62,7 @@ const goToProf = (professorId) => {
                 :numReviews="prof.review_count"
                 :favoriteCount="prof.favorite_count"
                 :is_favorited="prof.is_favorited"
+                :tags="prof.tags"
                 />
             </li>
         </ul>
