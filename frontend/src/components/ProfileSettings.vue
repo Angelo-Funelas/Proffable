@@ -2,6 +2,7 @@
     import { ref, onMounted } from "vue"
     import { useRouter } from "vue-router"
     import api from "@/api/axios"
+import Navbar from "./Navbar.vue"
 
     const router = useRouter()
 
@@ -46,5 +47,7 @@
 </script>
 
 <template>
-    <h1>Hello, world!</h1>
+    <div>
+        <Navbar/>
+    </div>
 </template>
