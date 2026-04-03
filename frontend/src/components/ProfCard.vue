@@ -7,6 +7,7 @@ const props = defineProps({
     tags: Array,
     numReviews: Number,
     favoriteCount: Number,
+    is_favorited: Boolean,
 })
 </script>
 
@@ -22,7 +23,8 @@ const props = defineProps({
     </div>
 
     <div class="flex flex-col items-center gap-1">
-        <img src="../assets/Heart.svg" class="h-[16px]">
+        <img v-if="is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
+        <img v-else src="../assets/Heart.svg" class="size-[16px]">
         <span class="text-sm">{{ favoriteCount }}</span>
     </div>
 

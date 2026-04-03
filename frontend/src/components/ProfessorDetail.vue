@@ -120,7 +120,8 @@
 
                     <!-- FAVORITE PROF-->
                     <div @click=toggleFavorite class="flex flex-col items-center gap-1 cursor-pointer">
-                        <img src="../assets/Heart.svg" class="h-[16px]">
+                        <img v-if="professor.is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
+                        <img v-else src="../assets/Heart.svg" class="size-[16px]">
                         <span class="text-sm">{{professor.favorite_count}}</span>
                     </div>
                 </div>
