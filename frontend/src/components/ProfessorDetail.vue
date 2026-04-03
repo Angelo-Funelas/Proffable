@@ -21,6 +21,7 @@
         try{
             const response = await api.get(`professors/${route.params.professorId}`)
             professor.value = response.data
+            console.log(professor.value.tags)
         } catch(error){
             console.log("Error with fetching professors: ",error)
         }
@@ -31,7 +32,6 @@
         try {
             const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
             reviews.value = response.data
-            console.log(reviews.value)
             for (const review of response.data) {
                 if (review.is_owner) {
                     professor_reviewed.value = true
@@ -115,7 +115,11 @@
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
                             {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
-                        <p class="text-sm">Tags:</p>
+                        <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
+                            <span v-for="tag in professor.tags" :key="tag" class='bg-gray-200 text-[#719294] px-2 py-1 rounded-full'>
+                                {{ tag }}
+                            </span>
+                        </div>
                     </div>
 
                     <!-- FAVORITE PROF-->

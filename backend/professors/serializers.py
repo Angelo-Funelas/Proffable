@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Professor, Review, Institution, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
+from django.db.models import Count
 
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
@@ -7,6 +8,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
     favorite_count = serializers.IntegerField(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     favorite_id = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -21,10 +23,16 @@ class ProfessorSerializer(serializers.ModelSerializer):
             return fav.id if fav else None
         return None
 
+    def get_tags(self,obj):
+        tags = Tag.objects.filter(review_tag__review_id__professor=obj)\
+            .annotate(count=Count('review_tag'))\
+            .order_by('-count')[:5]
+        return [tag.tag_name for tag in tags]
+
     class Meta:
         model = Professor
         fields = ["professor_id", "f_name", "l_name", "m_name", "email", 
-                  "avg_rating", "review_count", "favorite_count", "is_favorited", "favorite_id"]
+                  "avg_rating", "review_count", "favorite_count", "is_favorited", "favorite_id", "tags"]
 
 
 class TagSerializer(serializers.ModelSerializer):
