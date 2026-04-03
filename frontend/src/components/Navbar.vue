@@ -5,16 +5,28 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 
 const isAuthenticated = ref(false)
+const user = ref(null)
+const dropdownOpen = ref(false)
 
 const checkAuth = () => {
   isAuthenticated.value = !!localStorage.getItem('access_token')
 }
 
-
-
 onMounted(() => {
   checkAuth()
+  if (isAuthenticated.value) {
+    fetchUser()
+  }
 })
+
+const fetchUser = async () => {
+  try {
+    const res = await api.get("me/")
+    user.value = res.data
+  } catch(err) {
+    console.error(err)
+  }
+}
 
 const goToHomePage = () => {
   router.push('/')
@@ -25,6 +37,15 @@ const goToLogin = () => {
     path: '/login', 
     query: { next: router.currentRoute.value.fullPath } 
   })
+}
+
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+const goToProfile = () => {
+  router.push("/profile")
+  dropdownOpen.value = false
 }
 
 const logout = () => {
