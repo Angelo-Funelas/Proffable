@@ -46,6 +46,24 @@ class ProfessorViewSet(viewsets.ModelViewSet):
 
         print("Final Query: ", str(queryset.query))
         return queryset
+
+    @action(detail=True, methods=['get'])    
+    def similar(self, request, pk=None):
+        professor = self.get_object()
+
+        tag_ids = Tag.objects.filter(
+            review_tag__review_id__professor=professor
+        ).values_list('tag_id', flat=True)
+        
+        similar = Professor.objects.filter(
+            reviews__review_tag__tag_id__in=tag_ids
+        ).exclude(pk=pk).annotate(
+            avg_rating=Avg("reviews__review_rating"),
+            review_count=Count("reviews", distinct=True),
+            favorite_count=Count("fave_prof", distinct=True)
+        ).distinct()[:5]
+        
+        return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
         
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()

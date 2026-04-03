@@ -43,10 +43,10 @@
             console.log("Error with fetching reviews: ", error)
         }
     }
-    async function fetchProfessors(){
+    async function fetchSimilar(){
         isLoading.value = true
         try{
-            const response = await api.get('professors/')
+            const response = await api.get(`professors/${route.params.professorId}/similar/`)
             professors.value = response.data
         } catch(error){
             console.log("Error with fetching professors: ",error)
@@ -63,7 +63,7 @@
     onMounted(()=>{
         fetchProfessor()
         fetchReviews()
-        fetchProfessors()
+        fetchSimilar()
     })
 
     async function toggleFavorite() {
