@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
-from .serializers import UsernameOrEmailTokenSerializer
+from .serializers import UsernameOrEmailTokenSerializer, ProfileSerializer
 
 import os
 
@@ -135,3 +135,9 @@ def google_login(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def me(request):
+    serializer = ProfileSerializer(request.user)
+    return Response(serializer.data)
