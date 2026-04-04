@@ -51,6 +51,39 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
+    current_password = serializers.CharField(write_only=True, required=False)
     class Meta:
         model = User
-        fields = ["username", "email", "f_name", "m_name", "l_name", "profile_picture_url", "password"]
+        fields = ["username", "email", "f_name", "m_name", "l_name", "profile_picture_url", "password", "current_password",]
+
+    def validate(self, attrs):
+        password = attrs.get("password")
+        current_password = attrs.get("current_password")
+        user = self.instance
+
+        if password:
+            if user.has_usable_password():
+                if not current_password:
+                    raise serializers.ValidationError({
+                        "current_password": "Current password is required."
+                    })
+
+                if not user.check_password(current_password):
+                    raise serializers.ValidationError({
+                        "current_password": "Current password is incorrect."
+                    })
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        validated_data.pop("current_password", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
