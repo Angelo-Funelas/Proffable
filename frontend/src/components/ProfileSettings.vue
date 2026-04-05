@@ -237,9 +237,15 @@ const changePassword = async () => {
   }
 }
 
-const deleteAccount = () => {
-  // TODO: Replace with backend delete account endpoint
-  showMessage("Deleted account.", "success")
+const deleteAccount = async () => {
+  try {
+    await api.delete("me/delete/")
+    logout()
+    showMessage("Deleted account.", "success")
+  } catch (err) {
+    console.error("DELETE /me/delete failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Could not delete account.", "error")
+  }
 }
 
 const removeFavorite = (professorId) => {

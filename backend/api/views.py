@@ -169,3 +169,10 @@ def update_profile(request):
         return Response(serializer.data)
     
     return Response(serializer.errors, status=400)
+
+# Delete use profile 
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_profile(request): 
+    request.user.delete()
+    return Response(status=204)
