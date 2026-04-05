@@ -74,6 +74,7 @@ const message = ref("")
 const messageType = ref("success") // "success" or "error"
 const messageBannerRef = ref(null)
 const activePanel = ref(null)
+const showDeleteConfirm = ref(false)
 
 const togglePanel = (panelName) => {
   activePanel.value = activePanel.value === panelName ? null : panelName
@@ -241,10 +242,12 @@ const deleteAccount = async () => {
   try {
     await api.delete("me/delete/")
     logout()
+    showDeleteConfirm = false 
     showMessage("Deleted account.", "success")
   } catch (err) {
     console.error("DELETE /me/delete failed:", err.response?.status, err.response?.data || err.message)
     showMessage("Could not delete account.", "error")
+    showDeleteConfirm = false
   }
 }
 
@@ -314,7 +317,7 @@ const formatDate = (dateString) => {
                 {{ activePanel === 'changePassword' ? "Close Password Form" : "Change Password" }}
             </button>
 
-            <button class="sidebar-btn danger-btn" @click="deleteAccount">
+            <button class="sidebar-btn danger-btn" @click="showDeleteConfirm = true">
               Delete Account
             </button>
           </div>
@@ -439,6 +442,34 @@ const formatDate = (dateString) => {
           </div>
         </section>
       </section>
+
+        <div
+            v-if="showDeleteConfirm"
+            class="fixed inset-0 flex items-center justify-center bg-black/30 z-50"
+            >
+        <div class="bg-white rounded-xl p-6 w-[360px] shadow-lg text-center">
+            <h3 class="text-xl font-bold text-[#0B0D09] mb-3">Delete Account</h3>
+            <p class="text-[#444] mb-5">
+                Are you sure you want to delete your profile? This action cannot be undone.
+            </p>
+
+            <div class="flex justify-center gap-3">
+            <button
+                class="secondary-btn"
+                @click="showDeleteConfirm = false"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="danger-btn"
+                @click="deleteAccount"
+            >
+                Yes, Delete
+            </button>
+        </div>
+        </div>
+        </div>
     </main>
   </div>
 </template>
