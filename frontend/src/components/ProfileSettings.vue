@@ -1,11 +1,24 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, onMounted, nextTick} from "vue"
+import { useRouter } from 'vue-router'
 import api from "@/api/axios"
 import Navbar from "./Navbar.vue"
 
-// Align with GET /me request 
+// Routing logic 
+const router = useRouter()
 
-// FIX /ME REQUEST TO ALIGN WITH SERIALIZER VIEW LATER ON. VALUES ARE HARDCODED 
+// similar logic to logging out in Navbar.vue 
+
+const logout = () => {
+    localStorage.removeItem('access_token') 
+    localStorage.removeItem('refresh_token')
+    router.push('/')
+}
+
+
+// === USER INFORMATION FUNCTIONS === 
+
+// Align with GET /me request 
 const profile = ref({
   username: "",
   email: "",
@@ -56,10 +69,10 @@ const favoriteProfessors = ref([
   },
 ])
 
-
 // === UI STATE ===
-
 const message = ref("")
+const messageType = ref("success") // "success" or "error"
+const messageBannerRef = ref(null)
 const activePanel = ref(null)
 
 const togglePanel = (panelName) => {
@@ -98,7 +111,24 @@ const fetchProfile = async () => {
     profile.value = res.data
   } catch (err) {
     console.error("GET /me failed:", err.response?.status, err.response?.data || err.message)
-    message.value = "Failed to load profile."
+    showMessage("Failed to load profile.", "error")
+  }
+}
+
+// Updated logic for handling showing the message for filling out forms 
+const showMessage = async (text, type = "success") => {
+  message.value = text
+  messageType.value = type
+
+  await nextTick()
+
+  if (messageBannerRef.value) {
+    messageBannerRef.value.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  } else {
+    window.scrollTo({ top: -100, behavior: "smooth" })
   }
 }
 
@@ -106,85 +136,10 @@ onMounted(() => {
   fetchProfile()
 })
 
-
-const saveProfile = async () => {
-  try {
-    const payload = {}
-
-    if (editForm.value.username.trim()) payload.username = editForm.value.username.trim()
-    if (editForm.value.email.trim()) payload.email = editForm.value.email.trim()
-    if (editForm.value.f_name.trim()) payload.f_name = editForm.value.f_name.trim()
-    if (editForm.value.m_name.trim()) payload.m_name = editForm.value.m_name.trim()
-    if (editForm.value.l_name.trim()) payload.l_name = editForm.value.l_name.trim()
-
-    if (Object.keys(payload).length === 0) {
-      message.value = "No changes to save."
-      return
-    }
-
-    const res = await api.patch("me/update/", payload)
-    profile.value = {
-      ...profile.value,
-      ...res.data,
-    }
-
-    message.value = "Profile updated successfully."
-    activePanel.value = null
-
-    editForm.value = {
-      username: "",
-      email: "",
-      f_name: "",
-      m_name: "",
-      l_name: "",
-    }
-  } catch (err) {
-    console.error("PATCH /me/update failed:", err.response?.data || err.message)
-    message.value = "Failed to update profile."
-  }
-}
-
-const changePassword = async () => {
-  if (
-    !passwordForm.value.current_password ||
-    !passwordForm.value.new_password ||
-    !passwordForm.value.confirm_password
-  ) {
-    message.value = "Please fill in all password fields."
-    return
-  }
-
-  if (passwordForm.value.new_password !== passwordForm.value.confirm_password) {
-    message.value = "New password and confirm password do not match."
-    return
-  }
-
-  try {
-    await api.patch("me/update/", {
-      current_password: passwordForm.value.current_password,
-      password: passwordForm.value.new_password,
-    })
-
-    message.value = "Password updated successfully."
-    activePanel.value = null
-
-    passwordForm.value = {
-      current_password: "",
-      new_password: "",
-      confirm_password: "",
-    }
-  } catch (err) {
-    console.error("PATCH /me/update password failed:", err.response?.data || err.message)
-    message.value =
-      err.response?.data?.error ||
-      err.response?.data?.current_password?.[0] ||
-      "Failed to update password."
-  }
-}
-
+// TODO: Later, align with PATCH request in user information 
 const chooseAvatar = async () => {
   if (!profile.value.profile_picture_url?.trim()) {
-    message.value = "No profile picture URL provided."
+    showMessage("No profile picture URL provided.", "error")
     return
   }
 
@@ -198,11 +153,93 @@ const chooseAvatar = async () => {
       ...res.data,
     }
 
-    message.value = "Profile picture updated successfully."
+    showMessage("Profile picture updated successfully.", "success")
   } catch (err) {
     console.error("PATCH /me/update avatar failed:", err.response?.data || err.message)
-    message.value = "Failed to update profile picture."
+    showMessage("Failed to update profile picture.", "error")
   }
+}
+
+const saveProfile = async () => {
+  try {
+    const payload = {}
+
+    if (editForm.value.username.trim()) payload.username = editForm.value.username.trim()
+    if (editForm.value.email.trim()) payload.email = editForm.value.email.trim()
+    if (editForm.value.f_name.trim()) payload.f_name = editForm.value.f_name.trim()
+    if (editForm.value.m_name.trim()) payload.m_name = editForm.value.m_name.trim()
+    if (editForm.value.l_name.trim()) payload.l_name = editForm.value.l_name.trim()
+
+    if (Object.keys(payload).length === 0) {
+      showMessage("No changes to save", "error")
+      return
+    }
+
+    const res = await api.patch("me/update/", payload)
+    profile.value = {
+      ...profile.value,
+      ...res.data,
+    }
+
+    showMessage("Profile updated successfully.", "success")
+    activePanel.value = null
+
+    editForm.value = {
+      username: "",
+      email: "",
+      f_name: "",
+      m_name: "",
+      l_name: "",
+    }
+  } catch (err) {
+    console.error("PATCH /me/update failed:", err.response?.data || err.message)
+    showMessage("Failed to update profile.", "error") 
+  }
+}
+
+const changePassword = async () => {
+  if (
+    !passwordForm.value.current_password ||
+    !passwordForm.value.new_password ||
+    !passwordForm.value.confirm_password
+  ) {
+    showMessage("Please fill in all password fields.", "error")
+    return
+  }
+
+  if (passwordForm.value.new_password !== passwordForm.value.confirm_password) {
+    showMessage("New password and confirm password do not match.", "error")
+    return
+  }
+
+  try {
+    await api.patch("me/update/", {
+      current_password: passwordForm.value.current_password,
+      password: passwordForm.value.new_password,
+    })
+
+    showMessage("Password updated successfully.", "success")
+    activePanel.value = null
+
+    passwordForm.value = {
+      current_password: "",
+      new_password: "",
+      confirm_password: "",
+    }
+  } catch (err) {
+    console.error("PATCH /me/update password failed:", err.response?.data || err.message)
+    showMessage(
+      err.response?.data?.error ||
+      err.response?.data?.current_password?.[0] ||
+      "Failed to update password.", 
+      "error"
+    )
+  }
+}
+
+const deleteAccount = () => {
+  // TODO: Replace with backend delete account endpoint
+  showMessage("Deleted account.", "success")
 }
 
 const removeFavorite = (professorId) => {
@@ -210,7 +247,7 @@ const removeFavorite = (professorId) => {
   favoriteProfessors.value = favoriteProfessors.value.filter(
     (prof) => prof.professor_id !== professorId
   )
-  message.value = "Mock favorite professor removed."
+  showMessage("Mock favorite professor removed.", "success")
 }
 
 const deleteReview = (reviewId) => {
@@ -218,12 +255,7 @@ const deleteReview = (reviewId) => {
   userReviews.value = userReviews.value.filter(
     (review) => review.review_id !== reviewId
   )
-  message.value = "Mock review deleted."
-}
-
-const deleteAccount = () => {
-  // TODO: Replace with backend delete account endpoint
-  message.value = "Mock delete account clicked."
+  showMessage("Mock review deleted.", "success")
 }
 
 const getInitials = (firstName, lastName) => {
@@ -236,6 +268,7 @@ const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleDateString()
 }
+
 </script>
 
 <template>
@@ -322,8 +355,13 @@ const formatDate = (dateString) => {
 
       <!-- RIGHT CONTENT -->
       <section class="profile-content">
-        <div v-if="message" class="message-banner">
-          {{ message }}
+        <div
+            v-if="message"
+            ref="messageBannerRef"
+            class="message-banner"
+            :class="messageType === 'error' ? 'message-banner-error' : 'message-banner-success'"
+        >
+            {{ message }}
         </div>
 
         <!-- FAVORITE PROFESSORS -->
@@ -503,6 +541,7 @@ const formatDate = (dateString) => {
   font-size: 0.85rem;
 }
 
+
 .panel-card {
   background: white;
   border-radius: 18px;
@@ -539,12 +578,21 @@ const formatDate = (dateString) => {
 }
 
 .message-banner {
-  background: #e8f4e8;
-  color: #2f6b2f;
-  border: 1px solid #c6e2c6;
   padding: 0.9rem 1rem;
   border-radius: 12px;
   font-weight: 600;
+}
+
+.message-banner-success {
+  background: #e8f4e8;
+  color: #2f6b2f;
+  border: 1px solid #c6e2c6;
+}
+
+.message-banner-error {
+  background: #fdeaea;
+  color: #a12626;
+  border: 1px solid #f2b8b8;
 }
 
 .content-section {
