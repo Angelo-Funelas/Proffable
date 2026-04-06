@@ -1,5 +1,5 @@
 <script setup>
-    import {ref, computed, onMounted} from 'vue'
+    import {ref, computed, onMounted, watch} from 'vue'
     import api from "@/api/axios"
     import ProfCard from './ProfCard.vue'
     import ReviewCard from './ReviewCard.vue'
@@ -21,6 +21,7 @@
         try{
             const response = await api.get(`professors/${route.params.professorId}`)
             professor.value = response.data
+            console.log(professor.value.tags)
         } catch(error){
             console.log("Error with fetching professors: ",error)
         }
@@ -31,7 +32,6 @@
         try {
             const response = await api.get('reviews/', { params: { professor: route.params.professorId } })
             reviews.value = response.data
-            console.log(reviews.value)
             for (const review of response.data) {
                 if (review.is_owner) {
                     professor_reviewed.value = true
@@ -43,10 +43,10 @@
             console.log("Error with fetching reviews: ", error)
         }
     }
-    async function fetchProfessors(){
+    async function fetchSimilar(){
         isLoading.value = true
         try{
-            const response = await api.get('professors/')
+            const response = await api.get(`professors/${route.params.professorId}/similar/`)
             professors.value = response.data
         } catch(error){
             console.log("Error with fetching professors: ",error)
@@ -63,7 +63,33 @@
     onMounted(()=>{
         fetchProfessor()
         fetchReviews()
-        fetchProfessors()
+        fetchSimilar()
+    })
+
+    async function toggleFavorite() {
+        try{
+            if (professor.value.is_favorited){
+                await api.delete(`favorite-prof/${professor.value.favorite_id}/`)
+            } else {
+                const response = await api.post('favorite-prof/' ,{
+                professor_id: route.params.professorId
+            })
+            
+            }
+            fetchProfessor()
+        } catch(error){
+            console.log("Error toggling favorite: ",error)
+        }
+    }
+    const goToProf = (professorId) => {
+        console.log('navigating to', professorId)
+        router.push(`/professor/${professorId}`)
+    }
+    watch(() => route.params.professorId, () => {
+        professor_reviewed.value = false
+        fetchProfessor()
+        fetchReviews()
+        fetchSimilar()
     })
 </script>
 
@@ -79,12 +105,16 @@
                 <!--SIMILAR PROFESSORS' CARDS-->
                 <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
                 <ul class="grid grid-cols-1 gap-2.5">
-                    <li  v-for="prof in professors" :key="prof.professor_id">
+                    <li  v-for="prof in professors" :key="prof.professor_id" @click="goToProf(prof.professor_id)"
+                    class="cursor-pointer">
                         <ProfCard
                         :lname="prof.l_name"
                         :fname="prof.f_name"
                         :avgScore="prof.avg_rating || 0"
                         :numReviews="prof.review_count"
+                        :tags="prof.tags"
+                        :is_favorited="prof.is_favorited"
+                        :favoriteCount="prof.favorite_count"
                         />
                     </li>
                 </ul>
@@ -99,12 +129,18 @@
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
                             {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
-                        <p class="text-sm">Tags:</p>
+                        <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
+                            <span v-for="tag in professor.tags" :key="tag" class='bg-gray-200 text-[#719294] px-2 py-1 rounded-full'>
+                                {{ tag }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col items-center gap-1">
-                        <img src="../assets/Heart.svg" class="h-[16px]">
-                        <span class="text-sm">{{professor.review_count}}</span>
+                    <!-- FAVORITE PROF-->
+                    <div @click=toggleFavorite class="flex flex-col items-center gap-1 cursor-pointer">
+                        <img v-if="professor.is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
+                        <img v-else src="../assets/Heart.svg" class="size-[16px]">
+                        <span class="text-sm">{{professor.favorite_count}}</span>
                     </div>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
