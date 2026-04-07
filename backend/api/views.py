@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
-from .serializers import UsernameOrEmailTokenSerializer
+from .serializers import UsernameOrEmailTokenSerializer, ProfileSerializer, UpdateProfileSerializer
 
 import os
 
@@ -36,11 +36,31 @@ from .serializers import RegisterSerializer
 def me(request):
     user = request.user
     return Response({
+        "username": user.username,
         "email": user.email,
         "f_name": user.f_name,
+        "m_name": user.m_name,
         "l_name": user.l_name,
-        "is_moderator": user.is_moderator,
+        "profile_picture_url": user.profile_picture_url,
+        "can_change_password": user.has_usable_password(),
     })
+
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    if "password" in request.data and not request.user.has_usable_password():
+        return Response(
+            {"error": "Google-authenticated accounts cannot change password here."},
+            status=400
+        )
+
+    serializer = UpdateProfileSerializer(request.user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)
 
 @api_view(["POST"])
 def register_user(request):
@@ -114,18 +134,19 @@ def google_login(request):
         f_name = payload.get("given_name", "")
         l_name = payload.get("family_name", "")
 
-        random_password = get_random_string(length=12)  
-        hashed_password = make_password(random_password)
-
-        user, _ = User.objects.get_or_create(
+        user, created = User.objects.get_or_create(
             email=email,
             defaults={
                 "username": email,
                 "f_name": f_name,
                 "l_name": l_name,
-                "password": hashed_password,
             }
         )
+        if created:
+            user.set_unusable_password()
+            user.save()
+
+        
 
         refresh = RefreshToken.for_user(user)
         return Response({
@@ -135,3 +156,23 @@ def google_login(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+# Update user profile
+@api_view(["PATCH"])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    serializer = UpdateProfileSerializer(request.user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    
+    return Response(serializer.errors, status=400)
+
+# Delete use profile 
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_profile(request): 
+    request.user.delete()
+    return Response(status=204)

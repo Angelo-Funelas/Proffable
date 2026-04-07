@@ -3,19 +3,20 @@ from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
-from .serializers import TagSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag
+from .serializers import TagSerializer, FavoriteProfSerializer
+from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField
-from .permissions import IsOwner
+from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
+    permission_classes = [IsModeratorOrReadOnly]
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['f_name', 'l_name']
@@ -23,8 +24,9 @@ class ProfessorViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Professor.objects.annotate(
             avg_rating=Avg("reviews__review_rating"),
-            review_count=Count("reviews"),
-            full_name = Concat('f_name', Value(' '), 'l_name')
+            review_count=Count("reviews", distinct=True),
+            full_name=Concat('f_name', Value(' '), 'l_name'),
+            favorite_count=Count("fave_prof", distinct=True)
         )
         search = self.request.query_params.get('search')
         inst_name = self.request.query_params.get('institution')
@@ -45,6 +47,24 @@ class ProfessorViewSet(viewsets.ModelViewSet):
 
         print("Final Query: ", str(queryset.query))
         return queryset
+
+    @action(detail=True, methods=['get'])    
+    def similar(self, request, pk=None):
+        professor = self.get_object()
+
+        tag_ids = Tag.objects.filter(
+            review_tag__review_id__professor=professor
+        ).values_list('tag_id', flat=True)
+        
+        similar = Professor.objects.filter(
+            reviews__review_tag__tag_id__in=tag_ids
+        ).exclude(pk=pk).annotate(
+            avg_rating=Avg("reviews__review_rating"),
+            review_count=Count("reviews", distinct=True),
+            favorite_count=Count("fave_prof", distinct=True)
+        ).distinct()[:5]
+        
+        return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
         
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -75,7 +95,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         # Only owners can update, partially update, or delete their reviews.
         elif self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthenticated(), IsOwner()]
+            return [IsAuthenticated(), (IsOwner | IsModerator)()]
         return [AllowAny()]
 
     def perform_create(self, serializer):
@@ -115,6 +135,12 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()
     serializer_class = ReviewReportSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAuthenticated()]
+        else:
+            return [IsModerator()]
+
     def perform_create(self, serializer):
         reporter = self.request.user if self.request.user.is_authenticated else None
         serializer.save(reporter=reporter)
@@ -134,6 +160,12 @@ class ReviewReportViewSet(viewsets.ModelViewSet):
             vote.save()
 
         return Response({'helpful_count': review.votes.filter(is_helpful=True).count()})
+    
+    @action(detail=True, methods=['post'])
+    def dismiss(self, request, pk=None):
+        report = self.get_object()
+        report.delete()
+        return Response({'status': 'report dismissed'})
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()
@@ -150,3 +182,17 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [AllowAny]
+
+
+class FavoriteProfViewset(viewsets.ModelViewSet):
+    queryset = FavoriteProf.objects.all()
+    serializer_class = FavoriteProfSerializer
+
+    def perform_create(self, serializer):
+        student = self.request.user if self.request.user.is_authenticated else None
+        serializer.save(student=student)
+    
+    def get_permissions(self):
+        if self.action in ['create', 'destroy']:
+            return [IsAuthenticated()]
+        return []

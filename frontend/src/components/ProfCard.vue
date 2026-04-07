@@ -6,7 +6,10 @@ const props = defineProps({
     avgScore: Number,
     tags: Array,
     numReviews: Number,
+    favoriteCount: Number,
+    is_favorited: Boolean,
 })
+
 </script>
 
 <template>
@@ -16,13 +19,19 @@ const props = defineProps({
         <h3 class="text-xl font-bold">{{ fname }} {{ lname }}</h3>
         <p class="text-sm">University of Unknown </p>
         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> {{ avgScore }} ({{ numReviews }} reviews)</p>
-        <p class="text-sm">Tags:</p>
+        <div class="text-sm flex flex-wrap gap-1 items-center">
+            <span>Tags:</span>
+            <span v-for="tag in tags" :key="tag" class='bg-gray-200 text-[#719294] px-2 py-1 rounded-full'>
+                {{ tag }}
+            </span>
+        </div>
 
     </div>
 
     <div class="flex flex-col items-center gap-1">
-        <img src="../assets/Heart.svg" class="h-[16px]">
-        <span class="text-sm">{{ numReviews }}</span>
+        <img v-if="is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
+        <img v-else src="../assets/Heart.svg" class="size-[16px]">
+        <span class="text-sm">{{ favoriteCount }}</span>
     </div>
 
 </div>
