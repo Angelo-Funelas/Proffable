@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from api.models import User
 from django.conf import settings
+from api.models import User
 
 # Create your models here.
 class Institution(models.Model):
@@ -91,3 +92,11 @@ class ReviewTag(models.Model):
 
     class Meta:
         unique_together = ("review_id", "tag_id")
+
+
+class FavoriteProf(models.Model):
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name="fave_prof")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="fave_prof")
+
+    class Meta:
+        unique_together = ("professor","student")
