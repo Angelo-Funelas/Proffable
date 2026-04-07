@@ -1,16 +1,38 @@
 from rest_framework import serializers
-from .models import Professor, Review, Institution, Course, ReviewReport, Tag, ReviewTag
+from .models import Professor, Review, Institution, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
+from django.db.models import Count
 
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
     review_count = serializers.IntegerField(read_only=True)
+    favorite_count = serializers.IntegerField(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
+    favorite_id = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return FavoriteProf.objects.filter(professor=obj, student=request.user).exists()
+        return False
+
+    def get_favorite_id(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            fav = FavoriteProf.objects.filter(professor=obj, student=request.user).first()
+            return fav.id if fav else None
+        return None
+
+    def get_tags(self,obj):
+        tags = Tag.objects.filter(review_tag__review_id__professor=obj)\
+            .annotate(count=Count('review_tag'))\
+            .order_by('-count')[:5]
+        return [tag.tag_name for tag in tags]
 
     class Meta:
         model = Professor
-        fields = [
-            "professor_id", "f_name", "l_name", "m_name", "email", 
-            "avg_rating", "review_count"
-        ]
+        fields = ["professor_id", "f_name", "l_name", "m_name", "email", 
+                  "avg_rating", "review_count", "favorite_count", "is_favorited", "favorite_id", "tags"]
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -95,3 +117,15 @@ class ReviewReportSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["report_id", "created_at"]
 
+class FavoriteProfSerializer(serializers.ModelSerializer):
+    professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    student_name = serializers.StringRelatedField(source="student", read_only=True)
+    professor_id = serializers.PrimaryKeyRelatedField(source="professor",queryset=Professor.objects.all(), write_only=True)
+
+    class Meta:
+        model = FavoriteProf
+        fields = [
+            'professor_id',
+            "professor_name",
+            "student_name"
+        ]
