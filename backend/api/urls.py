@@ -20,6 +20,8 @@ from .views import me
 from .views import register_user
 from .views import google_login
 from .views import LoginView
+from .views import update_profile
+from .views import delete_profile
 
 urlpatterns = [
     path("token/", LoginView.as_view()),
@@ -27,5 +29,7 @@ urlpatterns = [
     path("register/", register_user),
     path("google-login/", google_login),
     path("me/", me),
+    path("me/update/", update_profile),
+    path("me/delete/", delete_profile),
     path('', include(router.urls)),
 ]

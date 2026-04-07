@@ -5,6 +5,7 @@ import LoginView from '../components/LoginView.vue'
 import Register from '../components/Register.vue'
 import ProfessorDetail from '../components/ProfessorDetail.vue'
 import HomePage from '../components/HomePage.vue'
+import ProfileSettings from '../components/ProfileSettings.vue'
 import ModeratorView from '../components/ModeratorView.vue'
 
 const routes = [
@@ -14,6 +15,7 @@ const routes = [
   { path: '/reviews/:professorId', component: ReviewForm },
   { path: '/login', component: LoginView },
   { path: '/sign-up', component: Register},
+  { path: '/profile', component: ProfileSettings },
   { path: '/', component: HomePage }
 ]
 
