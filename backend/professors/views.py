@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
+from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
 from .serializers import TagSerializer, FavoriteProfSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
@@ -130,6 +130,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         voted = ReviewVote.objects.filter(review=review, user=user).exists()
         return Response({"voted": voted})
 
+class InstitutionDomainViewSet(viewsets.ModelViewSet):
+    queryset = InstitutionDomain.objects.all()
+    serializer_class = InstitutionDomainSerializer
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsModerator()]
+        return []
 
 class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()
