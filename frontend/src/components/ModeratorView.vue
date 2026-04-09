@@ -1,6 +1,22 @@
 <script setup>
     import { ref, onMounted } from 'vue';
-    const isModerator = ref(true);
+    import api from "@/api/axios"
+
+    const isModerator = ref(false);
+    onMounted(() => {
+        fetchUser();
+    })
+    const fetchUser = async () => {
+        try {
+            const res = await api.get("me/")
+            console.log(res.data)
+            isModerator.value = res.data.is_moderator;
+        } catch(err) {
+            console.error(err)
+        }
+    }
+
+    
 </script>
 <template>
     <div v-if="isModerator" class="h-screen py-10 mx-40">

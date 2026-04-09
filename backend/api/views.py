@@ -43,6 +43,7 @@ def me(request):
         "l_name": user.l_name,
         "profile_picture_url": user.profile_picture_url,
         "can_change_password": user.has_usable_password(),
+        "is_moderator": user.is_moderator,
     })
 
 @api_view(["PATCH"])
