@@ -155,9 +155,10 @@
       method: "POST",
       body: formData,
     })
-    .then(res => {
+    .then(async res => {
       if (!res.ok) {
-        throw new Error("Login failed. Please try again.");
+        const errorMsg = await res.text(); 
+        throw new Error(errorMsg || 'Login failed.');
       }
       return res.json();
     })
@@ -174,8 +175,8 @@
 
     })
     .catch(err => {
-      console.error("Login error:", err);
-      errorMsg.value = "An unexpected error occurred.";
+      console.error(err);
+      errorMsg.value = `Login failed. ${err.message}`;
     })
     .finally(() => {
       loadingVisible.value = false;

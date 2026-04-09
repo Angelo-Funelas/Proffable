@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.functions import Lower
 from api.models import User
 from django.conf import settings
-from api.models import User
 
 # Create your models here.
 class Institution(models.Model):
@@ -11,6 +11,17 @@ class Institution(models.Model):
     domain = models.CharField(blank=False, max_length=255)
     def __str__(self):
         return f"{self.name}"
+
+class InstitutionDomain(models.Model):
+    institution = models.ForeignKey(Institution, null=True, blank=True, on_delete=models.SET_NULL, related_name="domains")
+    domain = models.CharField(blank=False, max_length=32, unique=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                Lower('domain'),
+                name='unique_domain'
+            ),
+        ]
 
 class Course(models.Model):
     course_id = models.AutoField(primary_key=True)

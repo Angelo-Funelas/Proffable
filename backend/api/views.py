@@ -13,10 +13,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from social_django.utils import load_strategy, load_backend
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseBadRequest
 
 from django.utils.crypto import get_random_string
 from django.contrib.auth.hashers import make_password
 from .serializers import UsernameOrEmailTokenSerializer, ProfileSerializer, UpdateProfileSerializer
+from professors.models import InstitutionDomain
 
 import os
 
@@ -92,6 +95,12 @@ def register_user(request):
             {"error": "Username already exists."},
             status=status.HTTP_400_BAD_REQUEST
         )
+    domain = email.split("@")[1]
+    try:
+        domain_obj = InstitutionDomain.objects.get(domain=domain)
+        institution = domain_obj.institution
+    except InstitutionDomain.DoesNotExist:
+        return HttpResponseBadRequest("This domain is not registered with an institution.")
 
     # Create the user
     user = User.objects.create_user(
@@ -99,7 +108,8 @@ def register_user(request):
         email=email,
         password=password,
         f_name=f_name,
-        l_name=l_name
+        l_name=l_name,
+        institution=institution,
     )
 
     return Response(
@@ -134,6 +144,13 @@ def google_login(request):
         email = payload.get("email")
         f_name = payload.get("given_name", "")
         l_name = payload.get("family_name", "")
+        
+        domain = email.split("@")[1]
+        try:
+            domain_obj = InstitutionDomain.objects.get(domain=domain)
+            institution = domain_obj.institution
+        except InstitutionDomain.DoesNotExist:
+            return HttpResponseBadRequest("This domain is not registered with an institution.")
 
         user, created = User.objects.get_or_create(
             email=email,
@@ -141,6 +158,7 @@ def google_login(request):
                 "username": email,
                 "f_name": f_name,
                 "l_name": l_name,
+                "institution": institution,
             }
         )
         if created:
