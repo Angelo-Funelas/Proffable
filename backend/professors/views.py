@@ -102,7 +102,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         try:
             serializer.save(student=self.request.user)
         except IntegrityError:
-            raise serializers.ValidationError("You have already reviewed this professor.")
+            raise serializer.ValidationError("You have already reviewed this professor.")
     
     
     @action(detail=True, methods=["post"])
