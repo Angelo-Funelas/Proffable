@@ -133,6 +133,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class InstitutionDomainViewSet(viewsets.ModelViewSet):
     queryset = InstitutionDomain.objects.all()
     serializer_class = InstitutionDomainSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return InstitutionDomain.objects.filter(institution=user.institution)
+        return InstitutionDomain.objects.none()
+    
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsModerator()]

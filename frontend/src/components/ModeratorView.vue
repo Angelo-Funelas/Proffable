@@ -3,8 +3,11 @@
     import api from "@/api/axios"
 
     const isModerator = ref(false);
+    const domains = ref([]);
+
     onMounted(() => {
         fetchUser();
+        fetchDomains();
     })
     const fetchUser = async () => {
         try {
@@ -16,7 +19,38 @@
         }
     }
 
-    
+    async function fetchDomains(){
+        try {
+            const response = await api.get('institution-domains/')
+            domains.value = response.data
+            console.log(response.data)
+        } catch(error){
+            console.log("Error with fetching domains: ", error)
+        }
+    }
+
+    async function createDomain() {
+        try {
+            await api.post('reviews/', {
+                professor: route.params.professorId,
+                review_rating: form.value.review_rating,
+                comment_text: form.value.comment_text,
+                received_grade: form.value.received_grade,
+                tags: form.value.tags
+            })
+            message.value = 'Review submitted successfully!'
+            isError.value = false
+            form.value = { review_rating: '', comment_text: '', received_grade: '' }
+        } catch (err) {
+        const data = err.response?.data
+        if (data?.non_field_errors || data?.detail) {
+            message.value = data.non_field_errors?.[0] || data.detail
+        } else {
+            message.value = 'You have already reviewed this professor.'
+        }
+        isError.value = true
+        }
+    }
 </script>
 <template>
     <div v-if="isModerator" class="h-screen py-10 mx-40">
@@ -33,6 +67,14 @@
                     <input type="email" placeholder="e.g. student.ateneo.edu" class="outline-1 px-2">
                     <button class="mx-2 bg-[#d2d2d2] px-2">Add Domain</button>
                 </form>
+                <ul class="m-2">
+                    <li v-for="domain in domains" class="my-1">
+                        <div class="grid bg-gray-200 p-2 grid-cols-[80%_20%] grid-rows-1">
+                            <span class="flex justify-start">{{ domain.domain }}</span>
+                            <span class="flex justify-end"><img src="../assets/delete.svg" class="h-[24px]"></span>
+                        </div>
+                    </li>
+                </ul>
             </div>
             <div>
                 <h2>Professor Profiles</h2>
