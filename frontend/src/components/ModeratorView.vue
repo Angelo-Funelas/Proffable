@@ -83,7 +83,7 @@
                     </li>
                 </ul>
             </div>
-            <div>
+            <div class="row-span-2">
                 <h2>📧Email Domains</h2>
                 <p class="text-black">Manage known email domains used by students.</p>
                 <form @submit.prevent="createDomain">
@@ -100,10 +100,10 @@
                     </li>
                 </ul>
             </div>
-            <div>
+            <!-- <div>
                 <h2>👤Professor Profiles</h2>
                 <p>Merge, Delete, and Modify Professor Profiles.</p>
-            </div>
+            </div> -->
         </div>
         </div>
     <div v-else>
