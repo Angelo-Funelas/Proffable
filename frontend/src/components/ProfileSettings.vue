@@ -276,6 +276,7 @@ const formatDate = (dateString) => {
 
 const goToModeratorDashboard = () => {
   router.push('/moderation')
+}
 
 const getProfessorFullName = (professor) => {
   return [professor.f_name, professor.m_name, professor.l_name]
