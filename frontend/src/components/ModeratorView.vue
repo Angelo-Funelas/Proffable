@@ -8,6 +8,7 @@
     const isModerator = ref(false);
     const reports = ref([]);
     const domains = ref([]);
+    const me = ref();
 
     onMounted(() => {
         fetchUser();
@@ -16,8 +17,9 @@
     })
     const fetchUser = async () => {
         try {
-            const res = await api.get("me/")
-            console.log(res.data)
+            const res = await api.get("me/");
+            console.log(res.data);
+            me.value = res.data;
             isModerator.value = res.data.is_moderator;
         } catch(err) {
             console.error(err)
@@ -60,6 +62,7 @@
     <Navbar/>
     <div v-if="isModerator" class="h-screen py-10 mx-40 mb-10">
         <h1>Moderator Dashboard</h1>
+        <p class="text-left">Managing reports, domains, and profiles for {{ me.institution }}.</p>
         <div class="moderator-dashbaord mt-5 grid grid-cols-[50%_50%] grid-rows-[50%_50%] h-full gap-4 text-black">
             <div class="row-span-2 overflow-hidden">
                 <h2>📢Reports</h2>
@@ -117,5 +120,8 @@
     }
     .moderator-dashbaord > div {
         @apply p-4 bg-white shadow-md rounded-2xl;
+    }
+    p {
+        @apply text-black;
     }
 </style>
