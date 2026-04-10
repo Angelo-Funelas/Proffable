@@ -25,7 +25,7 @@ class TagAdmin(admin.ModelAdmin):
 class ReviewTagInline(admin.StackedInline):
     model = ReviewTag
 
-class ReviewReport(admin.ModelAdmin): 
+class ReviewReportAdmin(admin.ModelAdmin): 
     model = ReviewReport
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -43,6 +43,7 @@ admin.site.register(InstitutionDomain, InstitutionDomainAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(ProfessorCourse, ProfessorCourseAdmin)
 admin.site.register(ReviewVote)
+admin.site.register(ReviewReport, ReviewReportAdmin)
 admin.site.register(Tag,TagAdmin)
 admin.site.register(ReviewTag)
 admin.site.register(FavoriteProf, FavoriteAdmin)

@@ -27,21 +27,11 @@ const hasVoted = ref(false)
 const submitReport = async () => {
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/review-reports/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        review: props.reviewId,
-        reason: reason.value,
-        description: description.value
-      })
+    const response = await api.post("review-reports/", {
+      review: props.reviewId,
+      reason: reason.value,
+      description: description.value
     })
-
-    if (!response.ok) {
-      throw new Error("Failed to submit report")
-    }
 
     alert("Report submitted.")
 
