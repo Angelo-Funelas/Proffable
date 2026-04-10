@@ -44,6 +44,7 @@ def me(request):
         "f_name": user.f_name,
         "m_name": user.m_name,
         "l_name": user.l_name,
+        "is_moderator": user.is_moderator,
         "profile_picture_url": user.profile_picture_url,
         "can_change_password": user.has_usable_password(),
         "is_moderator": user.is_moderator,

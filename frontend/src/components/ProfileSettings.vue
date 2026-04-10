@@ -29,45 +29,9 @@ const profile = ref({
   can_change_password: true, 
 })
 
-// TODO: Replace with GET /me/reviews/ THIS IS FILLER DATA. 
-const userReviews = ref([
-  {
-    review_id: 1,
-    professor_name: "Dr. Maria Santos",
-    review_rating: 5,
-    comment_text: "Very clear lectures and fair grading. One of the best professors I’ve had.",
-    review_date: "2026-04-01",
-    received_grade: "A",
-    helpful_count: 12,
-  },
-  {
-    review_id: 2,
-    professor_name: "Prof. Juan Dela Cruz",
-    review_rating: 4,
-    comment_text: "Workload was heavy, but I learned a lot. Class discussions were very engaging.",
-    review_date: "2026-03-20",
-    received_grade: "B+",
-    helpful_count: 7,
-  },
-])
+const userReviews = ref([])
 
-// TODO: Replace with GET /me/favorites/ THIS IS FILLER DATA
-const favoriteProfessors = ref([
-  {
-    professor_id: 1,
-    f_name: "Ana",
-    m_name: "R.",
-    l_name: "Reyes",
-    email: "ana.reyes@school.edu",
-  },
-  {
-    professor_id: 2,
-    f_name: "Miguel",
-    m_name: "",
-    l_name: "Torres",
-    email: "miguel.torres@school.edu",
-  },
-])
+const favoriteProfessors = ref([])
 
 // === UI STATE ===
 const message = ref("")
@@ -133,8 +97,30 @@ const showMessage = async (text, type = "success") => {
   }
 }
 
+const fetchFavoriteProfessors = async () => {
+  try {
+    const res = await api.get("favorite-prof/")
+    favoriteProfessors.value = res.data
+  } catch (err) {
+    console.error("GET /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to load favorite professors.", "error")
+  }
+}
+
+const fetchUserReviews = async () => {
+  try {
+    const res = await api.get("reviews/?mine=true")
+    userReviews.value = res.data
+  } catch (err) {
+    console.error("GET /reviews?mine=true failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to load your reviews.", "error")
+  }
+}
+
 onMounted(() => {
   fetchProfile()
+  fetchFavoriteProfessors()
+  fetchUserReviews()
 })
 
 // TODO: Later, align with PATCH request in user information 
@@ -251,20 +237,30 @@ const deleteAccount = async () => {
   }
 }
 
-const removeFavorite = (professorId) => {
-  // TODO: Replace with DELETE /me/favorites/:id or equivalent endpoint
-  favoriteProfessors.value = favoriteProfessors.value.filter(
-    (prof) => prof.professor_id !== professorId
-  )
-  showMessage("Mock favorite professor removed.", "success")
+const removeFavorite = async (favoriteId) => {
+  try {
+    await api.delete(`favorite-prof/${favoriteId}/`)
+    favoriteProfessors.value = favoriteProfessors.value.filter(
+      (prof) => prof.id !== favoriteId
+    )
+    showMessage("Favorite professor removed.", "success")
+  } catch (err) {
+    console.error("DELETE /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to remove favorite professor.", "error")
+  }
 }
 
-const deleteReview = (reviewId) => {
-  // TODO: Replace with DELETE /reviews/:id
-  userReviews.value = userReviews.value.filter(
-    (review) => review.review_id !== reviewId
-  )
-  showMessage("Mock review deleted.", "success")
+const deleteReview = async (reviewId) => {
+  try {
+    await api.delete(`reviews/${reviewId}/`)
+    userReviews.value = userReviews.value.filter(
+      (review) => review.review_id !== reviewId
+    )
+    showMessage("Review deleted successfully.", "success")
+  } catch (err) {
+    console.error("DELETE /reviews failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to delete review.", "error")
+  }
 }
 
 const getInitials = (firstName, lastName) => {
@@ -280,6 +276,16 @@ const formatDate = (dateString) => {
 
 const goToModeratorDashboard = () => {
   router.push('/moderation')
+
+const getProfessorFullName = (professor) => {
+  return [professor.f_name, professor.m_name, professor.l_name]
+    .filter(Boolean)
+    .join(" ")
+}
+
+const goToProfessorProfile = (professorId) => {
+  if (!professorId) return
+  router.push(`/professor/${professorId}`)
 }
 
 </script>
@@ -309,9 +315,11 @@ const goToModeratorDashboard = () => {
           <p class="profile-email">Email: {{ profile.email }}</p>
 
           <div class="sidebar-actions">
+            <!--- 
             <button class="sidebar-btn" @click="chooseAvatar">
               Choose Avatar
             </button>
+            -->
 
             <button class="sidebar-btn" @click="togglePanel('editProfile')">
                 {{ activePanel === 'editProfile' ? "Close Edit Profile" : "Edit Profile" }}
@@ -392,15 +400,15 @@ const goToModeratorDashboard = () => {
           <div v-else class="favorites-grid">
             <div
               v-for="prof in favoriteProfessors"
-              :key="prof.professor_id"
+              :key="prof.id"
               class="favorite-card"
             >
-              <div class="favorite-info">
-                <h3>{{ prof.f_name }} {{ prof.m_name }} {{ prof.l_name }}</h3>
+              <div class="favorite-info clickable-info" @click="goToProfessorProfile(prof.professor_id)">
+                <h3>{{ getProfessorFullName(prof) || prof.professor_name }}</h3>
                 <p>{{ prof.email || "No email available" }}</p>
               </div>
 
-              <button class="secondary-btn" @click="removeFavorite(prof.professor_id)">
+              <button class="secondary-btn" @click="removeFavorite(prof.id)">
                 Remove
               </button>
             </div>
@@ -423,7 +431,7 @@ const goToModeratorDashboard = () => {
             >
               <div class="review-header">
                 <div>
-                  <h3>{{ review.professor_name }}</h3>
+                  <h3 class="clickable-info" @click="goToProfessorProfile(review.professor)">{{ review.professor_name }}</h3>
                   <p class="review-date">{{ formatDate(review.review_date) }}</p>
                 </div>
 
@@ -441,7 +449,7 @@ const goToModeratorDashboard = () => {
 
               <div class="review-actions">
                 <!-- TODO: Later connect Edit to actual edit review page/modal -->
-                <button class="secondary-btn">Edit</button>
+                <button class="secondary-btn" @click="goToProfessorProfile(review.professor)">View Professor</button>
                 <button class="danger-btn small-btn" @click="deleteReview(review.review_id)">
                   Delete
                 </button>
@@ -730,6 +738,18 @@ const goToModeratorDashboard = () => {
   margin-top: 1rem;
   display: flex;
   gap: 0.75rem;
+}
+
+.clickable-info {
+  cursor: pointer;
+}
+
+.clickable-info:hover {
+  opacity: 0.85;
+}
+
+.favorite-info.clickable-info {
+  flex: 1;
 }
 
 @media (max-width: 980px) {
