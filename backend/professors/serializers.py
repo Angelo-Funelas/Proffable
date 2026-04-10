@@ -52,6 +52,10 @@ class ReviewTagSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    professor_id = serializers.IntegerField(source="professor.professor_id", read_only=True)
+    professor_f_name = serializers.CharField(source="professor.f_name", read_only=True)
+    professor_m_name = serializers.CharField(source="professor.m_name", read_only=True)
+    professor_l_name = serializers.CharField(source="professor.l_name", read_only=True)
     helpful_count = serializers.IntegerField(read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
@@ -65,7 +69,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            "review_id", "professor", "professor_name", "is_owner",
+            "review_id", "professor", "professor_id", "professor_name",
+            "professor_f_name", "professor_m_name", "professor_l_name", "is_owner",
             "review_rating", "comment_text", "review_date", "received_grade", 
             "helpful_count", "tags", "read_tags"
         ]

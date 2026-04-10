@@ -29,27 +29,7 @@ const profile = ref({
   can_change_password: true, 
 })
 
-// TODO: Replace with GET /me/reviews/ THIS IS FILLER DATA. 
-const userReviews = ref([
-  {
-    review_id: 1,
-    professor_name: "Dr. Maria Santos",
-    review_rating: 5,
-    comment_text: "Very clear lectures and fair grading. One of the best professors I’ve had.",
-    review_date: "2026-04-01",
-    received_grade: "A",
-    helpful_count: 12,
-  },
-  {
-    review_id: 2,
-    professor_name: "Prof. Juan Dela Cruz",
-    review_rating: 4,
-    comment_text: "Workload was heavy, but I learned a lot. Class discussions were very engaging.",
-    review_date: "2026-03-20",
-    received_grade: "B+",
-    helpful_count: 7,
-  },
-])
+const userReviews = ref([])
 
 const favoriteProfessors = ref([])
 
@@ -127,9 +107,20 @@ const fetchFavoriteProfessors = async () => {
   }
 }
 
+const fetchUserReviews = async () => {
+  try {
+    const res = await api.get("reviews/?mine=true")
+    userReviews.value = res.data
+  } catch (err) {
+    console.error("GET /reviews?mine=true failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to load your reviews.", "error")
+  }
+}
+
 onMounted(() => {
   fetchProfile()
   fetchFavoriteProfessors()
+  fetchUserReviews()
 })
 
 // TODO: Later, align with PATCH request in user information 
@@ -259,12 +250,17 @@ const removeFavorite = async (favoriteId) => {
   }
 }
 
-const deleteReview = (reviewId) => {
-  // TODO: Replace with DELETE /reviews/:id
-  userReviews.value = userReviews.value.filter(
-    (review) => review.review_id !== reviewId
-  )
-  showMessage("Mock review deleted.", "success")
+const deleteReview = async (reviewId) => {
+  try {
+    await api.delete(`reviews/${reviewId}/`)
+    userReviews.value = userReviews.value.filter(
+      (review) => review.review_id !== reviewId
+    )
+    showMessage("Review deleted successfully.", "success")
+  } catch (err) {
+    console.error("DELETE /reviews failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to delete review.", "error")
+  }
 }
 
 const getInitials = (firstName, lastName) => {
@@ -283,6 +279,11 @@ const getProfessorFullName = (professor) => {
   return [professor.f_name, professor.m_name, professor.l_name]
     .filter(Boolean)
     .join(" ")
+}
+
+const goToProfessorProfile = (professorId) => {
+  if (!professorId) return
+  router.push(`/professor/${professorId}`)
 }
 
 </script>
@@ -394,7 +395,7 @@ const getProfessorFullName = (professor) => {
               :key="prof.id"
               class="favorite-card"
             >
-              <div class="favorite-info">
+              <div class="favorite-info clickable-info" @click="goToProfessorProfile(prof.professor_id)">
                 <h3>{{ getProfessorFullName(prof) || prof.professor_name }}</h3>
                 <p>{{ prof.email || "No email available" }}</p>
               </div>
@@ -422,7 +423,7 @@ const getProfessorFullName = (professor) => {
             >
               <div class="review-header">
                 <div>
-                  <h3>{{ review.professor_name }}</h3>
+                  <h3 class="clickable-info" @click="goToProfessorProfile(review.professor)">{{ review.professor_name }}</h3>
                   <p class="review-date">{{ formatDate(review.review_date) }}</p>
                 </div>
 
@@ -440,7 +441,7 @@ const getProfessorFullName = (professor) => {
 
               <div class="review-actions">
                 <!-- TODO: Later connect Edit to actual edit review page/modal -->
-                <button class="secondary-btn">Edit</button>
+                <button class="secondary-btn" @click="goToProfessorProfile(review.professor)">View Professor</button>
                 <button class="danger-btn small-btn" @click="deleteReview(review.review_id)">
                   Delete
                 </button>
@@ -729,6 +730,18 @@ const getProfessorFullName = (professor) => {
   margin-top: 1rem;
   display: flex;
   gap: 0.75rem;
+}
+
+.clickable-info {
+  cursor: pointer;
+}
+
+.clickable-info:hover {
+  opacity: 0.85;
+}
+
+.favorite-info.clickable-info {
+  flex: 1;
 }
 
 @media (max-width: 980px) {

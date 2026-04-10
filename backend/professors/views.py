@@ -72,10 +72,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Review.objects.all()
+        queryset = Review.objects.select_related("professor", "student").all()
         professor_id = self.request.query_params.get('professor')
+        mine = self.request.query_params.get('mine')
+
         if professor_id:
             queryset = queryset.filter(professor_id=professor_id)
+
+        if mine in ["true", "1", "True"]:
+            if user.is_authenticated:
+                queryset = queryset.filter(student=user)
+            else:
+                return Review.objects.none()
+
         if user.is_authenticated:
             queryset = queryset.annotate(
                 is_owner=Case(
