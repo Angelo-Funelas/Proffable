@@ -2,13 +2,13 @@ from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, CourseSerializer, ReviewReportSerializer
+from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
 from .serializers import TagSerializer, FavoriteProfSerializer
-from .models import Professor, Review, Institution, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
-from django.db.models import Avg, Count, Case, When, Value, BooleanField
+from django.db.models import Avg, Count, Case, When, Value, BooleanField, F, CharField
 from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
 # Create your views here.
@@ -139,10 +139,25 @@ class ReviewViewSet(viewsets.ModelViewSet):
         voted = ReviewVote.objects.filter(review=review, user=user).exists()
         return Response({"voted": voted})
 
-
 class ReviewReportViewSet(viewsets.ModelViewSet):
     queryset = ReviewReport.objects.all()
     serializer_class = ReviewReportSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated and user.is_moderator:
+            return ReviewReport.objects.filter(reporter__institution=user.institution).annotate(
+                author=Concat(
+                    F('review__student__f_name'),
+                    Value(' '),
+                    F('review__student__l_name'),
+                    Value(' ('),
+                    F('review__student__email'),
+                    Value(')'),
+                    output_field=CharField()
+                )
+            )
+        return ReviewReport.objects.none()
 
     def get_permissions(self):
         if self.action == 'create':
@@ -180,6 +195,24 @@ class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
     permission_classes = [AllowAny]
+
+class InstitutionDomainViewSet(viewsets.ModelViewSet):
+    queryset = InstitutionDomain.objects.all()
+    serializer_class = InstitutionDomainSerializer
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return InstitutionDomain.objects.filter(institution=user.institution)
+        return InstitutionDomain.objects.none()
+    
+    def perform_create(self, serializer):
+        serializer.save(institution=self.request.user.institution)
+    
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAuthenticated(), IsModerator()]
+        return []
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()

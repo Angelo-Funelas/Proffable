@@ -274,6 +274,8 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString()
 }
 
+const goToModeratorDashboard = () => {
+  router.push('/moderation')
 
 const getProfessorFullName = (professor) => {
   return [professor.f_name, professor.m_name, professor.l_name]
@@ -325,6 +327,10 @@ const goToProfessorProfile = (professorId) => {
 
             <button v-if="profile.can_change_password" class="sidebar-btn" @click="togglePanel('changePassword')">
                 {{ activePanel === 'changePassword' ? "Close Password Form" : "Change Password" }}
+            </button>
+
+            <button class="sidebar-btn" @click="goToModeratorDashboard">
+              Moderator Dashboard
             </button>
 
             <button class="sidebar-btn danger-btn" @click="showDeleteConfirm = true">
