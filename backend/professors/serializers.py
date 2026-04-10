@@ -98,7 +98,8 @@ class InstitutionSerializer(serializers.ModelSerializer):
 class InstitutionDomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstitutionDomain
-        fields = ['institution', 'domain']
+        fields = ['domain', 'id']
+        read_only_fields = ['institution']
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:

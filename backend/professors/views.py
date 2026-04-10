@@ -197,6 +197,9 @@ class InstitutionDomainViewSet(viewsets.ModelViewSet):
             return InstitutionDomain.objects.filter(institution=user.institution)
         return InstitutionDomain.objects.none()
     
+    def perform_create(self, serializer):
+        serializer.save(institution=self.request.user.institution)
+    
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsModerator()]

@@ -1,6 +1,7 @@
 <script setup>
     import Navbar from './Navbar.vue'
     import ReviewReport from "./ReviewReport.vue";
+    import InstDomain from './InstDomain.vue';
     import { ref, onMounted } from 'vue';
     import api from "@/api/axios"
 
@@ -32,27 +33,16 @@
             console.log("Error with fetching domains: ", error)
         }
     }
-
+    const domain = ref();
     async function createDomain() {
         try {
-            await api.post('reviews/', {
-                professor: route.params.professorId,
-                review_rating: form.value.review_rating,
-                comment_text: form.value.comment_text,
-                received_grade: form.value.received_grade,
-                tags: form.value.tags
+            await api.post('institution-domains/', {
+                domain: domain.value
             })
-            message.value = 'Review submitted successfully!'
-            isError.value = false
-            form.value = { review_rating: '', comment_text: '', received_grade: '' }
+            domain.value = ""
+            fetchDomains();
         } catch (err) {
-        const data = err.response?.data
-        if (data?.non_field_errors || data?.detail) {
-            message.value = data.non_field_errors?.[0] || data.detail
-        } else {
-            message.value = 'You have already reviewed this professor.'
-        }
-        isError.value = true
+            console.error(err)
         }
     }
 
@@ -93,16 +83,17 @@
             <div>
                 <h2>📧Email Domains</h2>
                 <p class="text-black">Manage known email domains used by students.</p>
-                <form>
-                    <input type="email" placeholder="e.g. student.ateneo.edu" class="outline-1 px-2">
-                    <button class="mx-2 bg-[#d2d2d2] px-2">Add Domain</button>
+                <form @submit.prevent="createDomain">
+                    <input placeholder="e.g. student.ateneo.edu" v-model="domain" class="outline-1 px-2">
+                    <button class="mx-2  px-2">Add Domain</button>
                 </form>
                 <ul class="m-2">
                     <li v-for="domain in domains" class="my-1">
-                        <div class="grid bg-gray-200 p-2 grid-cols-[80%_20%] grid-rows-1">
-                            <span class="flex justify-start">{{ domain.domain }}</span>
-                            <span class="flex justify-end"><img src="../assets/delete.svg" class="h-[24px]"></span>
-                        </div>
+                        <InstDomain
+                            @delete="fetchDomains"
+                            :domain="domain.domain"
+                            :id="domain.id"
+                        />
                     </li>
                 </ul>
             </div>
