@@ -34,8 +34,6 @@ services:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py loaddata sample_data/users.json &&
-             python manage.py loaddata sample_data/professors.json &&
              python manage.py runserver 0.0.0.0:8000"
 
   # Frontend Service [cite: 173, 228, 631, 633]

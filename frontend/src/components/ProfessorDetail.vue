@@ -245,6 +245,7 @@
                                 :is-moderator="isModerator" 
                                 :review-text="review.comment_text"
                                 :rating="review.review_rating"
+                                :grade="review.received_grade"
                                 :likes="review.helpful_count"
                                 />
                         </li>

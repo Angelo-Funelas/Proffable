@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Professor, Review, Institution, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
 from django.db.models import Count
 
 class ProfessorSerializer(serializers.ModelSerializer):
@@ -52,6 +52,10 @@ class ReviewTagSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
+    professor_id = serializers.IntegerField(source="professor.professor_id", read_only=True)
+    professor_f_name = serializers.CharField(source="professor.f_name", read_only=True)
+    professor_m_name = serializers.CharField(source="professor.m_name", read_only=True)
+    professor_l_name = serializers.CharField(source="professor.l_name", read_only=True)
     helpful_count = serializers.IntegerField(read_only=True)
     is_owner = serializers.BooleanField(read_only=True)
     tags = serializers.PrimaryKeyRelatedField(
@@ -65,7 +69,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = [
-            "review_id", "professor", "professor_name", "is_owner",
+            "review_id", "professor", "professor_id", "professor_name",
+            "professor_f_name", "professor_m_name", "professor_l_name", "is_owner",
             "review_rating", "comment_text", "review_date", "received_grade", 
             "helpful_count", "tags", "read_tags"
         ]
@@ -95,6 +100,11 @@ class InstitutionSerializer(serializers.ModelSerializer):
         model = Institution
         fields = ['institution_id', 'name']
 
+class InstitutionDomainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstitutionDomain
+        fields = ['domain', 'id']
+        read_only_fields = ['institution']
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -104,7 +114,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class ReviewReportSerializer(serializers.ModelSerializer):
     reporter_name = serializers.StringRelatedField(source="reporter", read_only=True)
-
+    author = serializers.ReadOnlyField()
     class Meta:
         model = ReviewReport
         fields = [
@@ -113,19 +123,30 @@ class ReviewReportSerializer(serializers.ModelSerializer):
             "reason",
             "description",
             "created_at",
-            "reporter_name"
+            "reporter_name",
+            "author"
         ]
         read_only_fields = ["report_id", "created_at"]
 
 class FavoriteProfSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     student_name = serializers.StringRelatedField(source="student", read_only=True)
-    professor_id = serializers.PrimaryKeyRelatedField(source="professor",queryset=Professor.objects.all(), write_only=True)
+    professor_id = serializers.PrimaryKeyRelatedField(source="professor", queryset=Professor.objects.all(), write_only=True)
+    f_name = serializers.ReadOnlyField(source="professor.f_name")
+    m_name = serializers.ReadOnlyField(source="professor.m_name")
+    l_name = serializers.ReadOnlyField(source="professor.l_name")
+    email = serializers.ReadOnlyField(source="professor.email")
 
     class Meta:
         model = FavoriteProf
         fields = [
+            'id',
             'professor_id',
-            "professor_name",
-            "student_name"
+            'professor_name',
+            'student_name',
+            'f_name',
+            'm_name',
+            'l_name',
+            'email',
         ]
