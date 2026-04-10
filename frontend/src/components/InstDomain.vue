@@ -34,7 +34,7 @@
 <template>
     <div class="grid bg-[#f2f2f2] p-2 grid-cols-[80%_20%] grid-rows-1">
         <span class="flex justify-start">{{ domain }}</span>
-        <span class="flex justify-end"><img @click="showModal = true" ref="reference" src="../assets/delete.svg" class="h-[24px]"></span>
+        <span class="flex justify-end"><img @click="showModal=true" ref="reference" src="../assets/delete.svg" class="h-[24px] cursor-pointer hover:scale-[1.1]"></span>
     </div>
     <div
         v-if="showModal"
