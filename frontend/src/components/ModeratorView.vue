@@ -75,6 +75,7 @@
                 <h2>Reports</h2>
                 <p>Manage reported reviews.</p>
                 <ul class="m-2 h-full overflow-y-auto">
+                    <p v-if="reports.length === 0">No pending reports to review.</p>
                     <li v-for="report in reports" class="my-1">
                         <ReviewReport
                             @resolve="fetchReports"
