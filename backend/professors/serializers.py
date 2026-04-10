@@ -118,14 +118,24 @@ class ReviewReportSerializer(serializers.ModelSerializer):
         read_only_fields = ["report_id", "created_at"]
 
 class FavoriteProfSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     student_name = serializers.StringRelatedField(source="student", read_only=True)
-    professor_id = serializers.PrimaryKeyRelatedField(source="professor",queryset=Professor.objects.all(), write_only=True)
+    professor_id = serializers.PrimaryKeyRelatedField(source="professor", queryset=Professor.objects.all(), write_only=True)
+    f_name = serializers.ReadOnlyField(source="professor.f_name")
+    m_name = serializers.ReadOnlyField(source="professor.m_name")
+    l_name = serializers.ReadOnlyField(source="professor.l_name")
+    email = serializers.ReadOnlyField(source="professor.email")
 
     class Meta:
         model = FavoriteProf
         fields = [
+            'id',
             'professor_id',
-            "professor_name",
-            "student_name"
+            'professor_name',
+            'student_name',
+            'f_name',
+            'm_name',
+            'l_name',
+            'email',
         ]

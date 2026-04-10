@@ -51,23 +51,7 @@ const userReviews = ref([
   },
 ])
 
-// TODO: Replace with GET /me/favorites/ THIS IS FILLER DATA
-const favoriteProfessors = ref([
-  {
-    professor_id: 1,
-    f_name: "Ana",
-    m_name: "R.",
-    l_name: "Reyes",
-    email: "ana.reyes@school.edu",
-  },
-  {
-    professor_id: 2,
-    f_name: "Miguel",
-    m_name: "",
-    l_name: "Torres",
-    email: "miguel.torres@school.edu",
-  },
-])
+const favoriteProfessors = ref([])
 
 // === UI STATE ===
 const message = ref("")
@@ -133,8 +117,19 @@ const showMessage = async (text, type = "success") => {
   }
 }
 
+const fetchFavoriteProfessors = async () => {
+  try {
+    const res = await api.get("favorite-prof/")
+    favoriteProfessors.value = res.data
+  } catch (err) {
+    console.error("GET /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to load favorite professors.", "error")
+  }
+}
+
 onMounted(() => {
   fetchProfile()
+  fetchFavoriteProfessors()
 })
 
 // TODO: Later, align with PATCH request in user information 
@@ -251,12 +246,17 @@ const deleteAccount = async () => {
   }
 }
 
-const removeFavorite = (professorId) => {
-  // TODO: Replace with DELETE /me/favorites/:id or equivalent endpoint
-  favoriteProfessors.value = favoriteProfessors.value.filter(
-    (prof) => prof.professor_id !== professorId
-  )
-  showMessage("Mock favorite professor removed.", "success")
+const removeFavorite = async (favoriteId) => {
+  try {
+    await api.delete(`favorite-prof/${favoriteId}/`)
+    favoriteProfessors.value = favoriteProfessors.value.filter(
+      (prof) => prof.id !== favoriteId
+    )
+    showMessage("Favorite professor removed.", "success")
+  } catch (err) {
+    console.error("DELETE /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
+    showMessage("Failed to remove favorite professor.", "error")
+  }
 }
 
 const deleteReview = (reviewId) => {
@@ -276,6 +276,13 @@ const getInitials = (firstName, lastName) => {
 const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleDateString()
+}
+
+
+const getProfessorFullName = (professor) => {
+  return [professor.f_name, professor.m_name, professor.l_name]
+    .filter(Boolean)
+    .join(" ")
 }
 
 </script>
@@ -384,15 +391,15 @@ const formatDate = (dateString) => {
           <div v-else class="favorites-grid">
             <div
               v-for="prof in favoriteProfessors"
-              :key="prof.professor_id"
+              :key="prof.id"
               class="favorite-card"
             >
               <div class="favorite-info">
-                <h3>{{ prof.f_name }} {{ prof.m_name }} {{ prof.l_name }}</h3>
+                <h3>{{ getProfessorFullName(prof) || prof.professor_name }}</h3>
                 <p>{{ prof.email || "No email available" }}</p>
               </div>
 
-              <button class="secondary-btn" @click="removeFavorite(prof.professor_id)">
+              <button class="secondary-btn" @click="removeFavorite(prof.id)">
                 Remove
               </button>
             </div>

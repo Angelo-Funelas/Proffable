@@ -188,11 +188,14 @@ class FavoriteProfViewset(viewsets.ModelViewSet):
     queryset = FavoriteProf.objects.all()
     serializer_class = FavoriteProfSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return FavoriteProf.objects.filter(student=user).select_related("professor", "student")
+        return FavoriteProf.objects.none()
+
     def perform_create(self, serializer):
-        student = self.request.user if self.request.user.is_authenticated else None
-        serializer.save(student=student)
+        serializer.save(student=self.request.user)
     
     def get_permissions(self):
-        if self.action in ['create', 'destroy']:
-            return [IsAuthenticated()]
-        return []
+        return [IsAuthenticated()]
