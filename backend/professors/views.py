@@ -72,10 +72,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Review.objects.all()
+        queryset = Review.objects.select_related("professor", "student").all()
         professor_id = self.request.query_params.get('professor')
+        mine = self.request.query_params.get('mine')
+
         if professor_id:
             queryset = queryset.filter(professor_id=professor_id)
+
+        if mine in ["true", "1", "True"]:
+            if user.is_authenticated:
+                queryset = queryset.filter(student=user)
+            else:
+                return Review.objects.none()
+
         if user.is_authenticated:
             queryset = queryset.annotate(
                 is_owner=Case(
@@ -188,11 +197,14 @@ class FavoriteProfViewset(viewsets.ModelViewSet):
     queryset = FavoriteProf.objects.all()
     serializer_class = FavoriteProfSerializer
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return FavoriteProf.objects.filter(student=user).select_related("professor", "student")
+        return FavoriteProf.objects.none()
+
     def perform_create(self, serializer):
-        student = self.request.user if self.request.user.is_authenticated else None
-        serializer.save(student=student)
+        serializer.save(student=self.request.user)
     
     def get_permissions(self):
-        if self.action in ['create', 'destroy']:
-            return [IsAuthenticated()]
-        return []
+        return [IsAuthenticated()]
