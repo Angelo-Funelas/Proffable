@@ -72,7 +72,7 @@
         <h1>Moderator Dashboard</h1>
         <div class="moderator-dashbaord mt-5 grid grid-cols-[50%_50%] grid-rows-[50%_50%] h-full gap-4 text-black">
             <div class="row-span-2 overflow-hidden">
-                <h2>Reports</h2>
+                <h2>📢Reports</h2>
                 <p>Manage reported reviews.</p>
                 <ul class="m-2 h-full overflow-y-auto">
                     <p v-if="reports.length === 0">No pending reports to review.</p>
@@ -91,7 +91,7 @@
                 </ul>
             </div>
             <div>
-                <h2>Email Domains</h2>
+                <h2>📧Email Domains</h2>
                 <p class="text-black">Manage known email domains used by students.</p>
                 <form>
                     <input type="email" placeholder="e.g. student.ateneo.edu" class="outline-1 px-2">
@@ -107,7 +107,7 @@
                 </ul>
             </div>
             <div>
-                <h2>Professor Profiles</h2>
+                <h2>👤Professor Profiles</h2>
                 <p>Merge, Delete, and Modify Professor Profiles.</p>
             </div>
         </div>
@@ -122,7 +122,7 @@
         @apply text-6xl font-bold text-left;
     }
     h2 {
-        @apply text-4xl;
+        @apply text-[30px];
     }
     .moderator-dashbaord > div {
         @apply p-4 bg-white shadow-md rounded-2xl;
