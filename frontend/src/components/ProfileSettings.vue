@@ -313,9 +313,11 @@ const goToProfessorProfile = (professorId) => {
           <p class="profile-email">Email: {{ profile.email }}</p>
 
           <div class="sidebar-actions">
+            <!--- 
             <button class="sidebar-btn" @click="chooseAvatar">
               Choose Avatar
             </button>
+            -->
 
             <button class="sidebar-btn" @click="togglePanel('editProfile')">
                 {{ activePanel === 'editProfile' ? "Close Edit Profile" : "Edit Profile" }}
