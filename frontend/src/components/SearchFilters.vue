@@ -58,7 +58,7 @@ const updateStarQuery = (rating) => {
     <input 
       v-model="localQuery"
       @input="handleInput"
-      class="rounded-2xl bg-card shadow-lg mt-[5px] h-[35px] px-3 text-[#719294]"
+      class="rounded-2xl bg-card shadow-lg mt-[5px] h-[35px] px-3 text-text-main"
       placeholder="Search for a professor or course"
     />
 

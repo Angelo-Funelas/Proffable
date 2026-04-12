@@ -49,7 +49,7 @@ const handleRate = (value) => {
 
       <div class="w-[720px] relative mb-[-30px] z-10">
         <div class="flex items-center bg-white rounded-full shadow-md px-[24px] py-[18px]">
-          <input v-model="searchQuery" @keyup.enter="handleSearch" type="text" placeholder="Search for a professor or course" class="flex-1 outline-none text-lg text-[#719294]" />
+          <input v-model="searchQuery" @keyup.enter="handleSearch" type="text" placeholder="Search for a professor or course" class="flex-1 outline-none text-lg text-text-main" />
           <button class="ml-[20px] font-medium text-[#0B0D09] flex items-center gap-[6px]">Filter <span>▾</span></button>
         </div>
       </div>
@@ -60,13 +60,13 @@ const handleRate = (value) => {
         <div class="flex gap-[20px] mb-[10px]">
 
           <div class="flex-1">
-            <select v-model="selectedInstitution" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
+            <select v-model="selectedInstitution" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-primary">
               <option value="">University</option>
               <option v-for="inst in institutions" :key="inst.institution_id" :value="inst.name">{{ inst.name }}</option>
             </select>
           </div>
           <div class="flex-1">
-            <select v-model="selectedCourse" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-[#719294]">
+            <select v-model="selectedCourse" class="w-full px-[18px] py-[14px] rounded-[14px] bg-gray-100 text-primary">
               <option value="">Courses</option>
               <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>
             </select>
