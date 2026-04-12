@@ -9,6 +9,7 @@
     import { useRouter } from 'vue-router'
     import RatingSelector from './RatingSelector.vue'
     import ReviewFormNew from './ReviewFormNew.vue'
+    import Heart from './Heart.vue'
 
     const professor = ref({})
     const route = useRoute()
@@ -149,11 +150,7 @@
                     </div>
 
                     <!-- FAVORITE PROF-->
-                    <div @click=toggleFavorite class="flex flex-col items-center gap-1 cursor-pointer">
-                        <img v-if="professor.is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
-                        <img v-else src="../assets/Heart.svg" class="size-[16px]">
-                        <span class="text-sm">{{professor.favorite_count}}</span>
-                    </div>
+                    <Heart @click=toggleFavorite :filled="professor.is_favorited" :favorite_count="professor.favorite_count"/>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
                     <!--AI OVERVIEW-->
