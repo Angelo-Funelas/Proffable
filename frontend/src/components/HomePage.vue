@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import api from "@/api/axios"
 import Navbar from './Navbar.vue';
 import RatingSelector from './RatingSelector.vue';
+import LogoIcon from './LogoIcon.vue';
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -35,13 +36,13 @@ const handleRate = (value) => {
 </script>
 
 <template>
-  <div class="main-container">
-    <Navbar/>
-    <div class="flex flex-col items-center mt-[80px]">
+  <Navbar/>
+  <header class="pt-20 h-[80vh] ">
+    <div class="flex flex-col items-center">
       <div class="flex flex-col items-center mb-[40px]">
         <div class="flex items-center">
-          <img src="../assets/ProffableLogo.png" class="h-[150px]" />
-          <span class="text-[#505946] text-[100px] font-bold mb-[5px] ml-[-15px]">roffable</span>
+          <LogoIcon class="h-50 mr-3"/>
+          <span class="text-primary text-[100px] font-bold mb-[5px] ml-[-15px]">roffable</span>
         </div>
         <p class="text-[#0B0D09] text-2xl font-bold italic -mt-10 -mr-20">Choosing a professor made Proffable.</p>
       </div>
@@ -53,7 +54,7 @@ const handleRate = (value) => {
         </div>
       </div>
 
-      <div class="w-[720px] bg-[#5c898d] rounded-[18px] pt-[60px] pb-[30px] px-[40px] shadow-lg">
+      <div class="w-[720px] bg-card rounded-[18px] pt-[60px] pb-[30px] px-[40px] shadow-lg">
 
         <!-- DROPDOWNS -->
         <div class="flex gap-[20px] mb-[10px]">
@@ -77,7 +78,7 @@ const handleRate = (value) => {
         <p class="text-center text-white opacity-80">Average Rating</p>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 

@@ -58,7 +58,7 @@ const updateStarQuery = (rating) => {
     <input 
       v-model="localQuery"
       @input="handleInput"
-      class="rounded-2xl bg-[#FFFFFF] form_text mt-[5px] h-[35px] px-3 text-[#719294]"
+      class="rounded-2xl bg-[#FFFFFF] mt-[5px] h-[35px] px-3 text-[#719294]"
       placeholder="Search for a professor or course"
     />
 
@@ -67,7 +67,7 @@ const updateStarQuery = (rating) => {
         <select 
           v-model="selectedInstitution" 
           @change="updateURL" 
-          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
+          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] appearance-none outline-none"
         >
           <option value="">University</option>
           <option v-for="inst in institutions" :key="inst.institution_id" :value="inst.name">{{ inst.name }}</option>
@@ -79,7 +79,7 @@ const updateStarQuery = (rating) => {
         <select 
           v-model="selectedCourse" 
           @change="updateURL" 
-          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] form_text appearance-none outline-none"
+          class="w-full h-[40px] rounded-2xl px-6 pr-12 bg-[#E9E9E9] appearance-none outline-none"
         >
           <option value="">Course</option>
           <option v-for="c in courses" :key="c.course_id" :value="c.course_code">{{ c.course_code }}</option>

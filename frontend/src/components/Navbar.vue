@@ -59,7 +59,7 @@ const logout = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-gradient-to-b from-[#719294] to-[#52848A] h-16 flex items-center justify-between px-6 shadow-md">
+  <nav class="w-full bg-white h-16 flex items-center justify-between px-6 shadow-lg">
 
     <div
       @click="goToHomePage"
@@ -117,7 +117,7 @@ const logout = () => {
     <button
       v-else
       @click="goToLogin"
-      class="text-white font-semibold hover:opacity-80 transition"
+      class="font-semibold hover:opacity-80 transition"
     >
       Login
     </button>

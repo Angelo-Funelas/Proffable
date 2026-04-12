@@ -44,7 +44,7 @@ const goToProf = (professorId) => {
 </script>
 
 <template>
-<div class="min-h-screen bg-[#e8e8e8] flex flex-col">
+<div class="min-h-screen flex flex-col">
     <Navbar/>
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
         <SearchFilters />

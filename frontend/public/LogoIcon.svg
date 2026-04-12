@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357 642.13">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-linecap: square;
+        stroke-width: 12px;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-4, .cls-5 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-6 {
+        fill: #000;
+      }
+
+      .cls-6, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        stroke-width: 4px;
+      }
+
+      .cls-2, .cls-4, .cls-5 {
+        stroke-linecap: round;
+      }
+
+      .cls-4 {
+        stroke-width: 42px;
+      }
+
+      .cls-5 {
+        stroke-width: 80px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <path class="cls-6" d="M218,157c53.49,0,97,43.51,97,97s-43.51,97-97,97-97-43.51-97-97,43.51-97,97-97M218,115c-76.77,0-139,62.23-139,139s62.23,139,139,139,139-62.23,139-139-62.23-139-139-139h0Z"/>
+    <line class="cls-4" x1="33" y1="100" x2="243" y2="21"/>
+    <g>
+      <polygon class="cls-6" points="73.07 119.3 229.69 61.61 238.17 102 92.82 155.54 73.07 119.3"/>
+      <path class="cls-6" d="M237.07,37.24c-1.26,0-2.56.22-3.82.69L55.01,103.58c-6.33,2.33-9.11,9.74-5.88,15.66l29.37,53.9c1.98,3.64,5.76,5.76,9.71,5.76,1.27,0,2.56-.22,3.82-.68l161.48-59.48c5.14-1.89,8.12-7.27,7-12.64l-12.61-60.07c-1.11-5.28-5.76-8.79-10.81-8.79h0Z"/>
+    </g>
+    <line class="cls-4" x1="99.96" y1="264" x2="99.96" y2="494.89"/>
+    <line class="cls-5" x1="100" y1="491.82" x2="100" y2="602.13"/>
+    <path class="cls-3" d="M89,101c-.27,24.35-20.09,44-44.5,44S.27,125.35,0,101h89Z"/>
+    <path class="cls-6" d="M143.14,33.99l.06.17-29.43,11.07-.06-.17c-3.06-8.13,1.05-17.19,9.18-20.25,8.13-3.06,17.19,1.05,20.25,9.18Z"/>
+    <line class="cls-2" x1="28" y1="124" x2="28" y2="171"/>
+    <line class="cls-1" x1="28" y1="167" x2="28" y2="220"/>
+    <circle class="cls-6" cx="27.5" cy="141.5" r="7.5"/>
+  </g>
+</svg>

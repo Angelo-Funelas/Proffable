@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full bg-[#e9e9e9] flex flex-col font-sans">
+  <div class="min-h-screen w-full flex flex-col font-sans">
     
     <Navbar/>
 
