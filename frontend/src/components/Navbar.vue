@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import LogoIcon from './LogoIcon.vue'
 import api from "@/api/axios"
 
 
@@ -63,9 +64,9 @@ const logout = () => {
 
     <div
       @click="goToHomePage"
-      class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm cursor-pointer"
+      class="cursor-pointer"
     >
-      <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain pointer-events-none" />
+      <LogoIcon class="h-10 mr-3"/>
     </div>
 
 

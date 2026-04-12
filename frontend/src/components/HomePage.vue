@@ -42,7 +42,7 @@ const handleRate = (value) => {
       <div class="flex flex-col items-center mb-[40px]">
         <div class="flex items-center">
           <LogoIcon class="h-50 mr-3"/>
-          <span class="text-primary text-[100px] font-bold mb-[5px] ml-[-15px]">roffable</span>
+          <span class="text-primary text-[100px] font-roboto mb-[5px] ml-[-15px]">roffable</span>
         </div>
         <p class="text-[#0B0D09] text-2xl font-bold italic -mt-10 -mr-20">Choosing a professor made Proffable.</p>
       </div>
@@ -75,8 +75,14 @@ const handleRate = (value) => {
         </div>
 
         <RatingSelector @rate="handleRate"/>
-        <p class="text-center text-white opacity-80">Average Rating</p>
+        <p class="text-center opacity-80 text-text-muted">Average Rating</p>
       </div>
+    </div>
+    <div class=" opacity-30 grid grid-rows-1 grid-cols-29 items-end">
+      <img src="/ateneo.png" class="row-1 col-start-1 col-span-8">
+      <img src="/ust.png" class="row-1 col-start-8 col-span-8">
+      <img src="/up.png" class="row-1 col-start-15 col-span-8">
+      <img src="/dlsu.png" class="row-1 col-start-22 col-span-8">
     </div>
   </header>
 </template>

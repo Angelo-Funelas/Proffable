@@ -16,6 +16,15 @@
   /* Typography */
   --color-text-main: #1e293b;
   --color-text-muted: #64748b;
+
+  --font-roboto: 'RobotoCustom', sans-serif;
+}
+
+@font-face {
+  font-family: 'RobotoCustom';
+  src: url('./assets/roboto-500.woff2') format('woff2');
+  font-style: normal;
+  font-display: swap;
 }
 
 :root {
@@ -51,11 +60,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Karla', sans-serif;
-  @apply text-primary;
-}
-
-h1 {
-  color: #505946;
+  @apply text-text-main;
 }
 
 .card {
