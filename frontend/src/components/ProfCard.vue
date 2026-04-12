@@ -1,4 +1,5 @@
 <script setup>
+import Heart from './Heart.vue';
 import {ref} from 'vue'
 const props = defineProps({
     lname: String,
@@ -28,11 +29,6 @@ const props = defineProps({
 
     </div>
 
-    <div class="flex flex-col items-center gap-1">
-        <img v-if="is_favorited" src="../assets/FilledHeart.svg" class="size-[16px]">
-        <img v-else src="../assets/Heart.svg" class="size-[16px]">
-        <span class="text-sm">{{ favoriteCount }}</span>
-    </div>
-
+    <Heart :filled="is_favorited" :favorite_count="favoriteCount"/>
 </div>
 </template>
