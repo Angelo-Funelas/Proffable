@@ -69,10 +69,6 @@
         fetchReviews();
     }
 
-    const refreshReviews = () =>{
-        fetchReviews();
-    }
-
     onMounted(()=>{
         fetchProfessor()
         fetchReviews()
@@ -243,7 +239,7 @@
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
                                 @delete="handleDelete"
-                                @edit="refreshReviews"
+                                @edit="fetchReviews"
                                 :reviewId="review.review_id"
                                 :is-owner="review.is_owner"
                                 :is-moderator="isModerator" 
