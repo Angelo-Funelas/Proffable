@@ -30,7 +30,7 @@
         <svg width="40" height="38" viewBox="0 0 40 38"
         v-for="n in 5"
         :key="n"
-        class=" drop-shadow-[1px_2px_2px_rgba(0,0,0,.4)] inline fill-[#505946] cursor-pointer px-1 mx-0.5"
+        class=" drop-shadow-[1px_2px_2px_rgba(0,0,0,.4)] inline fill-[#616161] cursor-pointer px-1 mx-0.5"
         :class="{ 
             'fill-accent-hover': starRatingHover >= n && starRating < n,
             'star-active': starRating >= n
