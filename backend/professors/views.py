@@ -11,6 +11,8 @@ from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField, F, CharField
 from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
+from django.db.models import Count, Q
+from django.db.models.functions import Lower
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -65,6 +67,44 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         ).distinct()[:5]
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
+    
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def analytics(self, request, pk=None):
+        professor = self.get_object()
+
+        valid_reviews = professor.reviews.exclude(
+            Q(received_grade__isnull=True) | 
+            Q(received_grade__exact="") | 
+            Q(received_grade__regex=r'^\s*$')
+        )
+
+        total_with_grades = valid_reviews.count()
+
+        if total_with_grades == 0:
+            return Response({
+                "distribution": [], 
+                "total_reviews": 0
+            })
+
+        grade_counts = valid_reviews.annotate(
+            normalized_grade=Lower('received_grade')
+        ).values('normalized_grade').annotate(
+            count=Count('normalized_grade')
+        ).order_by('normalized_grade')
+
+        distribution = [
+            {
+                "grade": item['normalized_grade'].upper(),
+                "count": item['count'],
+                "percentage": round((item['count'] / total_with_grades) * 100)
+            }
+            for item in grade_counts
+        ]
+
+        return Response({
+            "distribution": distribution,
+            "total_reviews": total_with_grades
+        })
         
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
