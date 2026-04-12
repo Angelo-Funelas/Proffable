@@ -9,6 +9,7 @@
     import { useRouter } from 'vue-router'
     import RatingSelector from './RatingSelector.vue'
     import ReviewFormNew from './ReviewFormNew.vue'
+    import GradeDistribution from './GradeDistribution.vue'
 
     const professor = ref({})
     const route = useRoute()
@@ -166,67 +167,7 @@
                         </ul>
                     </div>
                     <!--GRADE DISTRIBUTION-->
-                    <div class="bg-white rounded-xl p-[18px] text-[#719294] text-left">
-                        <h3 class="text-2xl font-bold">Grade Distribution</h3>
-                        <div class="flex flex-col space-y-1.5">
-                            <!-- A -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">A</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[45%]"></div>
-                            </div>
-                            <span class="text-sm">45%</span>
-                            </div>
-                            <!-- B+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[25%]"></div>
-                            </div>
-                            <span class="text-sm">25%</span>
-                            </div>
-                            <!-- B -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[15%]"></div>
-                            </div>
-                            <span class="text-sm">15%</span>
-                            </div>
-                            <!-- C+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[8%]"></div>
-                            </div>
-                            <span class="text-sm">8%</span>
-                            </div>
-                            <!-- C -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[5%]"></div>
-                            </div>
-                            <span class="text-sm">5%</span>
-                            </div>
-                            <!-- D -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">D</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[2%]"></div>
-                            </div>
-                            <span class="text-sm">2%</span>
-                            </div>
-                            <!-- F -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">F</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[0%] opacity-40"></div>
-                            </div>
-                            <span class="text-sm">0%</span>
-                            </div>
-                        </div>
-                    </div>
+                    <GradeDistribution :professorId="professor.professor_id" />
                 </div>
                 <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="fetchReviews"/>
