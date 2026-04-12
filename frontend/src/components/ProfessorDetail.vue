@@ -33,7 +33,7 @@
         try{
             const response = await api.get(`professors/${route.params.professorId}`)
             professor.value = response.data
-            console.log(professor.value.tags)
+            console.log(professor.value.read_tags)
         } catch(error){
             console.log("Error with fetching professors: ",error)
         }
@@ -48,7 +48,6 @@
                 if (review.is_owner) professor_reviewed.value = true
                 break
             }
-            console.log(response.data)
         } catch(error){
             console.log("Error with fetching reviews: ", error)
         }
@@ -67,6 +66,10 @@
 
     const handleDelete = () => {
         professor_reviewed.value = false;
+        fetchReviews();
+    }
+
+    const refreshReviews = () =>{
         fetchReviews();
     }
 
@@ -240,6 +243,7 @@
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
                                 @delete="handleDelete"
+                                @edit="refreshReviews"
                                 :reviewId="review.review_id"
                                 :is-owner="review.is_owner"
                                 :is-moderator="isModerator" 
@@ -247,6 +251,7 @@
                                 :rating="review.review_rating"
                                 :grade="review.received_grade"
                                 :likes="review.helpful_count"
+                                :tags="review.read_tags"
                                 />
                         </li>
                     </ul>
