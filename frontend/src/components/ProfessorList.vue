@@ -49,23 +49,23 @@ const goToProf = (professorId) => {
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
         <SearchFilters />
         <div>
-            <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
-        <p v-if="isLoading">Loading professors...</p>
+            <h1 class="text-5xl font-bold text-left mb-[10px] text-primary">Professors</h1>
+            <p v-if="isLoading">Loading professors...</p>
 
-        <ul class="grid grid-cols-1 gap-y-[10px]">
-            <li  v-for="prof in professors" :key="prof.professor_id" 
-            @click="goToProf(prof.professor_id)" class="cursor-pointer">
-                <ProfCard
-                :lname="prof.l_name"
-                :fname="prof.f_name"
-                :avgScore="prof.avg_rating || 0"
-                :numReviews="prof.review_count"
-                :favoriteCount="prof.favorite_count"
-                :is_favorited="prof.is_favorited"
-                :tags="prof.tags"
-                />
-            </li>
-        </ul>
+            <ul class="grid grid-cols-1 gap-y-[10px]">
+                <li  v-for="prof in professors" :key="prof.professor_id" 
+                @click="goToProf(prof.professor_id)" class="cursor-pointer">
+                    <ProfCard
+                    :lname="prof.l_name"
+                    :fname="prof.f_name"
+                    :avgScore="prof.avg_rating || 0"
+                    :numReviews="prof.review_count"
+                    :favoriteCount="prof.favorite_count"
+                    :is_favorited="prof.is_favorited"
+                    :tags="prof.tags"
+                    />
+                </li>
+            </ul>
         </div>
     </div>
 </div> 

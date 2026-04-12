@@ -136,7 +136,7 @@
             <div>
                 <!--PROFESSOR CARD-->
                 <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
-                <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
+                <div class="bg-card shadow-md rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
@@ -157,7 +157,7 @@
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
                     <!--AI OVERVIEW-->
-                    <div class="bg-white rounded-xl p-[18px] flex flex-col text-[#719294] text-left">
+                    <div class="bg-card shadow rounded-xl p-[18px] flex flex-col text-[#719294] text-left">
                         <h3 class="text-2xl font-bold">AI Overview of Reviews</h3>
                         <ul class="space-y-2 mt-2">
                             <li><span class="font-bold">Pros</span>: Lectures are well-organized and grading is generally fair and transparent.</li>
@@ -166,7 +166,7 @@
                         </ul>
                     </div>
                     <!--GRADE DISTRIBUTION-->
-                    <div class="bg-white rounded-xl p-[18px] text-[#719294] text-left">
+                    <div class="bg-card shadow rounded-xl p-[18px] text-[#719294] text-left">
                         <h3 class="text-2xl font-bold">Grade Distribution</h3>
                         <div class="flex flex-col space-y-1.5">
                             <!-- A -->
@@ -228,7 +228,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
+                <div v-if="!professor_reviewed" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="fetchReviews"/>
                 </div>
                 <!--REVIEW CARDS-->

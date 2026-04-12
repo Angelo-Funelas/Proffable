@@ -58,11 +58,11 @@ const updateStarQuery = (rating) => {
     <input 
       v-model="localQuery"
       @input="handleInput"
-      class="rounded-2xl bg-[#FFFFFF] mt-[5px] h-[35px] px-3 text-[#719294]"
+      class="rounded-2xl bg-card shadow-lg mt-[5px] h-[35px] px-3 text-[#719294]"
       placeholder="Search for a professor or course"
     />
 
-    <div class="bg-[#52848A] rounded-xl p-[18px] flex flex-col gap-2 text-left">
+    <div class="bg-card shadow-lg rounded-xl p-[18px] flex flex-col gap-2 text-left">
       <div class="relative">
         <select 
           v-model="selectedInstitution" 
@@ -88,11 +88,11 @@ const updateStarQuery = (rating) => {
       </div>
       <div class="text-center">
         <RatingSelector :initialRating="rating_query" @rate="updateStarQuery"/>
-        <p class="text-center">Average Rating</p>
+        <p class="text-center text-text-muted">Average Rating</p>
       </div>
     </div>
 
-    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max justify-center mx-auto text-white">
+    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max justify-center mx-auto">
       Add a Professor
     </button>
   </div>
