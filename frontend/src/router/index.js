@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ProfessorList from '../components/ProfessorList.vue'
-import ReviewForm from '../components/ReviewForm.vue'
 import LoginView from '../components/LoginView.vue'
 import Register from '../components/Register.vue'
 import ProfessorDetail from '../components/ProfessorDetail.vue'
@@ -14,7 +13,6 @@ const routes = [
   }},
   { path: '/professors', component: ProfessorList },
   { path: '/professor/:professorId', component: ProfessorDetail },
-  { path: '/reviews/:professorId', component: ReviewForm },
   { path: '/login', component: LoginView, meta: {
     title: "Login to Proffable"
   } },
