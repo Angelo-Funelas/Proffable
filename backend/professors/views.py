@@ -96,7 +96,7 @@ class ProfessorViewSet(viewsets.ModelViewSet):
             {
                 "grade": item['normalized_grade'].upper(),
                 "count": item['count'],
-                "percentage": round((item['count'] / total_with_grades) * 100)
+                "percentage": round((item['count'] / total_with_grades) * 100, 2)
             }
             for item in grade_counts
         ]
