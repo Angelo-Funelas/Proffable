@@ -60,7 +60,7 @@ const logout = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-white h-16 flex items-center justify-between px-6 shadow-lg">
+  <nav class="w-full bg-white h-16 flex items-center justify-between px-6 shadow-lg relative z-50">
 
     <div
       @click="goToHomePage"
@@ -73,7 +73,7 @@ const logout = () => {
     <div v-if="isAuthenticated" class="relative">
       <div
         @click="toggleDropdown"
-        class="flex items-center gap-2 cursor-pointer text-white font-semibold"
+        class="flex items-center gap-2 cursor-pointer text-text-main font-semibold"
       >
         <img
           v-if="user?.profile_picture_url"

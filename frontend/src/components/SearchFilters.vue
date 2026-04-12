@@ -92,7 +92,7 @@ const updateStarQuery = (rating) => {
       </div>
     </div>
 
-    <button class="bg-[#52848A] rounded-full px-[18px] py-1 w-max justify-center mx-auto">
+    <button class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto">
       Add a Professor
     </button>
   </div>

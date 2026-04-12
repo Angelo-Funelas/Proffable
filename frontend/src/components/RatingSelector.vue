@@ -48,15 +48,4 @@
     fill: var(--color-accent);
     animation: pulse .2s cubic-bezier(.02,1.68,.95,.99);
 }
-@keyframes pulse {
-    0% {
-        scale: 1;
-    }
-    50% {
-        scale: 1.2;
-    }
-    100% {
-        scale: 1;
-    }
-}
 </style>

@@ -101,12 +101,12 @@ function toggleTag(id) {
             v-for="t in tags" 
             :key="t.tag_id"
             @click="toggleTag(t.tag_id)"
-            :class="form.tags.includes(t.tag_id) ? 'bg-[#52848A] text-white px-2 py-1 rounded-full cursor-pointer' : 'bg-gray-200 text-[#719294] px-2 py-1 rounded-full cursor-pointer'"
+            :class="form.tags.includes(t.tag_id) ? 'bg-primary text-white px-2 py-1 rounded-full cursor-pointer' : 'bg-gray-200 text-[#719294] px-2 py-1 rounded-full cursor-pointer'"
           >
             {{ t.tag_name }}
           </div>
         </div>
-        <button type="submit" class="bg-[#52848A] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
+        <button type="submit" class="bg-accent hover:bg-accent-hover text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
           <span v-if="!editing">Submit Review</span>  
           <span v-if="editing">Save</span>  
         </button>
