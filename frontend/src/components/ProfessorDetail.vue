@@ -138,7 +138,7 @@
                 <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
                 <div class="bg-[#719294] rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
-                        <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
+                        <h3 class="text-2xl"><span class="font-bold">{{ professor.institutions?.map(i => i.name).join(', ') || 'Unknown Institution' }}</span> </h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
                             {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
                         <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
