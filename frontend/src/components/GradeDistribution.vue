@@ -17,6 +17,8 @@
 
     onMounted(fetchAnalytics)
     watch(() => props.professorId, fetchAnalytics)
+
+    defineExpose({ fetchAnalytics })
 </script>
 
 <template>

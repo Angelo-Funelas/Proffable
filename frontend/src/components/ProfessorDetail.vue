@@ -15,6 +15,7 @@
     const route = useRoute()
     const reviews = ref([])
     const router = useRouter()
+    const gradeDistRef = ref(null)
     
     const professors = ref()
 
@@ -69,6 +70,12 @@
     const handleDelete = () => {
         professor_reviewed.value = false;
         fetchReviews();
+        gradeDistRef.value?.fetchAnalytics()
+    }
+
+    const handleReviewSubmit = () => {
+        fetchReviews()
+        gradeDistRef.value?.fetchAnalytics()
     }
 
     onMounted(()=>{
@@ -167,10 +174,10 @@
                         </ul>
                     </div>
                     <!--GRADE DISTRIBUTION-->
-                    <GradeDistribution :professorId="professor.professor_id" />
+                    <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
                 <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
-                    <ReviewFormNew @submitReview="fetchReviews"/>
+                    <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
