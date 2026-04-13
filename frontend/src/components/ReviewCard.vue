@@ -18,7 +18,9 @@ const props = defineProps({
   courseCode: String,
   courseName: String,
   semesterTerm: String,
-  semesterYear: String
+  semesterYear: String,
+  courseCode: String,
+  courseName:String,
 })  
 
 const showReportModal = ref(false)
@@ -158,7 +160,11 @@ const handleDelete = async () => {
                 <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
                     <img src="../assets/User.png" class="h-[20px]">
                 </div>
-                 <span>Anonymous Student | {{ semesterTerm }} {{ semesterYear }}</span>
+                <div class="flex flex-col">
+                  <span>Anonymous Student | {{ semesterTerm }} {{ semesterYear }}  </span> 
+                 <span>Course Taken: {{ courseCode }} -- {{ courseName }}</span>
+                </div>
+                 
             </div>
             
             <div class="flex">
