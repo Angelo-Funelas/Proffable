@@ -35,7 +35,7 @@
         try{
             const response = await api.get(`professors/${route.params.professorId}`)
             professor.value = response.data
-            console.log(professor.value.tags)
+            console.log(professor.value.read_tags)
         } catch(error){
             console.log("Error with fetching professors: ",error)
         }
@@ -51,7 +51,6 @@
                 professor_reviewed.value = true
                 break
             }
-            console.log(response.data)
         } catch(error){
             console.log("Error with fetching reviews: ", error)
         }
@@ -141,7 +140,7 @@
                 <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
                 <div class="bg-card shadow-md rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
-                        <h3 class="text-2xl"><span class="font-bold">University of Unknown</span> | Literature</h3>
+                        <h3 class="text-2xl"><span class="font-bold">{{ professor.institutions?.map(i => i.name).join(', ') || 'Unknown Institution' }}</span> </h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
                             {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
                         <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
@@ -231,6 +230,7 @@
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
                                 @delete="handleDelete"
+                                @edit="fetchReviews"
                                 :reviewId="review.review_id"
                                 :is-owner="review.is_owner"
                                 :is-moderator="isModerator" 
@@ -238,6 +238,7 @@
                                 :rating="review.review_rating"
                                 :grade="review.received_grade"
                                 :likes="review.helpful_count"
+                                :tags="review.read_tags"
                                 />
                         </li>
                     </ul>

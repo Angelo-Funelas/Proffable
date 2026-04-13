@@ -9,6 +9,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     favorite_id = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
+    institutions = serializers.SerializerMethodField()
 
     def get_is_favorited(self, obj):
         request = self.context.get('request')
@@ -29,10 +30,15 @@ class ProfessorSerializer(serializers.ModelSerializer):
             .order_by('-count')[:5]
         return [tag.tag_name for tag in tags]
 
+    def get_institutions(self,obj):
+        institutions = Institution.objects.filter(courses__professor_course__professor=obj).distinct()
+        return InstitutionSerializer(institutions, many=True).data
+    
     class Meta:
         model = Professor
         fields = ["professor_id", "f_name", "l_name", "m_name", "email", 
-                  "avg_rating", "review_count", "favorite_count", "is_favorited", "favorite_id", "tags"]
+                  "avg_rating", "review_count", "favorite_count", "is_favorited", 
+                  "favorite_id", "tags", "institutions"]
 
 class ProfessorOverviewSerializer(serializers.ModelSerializer):
     class Meta:

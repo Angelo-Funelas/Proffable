@@ -53,20 +53,21 @@ const goToProf = (professorId) => {
             <p v-if="professors.length>0" class="text-left ml-2 mb-4 text-text-muted">{{ professors.length }} results found for "{{ route.query.q }}"</p>
             <p v-if="isLoading">Loading professors...</p>
 
-            <ul class="grid grid-cols-1 gap-y-[10px]">
-                <li  v-for="prof in professors" :key="prof.professor_id" 
-                @click="goToProf(prof.professor_id)" class="cursor-pointer">
-                    <ProfCard
-                    :lname="prof.l_name"
-                    :fname="prof.f_name"
-                    :avgScore="prof.avg_rating || 0"
-                    :numReviews="prof.review_count"
-                    :favoriteCount="prof.favorite_count"
-                    :is_favorited="prof.is_favorited"
-                    :tags="prof.tags"
-                    />
-                </li>
-            </ul>
+        <ul class="grid grid-cols-1 gap-y-[10px]">
+            <li  v-for="prof in professors" :key="prof.professor_id" 
+            @click="goToProf(prof.professor_id)" class="cursor-pointer">
+                <ProfCard
+                :lname="prof.l_name"
+                :fname="prof.f_name"
+                :avgScore="prof.avg_rating || 0"
+                :numReviews="prof.review_count"
+                :favoriteCount="prof.favorite_count"
+                :is_favorited="prof.is_favorited"
+                :tags="prof.tags"
+                :institutions="prof.institutions"
+                />
+            </li>
+        </ul>
         </div>
     </div>
 </div> 

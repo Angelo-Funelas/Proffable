@@ -9,6 +9,7 @@ const props = defineProps({
     numReviews: Number,
     favoriteCount: Number,
     is_favorited: Boolean,
+    institutions: Array,
 })
 
 </script>
@@ -18,7 +19,7 @@ const props = defineProps({
 
     <div class="flex flex-col text-left text-text-main">
         <h3 class="text-xl font-bold">{{ fname }} {{ lname }}</h3>
-        <p class="text-sm text-text-muted">University of Unknown </p>
+        <p class="text-sm text-text-muted">{{ institutions?.map(i => i.name).join(', ') || 'Unknown Institution' }}</p>
         <p class="text-sm flex items-center gap-[2px] text-text-muted"><img src="../assets/Star.svg" class="h-[16px]"> {{ avgScore }} ({{ numReviews }} reviews)</p>
         <div class="text-sm text-text-muted flex flex-wrap gap-1 items-center">
             <span>Tags:</span>
