@@ -107,6 +107,7 @@ const handleEdit = (rating, grade_received, comment_text) => {
     review_data.value.grade_received = grade_received;
     review_data.value.reviewText = comment_text;
     isEditing.value = false;
+    emit('edit');
 }
 const isEditing = ref(false) 
 
@@ -123,7 +124,7 @@ const { floatingStyles } = useFloating(reference, floating, {
     shift()
   ],
 })
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'edit'])
 
 const canDelete = computed(() => props.isOwner || props.isModerator)
 
