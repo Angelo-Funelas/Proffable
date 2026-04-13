@@ -68,6 +68,13 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
 
+    @action(detail=True, methods=['get'])
+    def courses(self,request, pk=None):
+        professor = self.get_object()
+        courses = Course.objects.filter(professor_course__professor=professor)
+        return Response(CourseSerializer(courses, many=True).data)
+
+
 class ProfessorOverviewViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProfessorOverview.objects.all()
     serializer_class = ProfessorOverviewSerializer
