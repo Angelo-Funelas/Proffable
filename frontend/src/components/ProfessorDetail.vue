@@ -233,7 +233,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="!professor_reviewed" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
+                <div class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="fetchReviews"/>
                 </div>
                 <!--REVIEW CARDS-->

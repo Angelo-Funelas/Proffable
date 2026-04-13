@@ -64,7 +64,7 @@ class Review(models.Model):
     ]
     semester_term = models.CharField(choices=SEMESTER_CHOICES,null=False, blank=False)
 
-    #of the format 20XX-20XX, validated in views
+    #of the format 20XX-20XX, validated in serializer
     semester_year = models.CharField(max_length=9, null=False, blank=False)
     
     def __str__(self):
