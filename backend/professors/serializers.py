@@ -85,6 +85,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source="course.course_name", read_only=True)
     semester_term = serializers.ChoiceField(choices=Review.SEMESTER_CHOICES)
     semester_year = serializers.CharField(max_length=9)
+    read_semester_term = serializers.SerializerMethodField()
+
+    def get_read_semester_term(self, obj):
+        return obj.get_semester_term_display()
 
     class Meta:
         model = Review
@@ -93,7 +97,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "professor_f_name", "professor_m_name", "professor_l_name", "is_owner",
             "review_rating", "comment_text", "review_date", "received_grade", 
             "helpful_count", "tags", "read_tags", "course", "course_code", "course_name",
-            "semester_term", "semester_year",
+            "semester_term", "semester_year", 'read_semester_term'
         ]
         extra_kwargs = {
             'student': {'read_only': True}
@@ -170,7 +174,7 @@ class InstitutionDomainSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['course_id', 'course_code']
+        fields = ['course_id', 'course_code', 'course_name']
 
 
 class ReviewReportSerializer(serializers.ModelSerializer):

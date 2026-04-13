@@ -15,6 +15,7 @@
     const professor = ref({})
     const route = useRoute()
     const reviews = ref([])
+    const courses = ref([])
     const router = useRouter()
     
     const professors = ref()
@@ -72,11 +73,22 @@
         fetchReviews();
     }
 
+    async function fetchCourses(){
+        try{
+            const response = await api.get(`professors/${route.params.professorId}/courses/`)
+            courses.value = response.data
+            console.log(courses.value)
+        } catch(error){
+            console.log("Error with fetching professors: ",error)
+        }
+    }
+
     onMounted(()=>{
         fetchProfessor()
         fetchReviews()
         checkModStatus()
         fetchSimilar()
+        fetchCourses()
     })
 
     async function toggleFavorite() {
@@ -140,7 +152,8 @@
                 <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
                 <div class="bg-card shadow-md rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
-                        <h3 class="text-2xl"><span class="font-bold">{{ professor.institutions?.map(i => i.name).join(', ') || 'Unknown Institution' }}</span> </h3>
+                        <h3 class="text-2xl"><span class="font-bold">{{ professor.institutions?.map(i => i.name).join(', ') 
+                        || 'Unknown Institution' }}</span> </h3>
                         <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
                             {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
                         <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
@@ -148,6 +161,8 @@
                                 {{ tag }}
                             </span>
                         </div>
+                        <h2><span class="font-bold">Courses: {{ courses?.map(i => i.course_name).join(', ') || 
+                        'No Registered Courses' }}</span> </h2>
                     </div>
 
                     <!-- FAVORITE PROF-->
@@ -239,6 +254,10 @@
                                 :grade="review.received_grade"
                                 :likes="review.helpful_count"
                                 :tags="review.read_tags"
+                                :course-code="review.course_code"
+                                :course-name="review.course_name"
+                                :semester-term="review.read_semester_term"
+                                :semester-year="review.semester_year"
                                 />
                         </li>
                     </ul>
