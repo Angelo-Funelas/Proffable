@@ -1,11 +1,12 @@
 from django.contrib import admin
-from .models import Professor, Review, Institution, InstitutionDomain, Course, ProfessorCourse, ReviewReport, ReviewVote, Tag, ReviewTag
+from .models import Professor, ProfessorOverview, Review, Institution, InstitutionDomain, Course, ProfessorCourse, ReviewReport, ReviewVote, Tag, ReviewTag
 from .models import FavoriteProf
 
 class ProfessorAdmin(admin.ModelAdmin):
     model = Professor
 
-
+class ProfessorOverviewAdmin(admin.ModelAdmin):
+    model = ProfessorOverview
 
 class InstitutionAdmin(admin.ModelAdmin):
     model = Institution
@@ -37,6 +38,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Professor, ProfessorAdmin)
+admin.site.register(ProfessorOverview, ProfessorOverviewAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(InstitutionDomain, InstitutionDomainAdmin)
