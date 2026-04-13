@@ -42,7 +42,7 @@ class Professor(models.Model):
         return f"{self.l_name}, {self.f_name}"
 
 class ProfessorOverview(models.Model):
-    professor = models.ForeignKey(Professor, unique=True, on_delete=models.CASCADE, related_name="overview")
+    professor = models.OneToOneField(Professor, on_delete=models.CASCADE, related_name="overview")
     last_updated = models.DateTimeField(auto_now=True)
     overview = models.TextField()
 
