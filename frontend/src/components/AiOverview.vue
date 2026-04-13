@@ -22,7 +22,7 @@
         if (timer) clearInterval(timer);
         displayedHtml.value = '';
 
-        const words = text.split(' ');
+        const words = text.replace(/\n/g, "<br>").split(' ');
         let currentMarkdown = '';
         let i = 0;
 
