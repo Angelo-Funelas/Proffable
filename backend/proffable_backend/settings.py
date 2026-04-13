@@ -29,6 +29,8 @@ SECRET_KEY = 'django-insecure-xcp_k)z)%t$5qspwc^e%u_8vjaq-3yw9j1mq$(l^f3o-^!f+@a
 # Environment Variables
 GOOGLE_OAUTH_CLIENT_ID = config('GOOGLE_OAUTH_CLIENT_ID')
 GOOGLE_OAUTH_CLIENT_SECET = config('GOOGLE_OAUTH_CLIENT_SECET')
+LLM_API_URL = config('LLM_API_URL')
+LLM_API_KEY = config('LLM_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

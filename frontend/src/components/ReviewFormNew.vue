@@ -93,7 +93,7 @@ function toggleTag(id) {
     <form @submit.prevent="submitReview">
         <h1 class="text-2xl font-bold text-left my-2.5 mb-0" v-if="!editing">Write a Review</h1>
         <RatingSelector @rate="handleRate" :rating="review_rating"/>
-        <input type="text" v-model="form.received_grade" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60" placeholder="Grade Received: e.g. A+, 92, 1.75">
+        <input maxlength="12" type="text" v-model="form.received_grade" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60" placeholder="Grade Received: e.g. A+, 92, 1.75">
         <textarea v-model="form.comment_text" class="border-[#e9e9e9] border-2 rounded-xl resize-none w-full text-[#719294] p-2" placeholder="What was good? What could be improved?"></textarea>
         <div class="flex flex-wrap gap-2 my-2.5">
           <h1 class="text-xl text-left font-bold" v-if="!editing">Tags: </h1>

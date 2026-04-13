@@ -10,6 +10,7 @@
     import RatingSelector from './RatingSelector.vue'
     import ReviewFormNew from './ReviewFormNew.vue'
     import Heart from './Heart.vue'
+    import AiOverview from './AiOverview.vue'
 
     const professor = ref({})
     const route = useRoute()
@@ -154,15 +155,7 @@
                     <Heart @click=toggleFavorite :filled="professor.is_favorited" :favorite_count="professor.favorite_count"/>
                 </div>
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
-                    <!--AI OVERVIEW-->
-                    <div class="bg-card shadow rounded-xl p-[18px] flex flex-col text-[#719294] text-left">
-                        <h3 class="text-2xl font-bold">AI Overview of Reviews</h3>
-                        <ul class="space-y-2 mt-2">
-                            <li><span class="font-bold">Pros</span>: Lectures are well-organized and grading is generally fair and transparent.</li>
-                            <li><span class="font-bold">Cons</span>: Fast-paced teaching style may require students to keep up with lessons consistently.</li>
-                            <li><span class="font-bold">Verdict</span>: Strong choice for students who prefer structured classes and can handle quicker pacing.</li>
-                        </ul>
-                    </div>
+                    <AiOverview :professor_id="route.params.professorId"/>
                     <!--GRADE DISTRIBUTION-->
                     <div class="bg-card shadow rounded-xl p-[18px] text-[#719294] text-left">
                         <h3 class="text-2xl font-bold">Grade Distribution</h3>

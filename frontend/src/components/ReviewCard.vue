@@ -204,7 +204,7 @@ const handleDelete = async () => {
                 </div>
             </div>
             
-            <p class="text-xl"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
+            <p class="text-md"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
             <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ review_data.grade }}</p>
 
             <div class="flex flex-wrap gap-2">
