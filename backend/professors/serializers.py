@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
+from .models import Professor, ProfessorOverview, Review, Institution, InstitutionDomain, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
 from django.db.models import Count
 
 class ProfessorSerializer(serializers.ModelSerializer):
@@ -40,6 +40,10 @@ class ProfessorSerializer(serializers.ModelSerializer):
                   "avg_rating", "review_count", "favorite_count", "is_favorited", 
                   "favorite_id", "tags", "institutions"]
 
+class ProfessorOverviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfessorOverview
+        fields = ['id', 'professor', 'last_updated', 'overview']
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

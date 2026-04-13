@@ -1,17 +1,55 @@
 @import "tailwindcss";
 
+@theme {
+  /* The Core Brand */
+  --color-primary: #005c78;
+  --color-primary-hover: #004960;
+
+  /* The Action Colors */
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+
+  /* The Canvas (Backgrounds) */
+  --color-surface: #f4f7f8;
+  --color-card: #ffffff;
+
+  /* Typography */
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
+
+  --font-roboto: 'RobotoCustom', sans-serif;
+}
+
+@font-face {
+  font-family: 'RobotoCustom';
+  src: url('./assets/roboto-500.woff2') format('woff2');
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #E9E9E9;
+  background-color: var(--color-surface);
 
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes pulse {
+    0% {
+        scale: 1;
+    }
+    50% {
+        scale: 1.2;
+    }
+    100% {
+        scale: 1;
+    }
 }
 
 a {
@@ -20,30 +58,13 @@ a {
   color: #719294;
 }
 
-a:visited {
-  color: #52848A;
-}
-
-a:hover {
-  color: #52848A;
-}
-
 body {
   margin: 0;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Karla', sans-serif;
-  color: #E9E9E9;
-}
-
-h1 {
-  color: #505946;
-}
-
-.form_text {
-  color: #719294;
-  opacity: 1;
+  @apply text-text-main;
 }
 
 .card {

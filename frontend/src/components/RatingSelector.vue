@@ -30,9 +30,9 @@
         <svg width="40" height="38" viewBox="0 0 40 38"
         v-for="n in 5"
         :key="n"
-        class=" drop-shadow-[1px_2px_2px_rgba(0,0,0,.4)] inline fill-[#505946] cursor-pointer px-1 mx-0.5"
+        class=" drop-shadow-[1px_2px_2px_rgba(0,0,0,.4)] inline fill-[#616161] cursor-pointer px-1 mx-0.5"
         :class="{ 
-            'fill-[#cbcb7c]': starRatingHover >= n && starRating < n,
+            'fill-accent-hover': starRatingHover >= n && starRating < n,
             'star-active': starRating >= n
         }"
         @mouseenter="handleMouseEnter(n)"
@@ -45,18 +45,7 @@
 
 <style>
 .star-active {
-    @apply fill-[#ffe51f];
+    fill: var(--color-accent);
     animation: pulse .2s cubic-bezier(.02,1.68,.95,.99);
-}
-@keyframes pulse {
-    0% {
-        scale: 1;
-    }
-    50% {
-        scale: 1.2;
-    }
-    100% {
-        scale: 1;
-    }
 }
 </style>

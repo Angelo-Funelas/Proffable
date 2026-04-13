@@ -228,12 +228,12 @@ const deleteAccount = async () => {
   try {
     await api.delete("me/delete/")
     logout()
-    showDeleteConfirm = false 
+    showDeleteConfirm.value = false 
     showMessage("Deleted account.", "success")
   } catch (err) {
     console.error("DELETE /me/delete failed:", err.response?.status, err.response?.data || err.message)
     showMessage("Could not delete account.", "error")
-    showDeleteConfirm = false
+    showDeleteConfirm.value = false
   }
 }
 

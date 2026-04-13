@@ -44,13 +44,14 @@ const goToProf = (professorId) => {
 </script>
 
 <template>
-<div class="min-h-screen bg-[#e8e8e8] flex flex-col">
+<div class="min-h-screen flex flex-col">
     <Navbar/>
     <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
         <SearchFilters />
         <div>
-            <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
-        <p v-if="isLoading">Loading professors...</p>
+            <h1 class="text-5xl font-bold text-left mb-4 text-primary">Professors</h1>
+            <p v-if="professors.length>0" class="text-left ml-2 mb-4 text-text-muted">{{ professors.length }} results found for "{{ route.query.q }}"</p>
+            <p v-if="isLoading">Loading professors...</p>
 
         <ul class="grid grid-cols-1 gap-y-[10px]">
             <li  v-for="prof in professors" :key="prof.professor_id" 
