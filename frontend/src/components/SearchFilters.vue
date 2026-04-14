@@ -122,10 +122,10 @@ const coursesTaught = ref(1);
 
         <template #footer>
           <div class="flex justify-end gap-2">
-            <button @click="showReportModal = false" class="border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+            <button @click="showReportModal = false" class="cursor-pointer border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
                 Cancel
             </button>
-            <button @click="submitReport" class="bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+            <button @click="submitReport" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
                 Submit
             </button>
           </div>
