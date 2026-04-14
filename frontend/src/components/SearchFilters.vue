@@ -53,7 +53,45 @@ const updateStarQuery = (rating) => {
 }
 
 const isModalOpen = ref(false);
-const coursesTaught = ref(1);
+const coursesTaught = ref([
+  { code: '', name: '' }
+]);
+
+const removeCourse = (index) => {
+  if (coursesTaught.value.length > 1) {
+    coursesTaught.value.splice(index, 1);
+  } else {
+    coursesTaught.value[0].code = '';
+    coursesTaught.value[0].name = '';
+  }
+};
+
+const f_name = ref();
+const m_name = ref();
+const l_name = ref();
+const email = ref();
+
+const createProf = async () => {
+
+  try {
+    const response = await api.post("review-reports/", {
+      review: props.reviewId,
+      reason: reason.value,
+      description: description.value
+    })
+
+    alert("Report submitted.")
+
+    showReportModal.value = false
+    reason.value = ""
+    description.value = ""
+
+  } catch (error) {
+    console.error(error)
+    alert("Error submitting report.")
+  }
+
+}
 </script>
 
 <template> 
@@ -95,7 +133,7 @@ const coursesTaught = ref(1);
       </div>
     </div>
 
-    <button  @click="isModalOpen = true" class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto cursor-pointer">
+    <button  @click="isModalOpen = true" class="bg-accent hover:bg-accent-hover text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto cursor-pointer">
       Add a Professor
     </button>
     <BaseModal 
@@ -108,24 +146,27 @@ const coursesTaught = ref(1);
       <input type="text" placeholder="Middle Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
       <input type="text" placeholder="Last Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
       <input type="email" placeholder="Email" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-      <p>Courses Taught</p>
-      <div class=" rounded-sm border border-primary inline mb-4">
-        <span @click="coursesTaught=Math.max(1, coursesTaught-1)" class="select-none cursor-pointer bg-primary px-1 hover:bg-primary-hover text-white"><</span>
-        <span class="inline-block w-8 text-center">{{coursesTaught}}</span>
-        <span @click="coursesTaught+=1" class="select-none cursor-pointer bg-primary px-1 hover:bg-primary-hover text-white">></span>
-      </div>
-      <div v-for="_ in coursesTaught" class="bg-surface p-2 rounded-lg m-2 grid grid-rows-1 grid-cols-[30%_70%]">
-        <input type="text" placeholder="Course Code" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-        <input type="text" placeholder="Course Name" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      <p class="inline-block">Courses Taught ({{ coursesTaught.length }})</p>
+      <p
+        @click="coursesTaught.push({code: '', name: ''})" 
+        class="inline-block px-2  rounded-2xl mx-2 border border-primary text-primary text-sm hover:text-white hover:bg-primary cursor-pointer">Add +</p>
+      <div v-for="(course, index) in coursesTaught" class="bg-surface p-2 rounded-lg m-2 grid grid-cols-[30%_60%_10%] items-center box-border">
+        <input type="text" v-model="course.code" placeholder="Course Code" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+        <input type="text" v-model="course.name" placeholder="Course Name" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+        <img
+          v-if="index !== 0"
+          @click="removeCourse(index)"
+          src="../assets/delete.svg"
+          class="h-6 justify-self-center cursor-pointer">
       </div>
     
 
         <template #footer>
           <div class="flex justify-end gap-2">
-            <button @click="showReportModal = false" class="cursor-pointer border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+            <button @click="isModalOpen = false" class="cursor-pointer border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
                 Cancel
             </button>
-            <button @click="submitReport" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+            <button @click="createProf" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
                 Submit
             </button>
           </div>
