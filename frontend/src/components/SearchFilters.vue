@@ -74,23 +74,34 @@ const email = ref();
 const createProf = async () => {
 
   try {
-    const response = await api.post("review-reports/", {
-      review: props.reviewId,
-      reason: reason.value,
-      description: description.value
+    const response = await api.post("create-professor/", {
+      f_name: f_name.value,
+      m_name: m_name.value,
+      l_name: l_name.value,
+      email: email.value,
+      courses: coursesTaught.value
     })
 
-    alert("Report submitted.")
+    alert("Form submitted.")
 
-    showReportModal.value = false
-    reason.value = ""
-    description.value = ""
+    f_name.value = ""
+    m_name.value = ""
+    l_name.value = ""
+    email.value = ""
+    for (const course of coursesTaught.value) {
+      course.code = ""
+      course.name = ""
+    }
 
   } catch (error) {
     console.error(error)
-    alert("Error submitting report.")
+    alert("Error submitting form.")
   }
 
+}
+
+const submitForm = async () => {
+  document.getElementById("prof-form-submit").click()
 }
 </script>
 
@@ -141,24 +152,27 @@ const createProf = async () => {
       title="New Professor" 
       @close="isModalOpen = false"
     >
-      <p class="text-text-muted mb-4">Can't find your professor? Create a new profile for them and wait for other students to leave their ratings & reviews.</p>
-      <input type="text" placeholder="First Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-      <input type="text" placeholder="Middle Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-      <input type="text" placeholder="Last Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-      <input type="email" placeholder="Email" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-      <p class="inline-block">Courses Taught ({{ coursesTaught.length }})</p>
-      <p
-        @click="coursesTaught.push({code: '', name: ''})" 
-        class="inline-block px-2  rounded-2xl mx-2 border border-primary text-primary text-sm hover:text-white hover:bg-primary cursor-pointer">Add +</p>
-      <div v-for="(course, index) in coursesTaught" class="bg-surface p-2 rounded-lg m-2 grid grid-cols-[30%_60%_10%] items-center box-border">
-        <input type="text" v-model="course.code" placeholder="Course Code" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-        <input type="text" v-model="course.name" placeholder="Course Name" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
-        <img
-          v-if="index !== 0"
-          @click="removeCourse(index)"
-          src="../assets/delete.svg"
-          class="h-6 justify-self-center cursor-pointer">
-      </div>
+      <form @submit.prevent="createProf">
+        <p class="text-text-muted mb-4">Can't find your professor? Create a new profile for them and wait for other students to leave their ratings & reviews.</p>
+        <input v-model="f_name" type="text" placeholder="First Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+        <input v-model="m_name" type="text" placeholder="Middle Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+        <input v-model="l_name" type="text" placeholder="Last Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+        <input v-model="email" type="email" placeholder="Email" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+        <p class="inline-block">Courses Taught ({{ coursesTaught.length }})</p>
+        <p
+          @click="coursesTaught.push({code: '', name: ''})" 
+          class="inline-block px-2  rounded-2xl mx-2 border border-primary text-primary text-sm hover:text-white hover:bg-primary cursor-pointer">Add +</p>
+        <div v-for="(course, index) in coursesTaught" class="bg-surface p-2 rounded-lg m-2 grid grid-cols-[30%_60%_10%] items-center box-border">
+          <input type="text" v-model="course.code" placeholder="Course Code" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+          <input type="text" v-model="course.name" placeholder="Course Name" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]" required>
+          <img
+            v-if="index !== 0"
+            @click="removeCourse(index)"
+            src="../assets/delete.svg"
+            class="h-6 justify-self-center cursor-pointer">
+        </div>
+        <input id="prof-form-submit" type="submit" class="hidden">
+      </form>
     
 
         <template #footer>
@@ -166,7 +180,7 @@ const createProf = async () => {
             <button @click="isModalOpen = false" class="cursor-pointer border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
                 Cancel
             </button>
-            <button @click="createProf" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+            <button @click="submitForm" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
                 Submit
             </button>
           </div>
