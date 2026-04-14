@@ -20,12 +20,15 @@
     const professors = ref()
 
     const isModerator = ref(false)
+    const isAuthorized = ref(false)
 
     async function checkModStatus() {
     try {
         const res = await api.get('me/')
         isModerator.value = res.data.is_moderator
+        isAuthorized.value = true
     } catch (err) {
+        console.error(err)
         isModerator.value = false
     }
 }
@@ -85,13 +88,18 @@
                 await api.delete(`favorite-prof/${professor.value.favorite_id}/`)
             } else {
                 const response = await api.post('favorite-prof/' ,{
-                professor_id: route.params.professorId
-            })
-            
+                    professor_id: route.params.professorId
+                })
             }
             fetchProfessor()
         } catch(error){
             console.log("Error toggling favorite: ",error)
+            if (error.response.status == 401) {
+                  router.push({ 
+                    path: '/login', 
+                    query: { next: router.currentRoute.value.fullPath } 
+                })
+            }
         }
     }
     const goToProf = (professorId) => {
@@ -218,7 +226,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="!professor_reviewed" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
+                <div v-if="!professor_reviewed && isAuthorized" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="fetchReviews"/>
                 </div>
                 <!--REVIEW CARDS-->
