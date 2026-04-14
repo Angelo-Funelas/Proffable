@@ -1,9 +1,10 @@
 <script setup>
-    import { ref, computed, onMounted, watch } from 'vue'
+    import { ref, computed, onMounted, watch, nextTick } from 'vue'
     import api from "@/api/axios"
 
     const props = defineProps(['professorId'])
     const distribution = ref([])
+    const animated = ref(false)
 
     const gradeOrder = ['A', 'B+', 'B', 'C+', 'C', 'D', 'F']
 
@@ -30,8 +31,11 @@
     const fetchAnalytics = async () => {
         if (!props.professorId) return
         try {
+            animated.value = false
             const response = await api.get(`professors/${props.professorId}/analytics/`)
             distribution.value = response.data.distribution
+            await nextTick()
+            setTimeout(() => { animated.value = true }, 50)
         } catch (error) {
             console.error("Failed to load analytics:", error)
         }
@@ -53,7 +57,7 @@
         <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
           <div
             class="bg-[#719294] h-4 rounded-full transition-all duration-700"
-            :style="{ width: item.percentage + '%' }"
+            :style="{ width: animated ? item.percentage + '%' : '0%' }"
           ></div>
         </div>
         <span class="text-sm">{{ item.percentage }}%</span>
