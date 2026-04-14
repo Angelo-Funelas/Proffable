@@ -11,7 +11,7 @@ defineEmits(['close']);
   <Teleport to="body">
     <Transition name="modal-fade">
       <div v-if="show" class="modal-backdrop" @click.self="$emit('close')">
-        <div class="modal-container" role="dialog" aria-modal="true">
+        <div class="modal-container max-h-200 overflow-auto scrollbar-sleek" role="dialog" aria-modal="true">
           <header class="modal-header relative">
             <slot name="header">
                 <h3 class="text-lg font-bold mb-4 text-[#0B0D09]">{{ title || 'Popup' }}</h3>
@@ -38,7 +38,7 @@ defineEmits(['close']);
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(5px); /* The blur you wanted */
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,7 +68,6 @@ defineEmits(['close']);
   cursor: pointer;
 }
 
-/* Animation Logic */
 .modal-fade-enter-active, .modal-fade-leave-active {
   transition: all 0.3s ease;
 }
@@ -77,4 +76,20 @@ defineEmits(['close']);
   opacity: 0;
   transform: translateY(10px);
 }
+
+  .scrollbar-sleek::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-sleek::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-sleek::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 100vh;
+    border: 2px solid transparent; /* Creates padding around thumb */
+  }
+  .scrollbar-sleek::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(155, 155, 155, 0.7);
+  }
 </style>

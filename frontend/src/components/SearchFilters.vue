@@ -53,6 +53,7 @@ const updateStarQuery = (rating) => {
 }
 
 const isModalOpen = ref(false);
+const coursesTaught = ref(1);
 </script>
 
 <template> 
@@ -94,7 +95,7 @@ const isModalOpen = ref(false);
       </div>
     </div>
 
-    <button  @click="isModalOpen = true" class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto">
+    <button  @click="isModalOpen = true" class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto cursor-pointer">
       Add a Professor
     </button>
     <BaseModal 
@@ -102,9 +103,33 @@ const isModalOpen = ref(false);
       title="New Professor" 
       @close="isModalOpen = false"
     >
-      <template #footer>
-        <button @click="isModalOpen = false">Confirm</button>
-      </template>
+      <p class="text-text-muted mb-4">Can't find your professor? Create a new profile for them and wait for other students to leave their ratings & reviews.</p>
+      <input type="text" placeholder="First Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      <input type="text" placeholder="Middle Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      <input type="text" placeholder="Last Name" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      <input type="email" placeholder="Email" class="border border-primary p-2 w-full mb-3 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      <p>Courses Taught</p>
+      <div class=" rounded-sm border border-primary inline mb-4">
+        <span @click="coursesTaught=Math.max(1, coursesTaught-1)" class="select-none cursor-pointer bg-primary px-1 hover:bg-primary-hover text-white"><</span>
+        <span class="inline-block w-8 text-center">{{coursesTaught}}</span>
+        <span @click="coursesTaught+=1" class="select-none cursor-pointer bg-primary px-1 hover:bg-primary-hover text-white">></span>
+      </div>
+      <div v-for="_ in coursesTaught" class="bg-surface p-2 rounded-lg m-2 grid grid-rows-1 grid-cols-[30%_70%]">
+        <input type="text" placeholder="Course Code" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+        <input type="text" placeholder="Course Name" class="bg-white border border-primary p-2 mx-1 rounded-lg text-sm text-text-main outline-none focus:border-[#5c898d]">
+      </div>
+    
+
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <button @click="showReportModal = false" class="border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+                Cancel
+            </button>
+            <button @click="submitReport" class="bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+                Submit
+            </button>
+          </div>
+        </template>
     </BaseModal>
   </div>
 </template>

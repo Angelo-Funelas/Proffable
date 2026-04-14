@@ -110,7 +110,7 @@ function toggleTag(id) {
           <span v-if="!editing">Submit Review</span>  
           <span v-if="editing">Save</span>  
         </button>
-        <button v-if="editing" @click="$emit('cancelReview')" type="button" class="bg-[#a2a2a2] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
+        <button v-if="editing" @click="$emit('cancelReview')" type="button" class="border border-primary text-primary mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
           Cancel
         </button>
         <!-- Feedback -->

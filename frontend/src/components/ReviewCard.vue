@@ -185,8 +185,8 @@ const handleDelete = async () => {
                     >
                         <p class="mb-2 text-[#0B0D09]">Are you sure you want to permanently delete your review?</p>
                         <div class="flex justify-end gap-2">
-                            <button @click="handleDelete" class="bg-red-600 text-white rounded-full px-4 py-1 text-sm">Yes, Delete</button>
-                            <button @click="showModal = false" class="bg-primary text-white rounded-full px-4 py-1 text-sm">Cancel</button>
+                            <button @click="handleDelete" class="cursor-pointer bg-red-600 text-white rounded-full px-4 py-1 text-sm">Yes, Delete</button>
+                            <button @click="showModal = false" class="cursor-pointer border border-primary text-primary rounded-full px-4 py-1 text-sm">Cancel</button>
                         </div>
                     </div>
 
@@ -265,10 +265,10 @@ const handleDelete = async () => {
 
           <template #footer>
             <div class="flex justify-end gap-2">
-              <button @click="showReportModal = false" class="border border-[#719294] text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+              <button @click="showReportModal = false" class="border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
                   Cancel
               </button>
-              <button @click="submitReport" class="bg-[#719294] text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+              <button @click="submitReport" class="bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
                   Submit
               </button>
             </div>
