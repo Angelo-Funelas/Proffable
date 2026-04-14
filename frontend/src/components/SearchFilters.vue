@@ -3,6 +3,7 @@ import { ref, watch, onMounted } from 'vue'
 import api from "@/api/axios"
 import { useRouter, useRoute } from 'vue-router'
 import RatingSelector from './RatingSelector.vue'
+import BaseModal from './BaseModal.vue';
 
 const router = useRouter()
 const route = useRoute()
@@ -51,6 +52,7 @@ const updateStarQuery = (rating) => {
   updateURL()
 }
 
+const isModalOpen = ref(false);
 </script>
 
 <template> 
@@ -92,8 +94,17 @@ const updateStarQuery = (rating) => {
       </div>
     </div>
 
-    <button class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto">
+    <button  @click="isModalOpen = true" class="bg-accent text-white rounded-full px-[18px] py-1 w-max justify-center mx-auto">
       Add a Professor
     </button>
+    <BaseModal 
+      :show="isModalOpen" 
+      title="New Professor" 
+      @close="isModalOpen = false"
+    >
+      <template #footer>
+        <button @click="isModalOpen = false">Confirm</button>
+      </template>
+    </BaseModal>
   </div>
 </template>
