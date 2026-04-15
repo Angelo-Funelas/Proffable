@@ -154,136 +154,147 @@ const handleDelete = async () => {
 </script>
 
 <template>
-    <div class="bg-[#ffffff] rounded-xl p-5 flex flex-col gap-2 text-left text-[#719294]">
-        <div class="flex justify-between items-center">
+    <div class="bg-card shadow-sm rounded-xl p-6 flex flex-col gap-3 text-left text-text-main border border-gray-100">
+        
+        <div class="flex justify-between items-start">
             <div class="flex gap-3 items-center">
-                <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
-                    <img src="../assets/User.png" class="h-[20px]">
+                <div class="w-10 h-10 rounded-full bg-surface border border-gray-200 flex items-center justify-center">
+                    <img src="../assets/User.png" class="h-5 opacity-70">
                 </div>
                 <div class="flex flex-col">
-                  <span>Anonymous Student | {{ semesterTerm }} {{ semesterYear }}  </span> 
-                 <span>Course Taken: {{ courseCode }} -- {{ courseName }}</span>
-                </div>
-                 
-            </div>
-            
-            <div class="flex">
-                <div class="flex align-middle gap-3">
-                    <button class="text-sm" v-if="isOwner" @click="isEditing = true">
-                        <img src="../assets/edit.svg" class="h-[24px]">
-                    </button>
-                    
-                    <button class="text-sm" v-if="isOwner" @click="showModal=true" ref="reference">
-                        <img src="../assets/delete.svg" class="h-[24px]">
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm text-text-main">
+                            {{ isOwner ? 'Me' : 'Anonymous Student' }}
+                        </span>
 
-                    <button 
-                        v-if="isModerator && !isOwner" 
-                        @click="deleteReview" 
-                        class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-200 transition-colors"
-                    >
-                        MOD DELETE
-                    </button>
-
-                    <div
-                        v-if="showModal"
-                        ref="floating"
-                        :style="floatingStyles"
-                        class="bg-white w-80 border-[#719294] border-2 shadow-xl p-4 rounded-md z-50"
-                    >
-                        <p class="mb-2 text-[#0B0D09]">Are you sure you want to permanently delete your review?</p>
-                        <div class="flex justify-end gap-2">
-                            <button @click="handleDelete" class="bg-red-600 text-white rounded-full px-4 py-1 text-sm">Yes, Delete</button>
-                            <button @click="showModal = false" class="bg-primary text-white rounded-full px-4 py-1 text-sm">Cancel</button>
-                        </div>
+                        <span v-if="isOwner" class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tight">
+                            Author
+                        </span>
                     </div>
 
-                    <button class="text-sm" v-if="!isOwner && !isModerator" @click="showReportModal = true">
-                        <img src="../assets/Flag.png" class="h-[24px]">
-                    </button>
+                    <span class="text-[11px] text-text-muted uppercase tracking-wider">
+                        {{ semester }} | {{ semesterTerm }} {{ semesterYear }}
+                    </span>
+                    <span class="text-[11px] text-text-muted uppercase tracking-wider">
+                        Course Taken: {{ courseCode }} -- {{ courseName }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button v-if="isOwner" @click="isEditing = true" class="p-1 hover:bg-surface rounded-lg transition-colors">
+                    <img src="../assets/edit.svg" class="h-6 opacity-80">
+                </button>
+                
+                <button v-if="isOwner" @click="showModal = true" ref="reference" class="p-1 hover:bg-red-50 rounded-lg transition-colors">
+                    <img src="../assets/delete.svg" class="h-6 opacity-80">
+                </button>
+
+                <button 
+                    v-if="isModerator && !isOwner" 
+                    @click="deleteReview" 
+                    class="text-[10px] font-bold bg-red-50 text-red-600 px-2 py-1 rounded border border-red-100 hover:bg-red-100"
+                >
+                    MOD DELETE
+                </button>
+
+                <button v-if="!isOwner && !isModerator" @click="showReportModal = true" class="p-1 hover:bg-surface rounded-lg transition-colors">
+                    <img src="../assets/Flag.png" class="h-6 opacity-80">
+                </button>
+
+                <div v-if="showModal" ref="floating" :style="floatingStyles" class="bg-white w-64 border-gray-200 border shadow-2xl p-4 rounded-xl z-50">
+                    <p class="text-sm mb-3 text-text-main font-medium">Permanently delete your review?</p>
+                    <div class="flex justify-end gap-2">
+                        <button @click="showModal = false" class="text-xs px-3 py-1.5 rounded-lg text-text-muted hover:bg-surface cursor-pointer">Cancel</button>
+                        <button @click="handleDelete" class="text-xs bg-red-600 text-white rounded-lg px-3 py-1.5 font-bold cursor-pointer">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div v-if="!isEditing">
-            <div class="flex">
-                <div v-for="n in review_data.rating">
-                    <img src="../assets/BigStarFilled.svg" class="h-[36px]" />
-                </div>
-                <div v-for="n in 5-review_data.rating">
-                    <img src="../assets/BigStar.svg" class="h-[36px]" />
-                </div>
+
+        <div v-if="!isEditing" class="space-y-3">
+            
+            <div class="flex gap-0.5">
+                <svg 
+                    v-for="n in 5" 
+                    :key="n"
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 40 38"
+                    class="inline transition-colors duration-300"
+                    :class="n <= review_data.rating ? 'fill-accent' : 'fill-gray-200'"
+                >
+                    <path d="M20,0l6.2,12.5,13.8,2-10,9.7,2.4,13.8-12.4-6.5-12.4,6.5,2.4-13.8L0,14.5l13.8-2L20,0Z"/>
+                </svg>
             </div>
             
-            <p class="text-md"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
-            <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ review_data.grade }}</p>
+            <p class="text-[15px] leading-relaxed text-text-main">
+                <span class="font-bold text-primary">Review:</span> {{ review_data.reviewText }}
+            </p>
 
-            <div class="flex flex-wrap gap-2">
-                <p class="text-sm"><span class="font-bold">Tags</span>:</p>
-                <span v-for="tag in review_data.tags" :key="tag.tag_name" class="text-sm underline px-1">
-                    {{ tag.tag_name }}
-                </span>
+            <div class="flex items-center gap-6">
+                <p class="text-xs text-text-muted">
+                    <span class="font-bold text-text-main">Grade:</span> {{ review_data.grade }}
+                </p>
+                <div v-if="review_data.tags && review_data.tags.length > 0" class="flex gap-2 items-center">
+                    <span class="text-xs font-bold text-text-main">Tags:</span>
+                    <div class="flex flex-wrap gap-1">
+                        <span v-for="tag in review_data.tags" :key="tag.tag_name" 
+                            class="text-[10px] bg-surface text-primary font-bold px-2 py-0.5 rounded-md border border-gray-100">
+                            {{ tag.tag_name }}
+                        </span>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex items-center gap-[2px]">
+            <div class="flex items-center gap-2 pt-3 border-t border-gray-50 mt-2">
                 <button 
                     @click="toggleHelpful"
-                    class="flex items-center gap-1 text-sm transition-colors"
-                    :class="hasVoted ? 'text-[#5c898d]' : 'text-[#719294] hover:text-[#5c898d]'"
+                    class="flex items-center gap-1.5 px-3 py-1 rounded-full border transition-all text-xs font-bold"
+                    :class="hasVoted ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-text-muted border-gray-200 hover:border-primary hover:text-primary'"
                 >
-                    <svg 
-                        :fill="hasVoted ? '#5c898d' : 'none'"
-                        :stroke="hasVoted ? '#5c898d' : '#719294'"
-                        class="h-[16px] w-[16px]"
-                        viewBox="0 0 24 24" 
-                        xmlns="http://www.w3.org/2000/svg"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        >
+                    <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z" />
                         <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
                     </svg>
                     {{ helpfulCountLocal }}
                 </button>
-                <span class="text-sm text-[#719294]">found this helpful</span>
+                <span class="text-[11px] text-text-muted italic">students found this helpful</span>
             </div>
         </div>
 
+        <div v-if="showReportModal" class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[100]">
+            <div class="bg-white p-6 rounded-2xl w-[340px] shadow-2xl animate-in fade-in zoom-in duration-200">
+                <h2 class="text-xl font-bold mb-1 text-primary">Report Review</h2>
+                <p class="text-xs text-text-muted mb-4">Help us maintain a helpful community.</p>
 
-    <div 
-    v-if="showReportModal" 
-    class="fixed inset-0 flex items-center justify-center bg-black/30 z-20"
-    >
-    <div class="bg-white p-6 rounded-xl w-[320px] shadow-lg z-30 text-[#719294]" >
-        <h2 class="text-lg font-bold mb-4 text-[#0B0D09]">Report Review</h2>
+                <select v-model="reason" class="bg-surface border border-gray-200 p-2.5 w-full mb-3 rounded-xl text-sm text-text-main outline-none focus:ring-2 focus:ring-primary/20">
+                    <option disabled value="">Select reason</option>
+                    <option value="offensive">Offensive Language</option>
+                    <option value="spam">Spam</option>
+                    <option value="fake">Fake Review</option>
+                    <option value="harassment">Harassment</option>
+                    <option value="irrelevant">Irrelevant Content</option>
+                    <option value="other">Other</option>
+                </select>
 
-        <select v-model="reason" class="border border-[#719294] p-2 w-full mb-3 rounded-lg text-sm text-[#0B0D09] outline-none focus:border-[#5c898d]">
-        <option disabled value="">Select reason</option>
-        <option value="offensive">Offensive Language</option>
-        <option value="spam">Spam</option>
-        <option value="fake">Fake Review</option>
-        <option value="harassment">Harassment</option>
-        <option value="irrelevant">Irrelevant Content</option>
-        <option value="other">Other</option>
-        </select>
+                <textarea
+                    v-model="description"
+                    placeholder="Provide more context..."
+                    class="bg-surface border border-gray-200 p-3 w-full mb-4 rounded-xl text-sm text-text-main placeholder:text-text-muted outline-none focus:ring-2 focus:ring-primary/20 resize-none h-28"
+                ></textarea>
 
-        <textarea
-        v-model="description"
-        placeholder="Additional details (optional)"
-        class="border border-[#719294] p-2 w-full mb-4 rounded-lg text-sm text-[#0B0D09] placeholder:text-[#719294] outline-none focus:border-[#5c898d] resize-none h-24"
-        ></textarea>
-
-        <div class="flex justify-end gap-2">
-        <button @click="showReportModal = false" class="border border-[#719294] text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
-            Cancel
-        </button>
-        <button @click="submitReport" class="bg-[#719294] text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
-            Submit
-        </button>
+                <div class="flex justify-end gap-2">
+                    <button @click="showReportModal = false" class="px-4 py-2 rounded-xl text-sm font-bold text-text-muted hover:bg-surface transition-colors">
+                        Cancel
+                    </button>
+                    <button @click="submitReport" class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-primary-hover transition-all">
+                        Submit Report
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-            <p class="italic flex items-center gap-[2px]"><img src="../assets/ThumbsUp.png" class="h-[16px] mr-[4px]"> {{ review_data.likes }} found this helpful</p>
-        </div>
+
         <div v-if="isEditing">
             <ReviewFormNew
                 @cancelReview="isEditing = false"
