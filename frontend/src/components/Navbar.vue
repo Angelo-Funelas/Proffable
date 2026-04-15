@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import LogoIcon from './LogoIcon.vue'
 import api from "@/api/axios"
 
 
@@ -59,20 +60,20 @@ const logout = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-gradient-to-b from-[#719294] to-[#52848A] h-16 flex items-center justify-between px-6 shadow-md">
+  <nav class="w-full bg-white h-16 flex items-center justify-between px-6 shadow-lg relative z-50">
 
     <div
       @click="goToHomePage"
-      class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm cursor-pointer"
+      class="cursor-pointer"
     >
-      <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain pointer-events-none" />
+      <LogoIcon class="h-10 mr-3"/>
     </div>
 
 
     <div v-if="isAuthenticated" class="relative">
       <div
         @click="toggleDropdown"
-        class="flex items-center gap-2 cursor-pointer text-white font-semibold"
+        class="flex items-center gap-2 cursor-pointer text-text-main font-semibold"
       >
         <img
           v-if="user?.profile_picture_url"
@@ -117,7 +118,7 @@ const logout = () => {
     <button
       v-else
       @click="goToLogin"
-      class="text-white font-semibold hover:opacity-80 transition"
+      class="font-semibold hover:opacity-80 transition"
     >
       Login
     </button>

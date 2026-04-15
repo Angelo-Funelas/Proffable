@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.conf import settings
+import requests, threading
 
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
+from .serializers import ProfessorSerializer, ProfessorOverviewSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
 from .serializers import TagSerializer, FavoriteProfSerializer
-from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf, ProfessorOverview
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db import IntegrityError
@@ -67,7 +69,7 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         ).distinct()[:5]
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
-    
+      
     @action(detail=True, methods=['get'], permission_classes=[AllowAny])
     def analytics(self, request, pk=None):
         professor = self.get_object()
@@ -105,6 +107,61 @@ class ProfessorViewSet(viewsets.ModelViewSet):
             "distribution": distribution,
             "total_reviews": total_with_grades
         })
+
+class ProfessorOverviewViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProfessorOverview.objects.all()
+    serializer_class = ProfessorOverviewSerializer
+    
+    lookup_field = 'professor_id'
+
+PROMPT_FILE_PATH = settings.BASE_DIR / 'professors' / 'prompts' / 'system_prompt.txt'
+try:
+    with open(PROMPT_FILE_PATH, 'r', encoding='utf-8') as file:
+        SYSTEM_PROMPT = file.read().strip()
+except FileNotFoundError:
+    print(f"⚠️ Warning: Could not find prompt file at {PROMPT_FILE_PATH}")
+    
+def summarize_reviews(professor):
+    if SYSTEM_PROMPT is None: return
+    url = settings.LLM_API_URL
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": settings.LLM_API_KEY
+    }
+    payload = {
+        "model": "gemma3:12b", 
+        "messages": [],
+    }
+    sys_message = {
+        "role": "system",
+        "content": SYSTEM_PROMPT
+    }
+    payload['messages'].append(sys_message)
+    reviews = Review.objects.filter(professor=professor)
+    for review in reviews:
+        message = {
+            "role": "user",
+            "content": review.comment_text
+        }
+        if len(review.comment_text) > 0:
+            payload['messages'].append(message)
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status() 
+        result = response.json()
+        
+        print("🤖 Model Output:\n")
+        output = result.get("response", "No response field found.")
+        print(output)
+        ProfessorOverview.objects.update_or_create(professor=professor, defaults={'overview': output})
+        
+    except requests.exceptions.HTTPError as errh:
+        print(f"❌ HTTP Error: {errh}")
+        # Print the specific error message sent by the Express server
+        print(f"Server details: {response.json()}") 
+    except requests.exceptions.RequestException as err:
+        print(f"❌ Connection Error: {err}")
         
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -149,7 +206,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(student=self.request.user)
+            instance = serializer.save(student=self.request.user)
+            thread = threading.Thread(
+                target=summarize_reviews, 
+                args=(instance.professor,)
+            )
+            thread.start()
         except IntegrityError:
             raise serializer.ValidationError("You have already reviewed this professor.")
     

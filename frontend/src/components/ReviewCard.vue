@@ -185,7 +185,7 @@ const handleDelete = async () => {
                         <p class="mb-2 text-[#0B0D09]">Are you sure you want to permanently delete your review?</p>
                         <div class="flex justify-end gap-2">
                             <button @click="handleDelete" class="bg-red-600 text-white rounded-full px-4 py-1 text-sm">Yes, Delete</button>
-                            <button @click="showModal = false" class="bg-[#52848A] text-white rounded-full px-4 py-1 text-sm">Cancel</button>
+                            <button @click="showModal = false" class="bg-primary text-white rounded-full px-4 py-1 text-sm">Cancel</button>
                         </div>
                     </div>
 
@@ -205,7 +205,7 @@ const handleDelete = async () => {
                 </div>
             </div>
             
-            <p class="text-xl"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
+            <p class="text-md"><span class="font-bold">Review</span>: {{ review_data.reviewText }}</p>
             <p class="text-sm"><span class="font-bold">Grade Received</span>: {{ review_data.grade }}</p>
 
             <div class="flex flex-wrap gap-2">
