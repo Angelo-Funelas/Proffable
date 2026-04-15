@@ -101,7 +101,7 @@ def summarize_reviews(professor):
     for review in reviews:
         message = {
             "role": "user",
-            "content": review.comment_text
+            "content": f"Review by Student #{review.student.id}: {review.comment_text}"
         }
         if len(review.comment_text) > 0:
             payload['messages'].append(message)
