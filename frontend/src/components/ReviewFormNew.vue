@@ -39,6 +39,9 @@ onMounted(async () => {
   } catch (err) {
     console.error("Failed to load tags data", err)
   }
+  if (props.editing && props.tags) {
+    form.value.tags = props.tags.map(t => t.tag_id);
+  }
 })
 
 // Call Backend for Review
@@ -90,35 +93,64 @@ function toggleTag(id) {
 </script>
 
 <template>
-    <form @submit.prevent="submitReview">
-        <h1 class="text-2xl font-bold text-left my-2.5 mb-0" v-if="!editing">Write a Review</h1>
-        <RatingSelector @rate="handleRate" :rating="review_rating"/>
-        <input maxlength="12" type="text" v-model="form.received_grade" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60" placeholder="Grade Received: e.g. A+, 92, 1.75">
-        <textarea v-model="form.comment_text" class="border-[#e9e9e9] border-2 rounded-xl resize-none w-full text-[#719294] p-2" placeholder="What was good? What could be improved?"></textarea>
-        <div class="flex flex-wrap gap-2 my-2.5">
-          <h1 class="text-xl text-left font-bold" v-if="!editing">Tags: </h1>
-          <div 
-            v-for="t in tags" 
-            :key="t.tag_id"
-            @click="toggleTag(t.tag_id)"
-            :class="form.tags.includes(t.tag_id) ? 'bg-primary text-white px-2 py-1 rounded-full cursor-pointer' : 'bg-gray-200 text-[#719294] px-2 py-1 rounded-full cursor-pointer'"
-          >
-            {{ t.tag_name }}
-          </div>
+    <form @submit.prevent="submitReview" class="space-y-4">
+        <h1 class="text-2xl font-bold text-text-main text-left" v-if="!editing">Write a Review</h1>
+        
+        <div class="flex flex-col gap-1">
+            <span class="text-sm font-bold text-text-main">Rating</span>
+            <RatingSelector @rate="handleRate" :initialRating="form.review_rating"/>
         </div>
-        <button type="submit" class="bg-accent hover:bg-accent-hover text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
-          <span v-if="!editing">Submit Review</span>  
-          <span v-if="editing">Save</span>  
-        </button>
-        <button v-if="editing" @click="$emit('cancelReview')" type="button" class="bg-[#a2a2a2] text-white mx-1 rounded-full px-[18px] py-1 w-max cursor-pointer">
-          Cancel
-        </button>
-        <!-- Feedback -->
-        <p
-            v-if="message"
-            class="text-sm text-center"
-            :class="isError ? 'text-red-500' : 'text-green-600'"
-        >
+
+        <div class="flex flex-col gap-1">
+            <span class="text-sm font-bold text-text-main">Grade Received</span>
+            <input 
+                maxlength="12" 
+                type="text" 
+                v-model="form.received_grade" 
+                class="bg-surface border border-gray-200 rounded-xl p-3 text-text-main w-full md:w-64 focus:border-primary outline-none transition-all shadow-sm" 
+                placeholder="e.g. A, 95"
+            >
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span class="text-sm font-bold text-text-main">Your Experience</span>
+            <textarea 
+                v-model="form.comment_text" 
+                rows="4"
+                class="bg-surface border border-gray-200 rounded-xl resize-none w-full text-text-main p-3 focus:border-primary outline-none transition-all shadow-sm" 
+                placeholder="What was good? What could be improved?"
+            ></textarea>
+        </div>
+
+        <div class="space-y-2">
+            <h1 class="text-sm font-bold text-text-main">Select Tags:</h1>
+            <div class="flex flex-wrap gap-2">
+                <div 
+                    v-for="t in tags" 
+                    :key="t.tag_id"
+                    @click="toggleTag(t.tag_id)"
+                    class="px-3 py-1.5 rounded-full cursor-pointer text-xs font-bold transition-all border"
+                    :class="form.tags.includes(t.tag_id) 
+                        ? 'bg-primary text-white border-primary shadow-md scale-105' 
+                        : 'bg-surface text-text-muted border-gray-200 hover:border-primary hover:text-primary'"
+                >
+                    {{ t.tag_name }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+            <button type="submit" class="bg-accent hover:brightness-110 text-white rounded-full px-6 py-2 font-bold transition-all shadow-md cursor-pointer">
+                <span v-if="!editing">Submit Review</span>  
+                <span v-if="editing">Save Changes</span>  
+            </button>
+            
+            <button v-if="editing" @click="$emit('cancelReview')" type="button" class="bg-surface text-text-muted border border-gray-200 rounded-full px-6 py-2 font-bold hover:bg-gray-100 transition-all cursor-pointer">
+                Cancel
+            </button>
+        </div>
+
+        <p v-if="message" class="text-sm font-medium animate-pulse" :class="isError ? 'text-red-500' : 'text-green-600'">
             {{ message }}
         </p>
     </form>
