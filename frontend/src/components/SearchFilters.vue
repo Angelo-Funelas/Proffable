@@ -17,6 +17,8 @@ let debounceTimer = null
 const institutions = ref([])
 const courses = ref([])
 
+const isAuthorized = ref(false)
+
 const updateURL = () =>{
   router.push({
     path: '/professors',
@@ -45,6 +47,13 @@ onMounted(async () => {
   } catch (err) {
     console.error("Failed to load filter data", err)
   }
+  try {
+      const res = await api.get('me/')
+      isAuthorized.value = true
+  } catch (err) {
+      console.error(err)
+      isModerator.value = false
+  }
 })
 
 const updateStarQuery = (rating) => {
@@ -72,7 +81,12 @@ const l_name = ref();
 const email = ref();
 
 const createProf = async () => {
-
+  if (!isAuthorized.value) {
+    return router.push({ 
+      path: '/login', 
+      query: { next: router.currentRoute.value.fullPath } 
+    })
+  }
   try {
     const response = await api.post("create-professor/", {
       f_name: f_name.value,

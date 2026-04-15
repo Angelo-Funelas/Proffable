@@ -95,7 +95,7 @@
         } catch(error){
             console.log("Error toggling favorite: ",error)
             if (error.response.status == 401) {
-                  router.push({ 
+                router.push({ 
                     path: '/login', 
                     query: { next: router.currentRoute.value.fullPath } 
                 })
