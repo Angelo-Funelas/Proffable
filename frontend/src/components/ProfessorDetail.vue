@@ -238,7 +238,7 @@
                     <!--GRADE DISTRIBUTION-->
                     <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
-                <div v-if="!professor_reviewed && isAuthorized" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
+                <div v-if="!professor_reviewed && isAuthorized" class="bg-card shadow-lg mt-4 text-left rounded-2xl p-8 border border-gray-100">
                     <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
