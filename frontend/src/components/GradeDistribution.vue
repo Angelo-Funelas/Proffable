@@ -48,24 +48,34 @@
 </script>
 
 <template>
-  <div class="bg-white rounded-xl p-[18px] text-[#719294] text-left">
-    <h3 class="text-2xl font-bold mb-4">Grade Distribution</h3>
+  <div class="bg-card shadow-md rounded-xl p-[18px] text-text-main text-left h-full border border-gray-100">
+    <h3 class="text-xl font-bold mb-4 text-primary">Grade Distribution</h3>
 
-    <div v-if="sortedDistribution.length > 0" class="flex flex-col space-y-1.5">
-      <div v-for="item in sortedDistribution" :key="item.grade" class="flex items-center gap-3">
-        <span class="w-20 font-bold text-sm">{{ gradeRanges[item.grade] ?? '—' }}</span>
-        <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
+    <div v-if="sortedDistribution.length > 0" class="flex flex-col space-y-4">
+      <div v-for="item in sortedDistribution" :key="item.grade">
+        
+        <div class="flex justify-between items-end mb-1">
+          <span class="font-bold text-sm text-text-main">
+            {{ item.grade }} 
+            <span class="text-[10px] font-normal text-text-muted ml-1">({{ gradeRanges[item.grade] }})</span>
+          </span>
+          <span class="text-xs font-bold text-primary">
+            {{ Math.round(item.percentage) }}%
+          </span>
+        </div>
+        
+        <div class="w-full bg-surface rounded-full h-2.5 overflow-hidden">
           <div
-            class="bg-[#719294] h-4 rounded-full transition-all duration-700"
+            class="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
             :style="{ width: animated ? item.percentage + '%' : '0%' }"
           ></div>
         </div>
-        <span class="text-sm">{{ item.percentage }}%</span>
+
       </div>
     </div>
 
-    <div v-else class="text-sm italic opacity-70">
-      No grade data available yet.
+    <div v-else class="flex items-center justify-center h-32 text-sm italic text-text-muted opacity-60">
+      No grade data available.
     </div>
   </div>
 </template>
