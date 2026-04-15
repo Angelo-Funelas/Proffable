@@ -4,6 +4,7 @@ import { useFloating, offset, flip, shift } from '@floating-ui/vue'
 import { onClickOutside } from '@vueuse/core'
 import api from "@/api/axios"
 import ReviewFormNew from './ReviewFormNew.vue'
+import BaseModal from './BaseModal.vue'
 
 const props = defineProps({
   reviewId: Number,
@@ -263,48 +264,48 @@ const handleDelete = async () => {
             </div>
         </div>
 
-        <div v-if="showReportModal" class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-[100]">
-            <div class="bg-white p-6 rounded-2xl w-[340px] shadow-2xl animate-in fade-in zoom-in duration-200">
-                <h2 class="text-xl font-bold mb-1 text-primary">Report Review</h2>
-                <p class="text-xs text-text-muted mb-4">Help us maintain a helpful community.</p>
+    <BaseModal
+        :show="showReportModal"
+        title="Report Review"
+        @close="showReportModal = false"
+    >
+      <select v-model="reason" class="border border-[#719294] p-2 w-full mb-3 rounded-lg text-sm text-[#0B0D09] outline-none focus:border-[#5c898d]">
+          <option disabled value="">Select reason</option>
+          <option value="offensive">Offensive Language</option>
+          <option value="spam">Spam</option>
+          <option value="fake">Fake Review</option>
+          <option value="harassment">Harassment</option>
+          <option value="irrelevant">Irrelevant Content</option>
+          <option value="other">Other</option>
+          </select>
 
-                <select v-model="reason" class="bg-surface border border-gray-200 p-2.5 w-full mb-3 rounded-xl text-sm text-text-main outline-none focus:ring-2 focus:ring-primary/20">
-                    <option disabled value="">Select reason</option>
-                    <option value="offensive">Offensive Language</option>
-                    <option value="spam">Spam</option>
-                    <option value="fake">Fake Review</option>
-                    <option value="harassment">Harassment</option>
-                    <option value="irrelevant">Irrelevant Content</option>
-                    <option value="other">Other</option>
-                </select>
+          <textarea
+          v-model="description"
+          placeholder="Additional details (optional)"
+          class="border border-[#719294] p-2 w-full mb-4 rounded-lg text-sm text-[#0B0D09] placeholder:text-[#719294] outline-none focus:border-[#5c898d] resize-none h-24"
+          ></textarea>
 
-                <textarea
-                    v-model="description"
-                    placeholder="Provide more context..."
-                    class="bg-surface border border-gray-200 p-3 w-full mb-4 rounded-xl text-sm text-text-main placeholder:text-text-muted outline-none focus:ring-2 focus:ring-primary/20 resize-none h-28"
-                ></textarea>
-
-                <div class="flex justify-end gap-2">
-                    <button @click="showReportModal = false" class="px-4 py-2 rounded-xl text-sm font-bold text-text-muted hover:bg-surface transition-colors">
-                        Cancel
-                    </button>
-                    <button @click="submitReport" class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-primary-hover transition-all">
-                        Submit Report
-                    </button>
-                </div>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <button @click="showReportModal = false" class="cursor-pointer border border-primary text-[#719294] px-4 py-1.5 rounded-full text-sm hover:bg-[#e9e9e9] transition-colors">
+                  Cancel
+              </button>
+              <button @click="submitReport" class="cursor-pointer bg-primary text-white px-4 py-1.5 rounded-full text-sm hover:brightness-110 transition-all">
+                  Submit
+              </button>
             </div>
-        </div>
-
-        <div v-if="isEditing">
-            <ReviewFormNew
-                @cancelReview="isEditing = false"
-                @submitReview="handleEdit"
-                :reviewId="reviewId"
-                :editing="isEditing"
-                :review_rating="rating"
-                :comment_text="reviewText"
-                :grade_received="grade"
-            />
-        </div>
+          </template>
+    </BaseModal>
+    <div v-if="isEditing">
+        <ReviewFormNew
+            @cancelReview="isEditing = false"
+            @submitReview="handleEdit"
+            :reviewId="reviewId"
+            :editing="isEditing"
+            :review_rating="rating"
+            :comment_text="reviewText"
+            :grade_received="grade"
+        />
     </div>
+  </div>
 </template>

@@ -119,7 +119,7 @@ function toggleTag(id) {
 </script>
 
 <template>
-  <div class="bg-card shadow-lg rounded-2xl p-8 border border-gray-100 mt-6">
+  <div>
     <form @submit.prevent="submitReview" class="space-y-4">
         <h1 class="text-2xl font-bold text-text-main text-left" v-if="!editing">Write a Review</h1>
         
@@ -131,14 +131,14 @@ function toggleTag(id) {
         <div class="flex flex-col gap-1">
           <span class="text-sm font-bold text-text-main">Course Details</span>
           <div class="flex gap-2">
-            <select v-model="form.course" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+            <select v-model="form.course" class="bg-surface border border-gray-200 rounded-xl my-2 p-2 text-text-main w-64 shadow-sm">
               <option disabled value="">Select a Course</option>
               <option v-for="c in courses" :key="c.course_id" :value="c.course_id">
                 {{ c.course_code }}
               </option>
             </select>
 
-            <select v-model="form.semester_term" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+            <select v-model="form.semester_term" class="bg-surface border border-gray-200 rounded-xl my-2 p-2 text-text-main w-64 shadow-sm">
               <option disabled value="">Select Semester</option>
               <option v-for="s in SEMESTER_TERMS" :key="s.value" :value="s.value">
                 {{ s.label }}
@@ -148,7 +148,7 @@ function toggleTag(id) {
             <input
               type="text"
               v-model="form.semester_year"
-              class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60"
+              class="bg-surface border border-gray-200 rounded-xl my-2 p-2 text-text-main w-64 shadow-sm"
               placeholder="Academic Year: e.g. 2024-2025"
               maxlength="9"
             />

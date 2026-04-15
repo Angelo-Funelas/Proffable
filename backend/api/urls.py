@@ -19,6 +19,7 @@ router.register(r"favorite-prof", FavoriteProfViewset)
 from .serializers import CustomTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import me, register_user, google_login, LoginView, update_profile, delete_profile
+from professors.views import create_professor
 
 urlpatterns = [
     path("token/", LoginView.as_view()),
@@ -28,5 +29,6 @@ urlpatterns = [
     path("me/", me),
     path("me/update/", update_profile),
     path("me/delete/", delete_profile),
+    path("create-professor/", create_professor),
     path('', include(router.urls)),
 ]
