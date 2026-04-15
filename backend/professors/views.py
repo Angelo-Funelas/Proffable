@@ -103,7 +103,7 @@ def summarize_reviews(professor):
             "role": "user",
             "content": f"Review by Student #{review.student.id}: {review.review_rating}/5. {review.comment_text}"
         }
-        if len(review.comment_text) > 0:
+        if len(review.comment_text) > 20:
             payload['messages'].append(message)
 
     try:
