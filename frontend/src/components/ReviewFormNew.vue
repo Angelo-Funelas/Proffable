@@ -127,31 +127,33 @@ function toggleTag(id) {
             <span class="text-sm font-bold text-text-main">Rating</span>
             <RatingSelector @rate="handleRate" :initialRating="form.review_rating"/>
         </div>
-      
-        <!-- Course -->
-        <select v-model="form.course" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
-          <option disabled value="">Select a Course</option>
-          <option v-for="c in courses" :key="c.course_id" :value="c.course_id">
-            {{ c.course_code }}
-          </option>
-        </select>
 
-        <!-- Semester Term -->
-        <select v-model="form.semester_term" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
-          <option disabled value="">Select Semester</option>
-          <option v-for="s in SEMESTER_TERMS" :key="s.value" :value="s.value">
-            {{ s.label }}
-          </option>
-        </select>
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-bold text-text-main">Course Details</span>
+          <div class="flex gap-2">
+            <select v-model="form.course" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+              <option disabled value="">Select a Course</option>
+              <option v-for="c in courses" :key="c.course_id" :value="c.course_id">
+                {{ c.course_code }}
+              </option>
+            </select>
 
-        <!-- Semester Year -->
-        <input
-          type="text"
-          v-model="form.semester_year"
-          class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60"
-          placeholder="Academic Year: e.g. 2024-2025"
-          maxlength="9"
-        />
+            <select v-model="form.semester_term" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+              <option disabled value="">Select Semester</option>
+              <option v-for="s in SEMESTER_TERMS" :key="s.value" :value="s.value">
+                {{ s.label }}
+              </option>
+            </select>
+
+            <input
+              type="text"
+              v-model="form.semester_year"
+              class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60"
+              placeholder="Academic Year: e.g. 2024-2025"
+              maxlength="9"
+            />
+          </div>
+        </div>
 
         <div class="flex flex-col gap-1">
             <span class="text-sm font-bold text-text-main">Grade Received</span>

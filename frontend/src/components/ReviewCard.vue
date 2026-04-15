@@ -173,7 +173,7 @@ const handleDelete = async () => {
                     </div>
 
                     <span class="text-[11px] text-text-muted uppercase tracking-wider">
-                        {{ semester }} | {{ semesterTerm }} {{ semesterYear }}
+                        {{ semesterTerm }} | {{ semesterYear }}
                     </span>
                     <span class="text-[11px] text-text-muted uppercase tracking-wider">
                         Course Taken: {{ courseCode }} -- {{ courseName }}
