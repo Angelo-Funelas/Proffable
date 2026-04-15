@@ -157,11 +157,20 @@ const handleDelete = async () => {
                     <img src="../assets/User.png" class="h-5 opacity-70">
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-bold text-sm text-text-main">Anonymous Student</span>
-                    <span class="text-[11px] text-text-muted uppercase tracking-wider">
-                        {{ semester }} | {{ subject }}
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-sm text-text-main">
+                        {{ isOwner ? 'Me' : 'Anonymous Student' }}
+                    </span>
+                    
+                    <span v-if="isOwner" class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tight">
+                        Author
                     </span>
                 </div>
+                
+                <span class="text-[11px] text-text-muted uppercase tracking-wider">
+                    {{ semester }} | {{ subject }}
+                </span>
+            </div>
             </div>
             
             <div class="flex items-center gap-2">
