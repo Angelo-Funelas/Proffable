@@ -7,7 +7,6 @@ import ReviewFormNew from './ReviewFormNew.vue'
 
 const props = defineProps({
   reviewId: Number,
-  semester: String,
   subject: String,
   reviewText: String,
   grade: String,
@@ -16,6 +15,12 @@ const props = defineProps({
   likes: Number,
   isOwner: Boolean,
   isModerator: Boolean,
+  courseCode: String,
+  courseName: String,
+  semesterTerm: String,
+  semesterYear: String,
+  courseCode: String,
+  courseName:String,
 })  
 
 const showReportModal = ref(false)
@@ -155,7 +160,11 @@ const handleDelete = async () => {
                 <div class="w-10 h-10 rounded-full bg-[#e9e9e9] border border-[#719294] flex items-center justify-center text-xl">
                     <img src="../assets/User.png" class="h-[20px]">
                 </div>
-                 <span>Anonymous Student | 25-26 1st Sem LIT 5111</span>
+                <div class="flex flex-col">
+                  <span>Anonymous Student | {{ semesterTerm }} {{ semesterYear }}  </span> 
+                 <span>Course Taken: {{ courseCode }} -- {{ courseName }}</span>
+                </div>
+                 
             </div>
             
             <div class="flex">

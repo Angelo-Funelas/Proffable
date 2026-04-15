@@ -55,12 +55,23 @@ class Review(models.Model):
     review_date = models.DateField(auto_now_add=True)
     received_grade = models.CharField(max_length=10, blank=True)
     helpful_count = models.PositiveIntegerField(default=0)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE, related_name="review_course")
+    
+    SEMESTER_CHOICES = [
+        ("1st", "1st Semester"),
+        ("2nd", "2nd Semester"),
+        ("summer", "Summer"),
+    ]
+    semester_term = models.CharField(choices=SEMESTER_CHOICES,null=False, blank=False)
+
+    #of the format 20XX-20XX, validated in serializer
+    semester_year = models.CharField(max_length=9, null=False, blank=False)
     
     def __str__(self):
         return f"{self.review_id}"
     
     class Meta:
-        unique_together = ("student", "professor")
+        unique_together = ("student", "professor", "course", "semester_term", "semester_year")
 
         
 class ReviewVote(models.Model):
