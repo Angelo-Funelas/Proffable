@@ -93,6 +93,7 @@ function toggleTag(id) {
 </script>
 
 <template>
+  <div class="bg-card shadow-lg rounded-2xl p-8 border border-gray-100 mt-6">
     <form @submit.prevent="submitReview" class="space-y-4">
         <h1 class="text-2xl font-bold text-text-main text-left" v-if="!editing">Write a Review</h1>
         
@@ -154,4 +155,5 @@ function toggleTag(id) {
             {{ message }}
         </p>
     </form>
+    </div>
 </template>
