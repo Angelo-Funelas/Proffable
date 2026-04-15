@@ -197,8 +197,8 @@ const handleDelete = async () => {
                 <div v-if="showModal" ref="floating" :style="floatingStyles" class="bg-white w-64 border-gray-200 border shadow-2xl p-4 rounded-xl z-50">
                     <p class="text-sm mb-3 text-text-main font-medium">Permanently delete your review?</p>
                     <div class="flex justify-end gap-2">
-                        <button @click="showModal = false" class="text-xs px-3 py-1.5 rounded-lg text-text-muted hover:bg-surface">Cancel</button>
-                        <button @click="handleDelete" class="text-xs bg-red-600 text-white rounded-lg px-3 py-1.5 font-bold">Delete</button>
+                        <button @click="showModal = false" class="text-xs px-3 py-1.5 rounded-lg text-text-muted hover:bg-surface cursor-pointer">Cancel</button>
+                        <button @click="handleDelete" class="text-xs bg-red-600 text-white rounded-lg px-3 py-1.5 font-bold cursor-pointer">Delete</button>
                     </div>
                 </div>
             </div>
