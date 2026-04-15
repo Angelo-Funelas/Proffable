@@ -7,7 +7,6 @@ import ReviewFormNew from './ReviewFormNew.vue'
 
 const props = defineProps({
   reviewId: Number,
-  semester: String,
   subject: String,
   reviewText: String,
   grade: String,
@@ -16,6 +15,12 @@ const props = defineProps({
   likes: Number,
   isOwner: Boolean,
   isModerator: Boolean,
+  courseCode: String,
+  courseName: String,
+  semesterTerm: String,
+  semesterYear: String,
+  courseCode: String,
+  courseName:String,
 })  
 
 const showReportModal = ref(false)
@@ -157,20 +162,23 @@ const handleDelete = async () => {
                     <img src="../assets/User.png" class="h-5 opacity-70">
                 </div>
                 <div class="flex flex-col">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-sm text-text-main">
-                        {{ isOwner ? 'Me' : 'Anonymous Student' }}
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm text-text-main">
+                            {{ isOwner ? 'Me' : 'Anonymous Student' }}
+                        </span>
+
+                        <span v-if="isOwner" class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tight">
+                            Author
+                        </span>
+                    </div>
+
+                    <span class="text-[11px] text-text-muted uppercase tracking-wider">
+                        {{ semester }} | {{ semesterTerm }} {{ semesterYear }}
                     </span>
-                    
-                    <span v-if="isOwner" class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tight">
-                        Author
+                    <span class="text-[11px] text-text-muted uppercase tracking-wider">
+                        Course Taken: {{ courseCode }} -- {{ courseName }}
                     </span>
                 </div>
-                
-                <span class="text-[11px] text-text-muted uppercase tracking-wider">
-                    {{ semester }} | {{ subject }}
-                </span>
-            </div>
             </div>
             
             <div class="flex items-center gap-2">

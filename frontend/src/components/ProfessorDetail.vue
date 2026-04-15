@@ -16,6 +16,7 @@
     const professor = ref({})
     const route = useRoute()
     const reviews = ref([])
+    const courses = ref([])
     const router = useRouter()
     const gradeDistRef = ref(null)
     
@@ -80,11 +81,22 @@
         gradeDistRef.value?.fetchAnalytics()
     }
 
+    async function fetchCourses(){
+        try{
+            const response = await api.get(`professors/${route.params.professorId}/courses/`)
+            courses.value = response.data
+            console.log(courses.value)
+        } catch(error){
+            console.log("Error with fetching professors: ",error)
+        }
+    }
+
     onMounted(()=>{
         fetchProfessor()
         fetchReviews()
         checkModStatus()
         fetchSimilar()
+        fetchCourses()
     })
 
     async function toggleFavorite() {
@@ -206,6 +218,8 @@
                                 <span v-else class="text-text-muted italic text-xs">No tags yet</span>
                             </div>
                         </div>
+                        <h2><span class="font-bold">Courses: {{ courses?.map(i => i.course_name).join(', ') || 
+                        'No Registered Courses' }}</span> </h2>
                     </div>
 
                     <!-- FAVORITE PROF-->
@@ -216,7 +230,7 @@
                     <!--GRADE DISTRIBUTION-->
                     <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
-                <div v-if="!professor_reviewed" class="text-left">
+                <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
                     <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
@@ -237,6 +251,10 @@
                                 :grade="review.received_grade"
                                 :likes="review.helpful_count"
                                 :tags="review.read_tags"
+                                :course-code="review.course_code"
+                                :course-name="review.course_name"
+                                :semester-term="review.read_semester_term"
+                                :semester-year="review.semester_year"
                                 />
                         </li>
                     </ul>

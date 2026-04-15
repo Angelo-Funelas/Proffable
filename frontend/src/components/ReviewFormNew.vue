@@ -17,6 +17,14 @@ const message = ref('')
 const isError = ref(false)
 const tags = ref([])
 
+const courses = ref([])
+
+const SEMESTER_TERMS = [
+  { value: '1st', label: '1st Semester' },
+  { value: '2nd', label: '2nd Semester' },
+  { value: 'summer', label: 'Summer' },
+]
+
 const emit = defineEmits(['submitReview', 'cancelReview']);
 
 const form = ref({
@@ -24,6 +32,9 @@ const form = ref({
   comment_text: props.comment_text,
   received_grade: props.grade_received,
   tags: [],
+  course: '',           
+  semester_term: '',      
+  semester_year: '',      
 })
 const handleRate = (value) => {
   form.value.review_rating = value;
@@ -31,10 +42,12 @@ const handleRate = (value) => {
 
 onMounted(async () => {
   try {
-    const [tagRes] = await Promise.all([
+    const [tagRes, courseRes] = await Promise.all([
       api.get('tags/'),
+      api.get(`professors/${route.params.professorId}/courses/`),
     ])
     tags.value = tagRes.data
+    courses.value= courseRes.data
     console.log(tags.value)
   } catch (err) {
     console.error("Failed to load tags data", err)
@@ -61,6 +74,9 @@ async function submitReview() {
         comment_text: form.value.comment_text,
         received_grade: form.value.received_grade,
         tags: form.value.tags,
+        course: form.value.course,          
+        semester_term: form.value.semester_term,  
+        semester_year: form.value.semester_year,  
       })
       message.value = 'Edited Review!'
     } else {
@@ -70,12 +86,22 @@ async function submitReview() {
         comment_text: form.value.comment_text,
         received_grade: form.value.received_grade,
         tags: form.value.tags,
+        course: form.value.course,            
+        semester_term: form.value.semester_term,  
+        semester_year: form.value.semester_year,  
       })
       message.value = 'Submitted Review!'
     }
     isError.value = false
     emit('submitReview', form.value.review_rating, form.value.received_grade, form.value.comment_text)
-    form.value = { review_rating: '', comment_text: '', received_grade: '', tags:[] }
+    form.value = { 
+      review_rating: '', 
+      comment_text: '', 
+      received_grade: '', 
+      tags:[], 
+      course: '',           
+      semester_term: '',      
+      semester_year: '',  }
   } catch (err) {
     // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
     message.value = JSON.stringify(err.response?.data)
@@ -101,6 +127,31 @@ function toggleTag(id) {
             <span class="text-sm font-bold text-text-main">Rating</span>
             <RatingSelector @rate="handleRate" :initialRating="form.review_rating"/>
         </div>
+      
+        <!-- Course -->
+        <select v-model="form.course" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+          <option disabled value="">Select a Course</option>
+          <option v-for="c in courses" :key="c.course_id" :value="c.course_id">
+            {{ c.course_code }}
+          </option>
+        </select>
+
+        <!-- Semester Term -->
+        <select v-model="form.semester_term" class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60">
+          <option disabled value="">Select Semester</option>
+          <option v-for="s in SEMESTER_TERMS" :key="s.value" :value="s.value">
+            {{ s.label }}
+          </option>
+        </select>
+
+        <!-- Semester Year -->
+        <input
+          type="text"
+          v-model="form.semester_year"
+          class="border-[#e9e9e9] border-2 rounded-xl my-2 p-2 text-[#719294] w-60"
+          placeholder="Academic Year: e.g. 2024-2025"
+          maxlength="9"
+        />
 
         <div class="flex flex-col gap-1">
             <span class="text-sm font-bold text-text-main">Grade Received</span>

@@ -108,6 +108,13 @@ class ProfessorViewSet(viewsets.ModelViewSet):
             "total_reviews": total_with_grades
         })
 
+    @action(detail=True, methods=['get'])
+    def courses(self,request, pk=None):
+        professor = self.get_object()
+        courses = Course.objects.filter(professor_course__professor=professor)
+        return Response(CourseSerializer(courses, many=True).data)
+
+
 class ProfessorOverviewViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProfessorOverview.objects.all()
     serializer_class = ProfessorOverviewSerializer
@@ -141,9 +148,9 @@ def summarize_reviews(professor):
     for review in reviews:
         message = {
             "role": "user",
-            "content": review.comment_text
+            "content": f"Review by Student #{review.student.id}: {review.review_rating}/5. {review.comment_text}"
         }
-        if len(review.comment_text) > 0:
+        if len(review.comment_text) > 20:
             payload['messages'].append(message)
 
     try:
