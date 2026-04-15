@@ -13,6 +13,8 @@ from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField, F, CharField
 from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
+from django.db.models import Count, Q
+from django.db.models.functions import Lower
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -67,6 +69,44 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         ).distinct()[:5]
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
+      
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def analytics(self, request, pk=None):
+        professor = self.get_object()
+
+        valid_reviews = professor.reviews.exclude(
+            Q(received_grade__isnull=True) | 
+            Q(received_grade__exact="") | 
+            Q(received_grade__regex=r'^\s*$')
+        )
+
+        total_with_grades = valid_reviews.count()
+
+        if total_with_grades == 0:
+            return Response({
+                "distribution": [], 
+                "total_reviews": 0
+            })
+
+        grade_counts = valid_reviews.annotate(
+            normalized_grade=Lower('received_grade')
+        ).values('normalized_grade').annotate(
+            count=Count('normalized_grade')
+        ).order_by('normalized_grade')
+
+        distribution = [
+            {
+                "grade": item['normalized_grade'].upper(),
+                "count": item['count'],
+                "percentage": round((item['count'] / total_with_grades) * 100, 2)
+            }
+            for item in grade_counts
+        ]
+
+        return Response({
+            "distribution": distribution,
+            "total_reviews": total_with_grades
+        })
 
     @action(detail=True, methods=['get'])
     def courses(self,request, pk=None):
@@ -108,9 +148,9 @@ def summarize_reviews(professor):
     for review in reviews:
         message = {
             "role": "user",
-            "content": review.comment_text
+            "content": f"Review by Student #{review.student.id}: {review.review_rating}/5. {review.comment_text}"
         }
-        if len(review.comment_text) > 0:
+        if len(review.comment_text) > 20:
             payload['messages'].append(message)
 
     try:

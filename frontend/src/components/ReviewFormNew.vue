@@ -54,7 +54,7 @@ onMounted(async () => {
   }
 })
 
-// Call Backend for Review 
+// Call Backend for Review
 async function submitReview() {
   console.log({
       professor: route.params.professorId,
