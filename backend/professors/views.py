@@ -1,18 +1,19 @@
 from django.shortcuts import render
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.conf import settings
 import requests, threading
 
 from .serializers import ProfessorSerializer, ProfessorOverviewSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
 from .serializers import TagSerializer, FavoriteProfSerializer
-from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf, ProfessorOverview
-from rest_framework.decorators import action
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ProfessorCourse, ReviewReport, ReviewVote, Tag, FavoriteProf, ProfessorOverview
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField, F, CharField
 from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
+from django.db import transaction
 # Create your views here.
 
 class ProfessorViewSet(viewsets.ModelViewSet):
@@ -68,6 +69,66 @@ class ProfessorViewSet(viewsets.ModelViewSet):
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
 
+@api_view(["POST"])
+def create_professor(request):
+    data = request.data
+    f_name = data.get("f_name", "").strip()
+    m_name = data.get("m_name", "").strip()
+    l_name = data.get("l_name", "").strip()
+    email = data.get("email", "").strip()
+    courses = data.get("courses", [])
+    if not email or "@" not in email:
+        return Response({"error": "A valid email is required."}, status=status.HTTP_400_BAD_REQUEST)
+    if not isinstance(courses, list):
+        return Response({"error": "Courses must be a list."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if Professor.objects.filter(
+        f_name__iexact=f_name, 
+        m_name__iexact=m_name, 
+        l_name__iexact=l_name, 
+        email__iexact=email
+    ).exists():
+        return Response(
+            {"error": "A professor with this exact name and email already exists."}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    domain = email.split("@")[1]
+    try:
+        domain_obj = InstitutionDomain.objects.get(domain=domain)
+        institution = domain_obj.institution
+        with transaction.atomic():
+            new_prof = Professor.objects.create(
+                f_name=f_name, 
+                m_name=m_name, 
+                l_name=l_name, 
+                email=email
+            )
+            for course_data in courses:
+                new_course, created = Course.objects.get_or_create(
+                    course_code=course_data.get("code"),
+                    institution=institution,
+                    defaults={'course_name': course_data.get("name")}
+                )
+                ProfessorCourse.objects.create(professor=new_prof, course=new_course)
+        return Response({
+            "message": "Professor and courses created successfully",
+            "professor_id": new_prof.professor_id,
+            "course_count": len(courses)
+        }, status=status.HTTP_201_CREATED)
+
+    except InstitutionDomain.DoesNotExist:
+        return Response(
+            {"error": f"The domain '{domain}' is not registered."}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"error": "An internal error occurred.", "details": str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
 class ProfessorOverviewViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProfessorOverview.objects.all()
     serializer_class = ProfessorOverviewSerializer
