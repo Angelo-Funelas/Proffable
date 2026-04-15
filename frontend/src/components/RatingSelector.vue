@@ -46,6 +46,6 @@
 <style>
 .star-active {
     fill: var(--color-accent);
-    animation: pulse .2s cubic-bezier(.02,1.68,.95,.99);
+    animation: pulse-custom .2s cubic-bezier(.02,1.68,.95,.99);
 }
 </style>
