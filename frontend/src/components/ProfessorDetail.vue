@@ -11,11 +11,14 @@
     import ReviewFormNew from './ReviewFormNew.vue'
     import Heart from './Heart.vue'
     import AiOverview from './AiOverview.vue'
+    import GradeDistribution from './GradeDistribution.vue'
 
     const professor = ref({})
     const route = useRoute()
     const reviews = ref([])
+    const courses = ref([])
     const router = useRouter()
+    const gradeDistRef = ref(null)
     
     const professors = ref()
 
@@ -73,6 +76,22 @@
     const handleDelete = () => {
         professor_reviewed.value = false;
         fetchReviews();
+        gradeDistRef.value?.fetchAnalytics()
+    }
+
+    const handleReviewSubmit = () => {
+        fetchReviews()
+        gradeDistRef.value?.fetchAnalytics()
+    }
+
+    async function fetchCourses(){
+        try{
+            const response = await api.get(`professors/${route.params.professorId}/courses/`)
+            courses.value = response.data
+            console.log(courses.value)
+        } catch(error){
+            console.log("Error with fetching professors: ",error)
+        }
     }
 
     onMounted(()=>{
@@ -80,6 +99,7 @@
         fetchReviews()
         checkModStatus()
         fetchSimilar()
+        fetchCourses()
     })
 
     async function toggleFavorite() {
@@ -106,6 +126,27 @@
         console.log('navigating to', professorId)
         router.push(`/professor/${professorId}`)
     }
+
+    const formattedAvgRating = computed(() => {
+    const rating = professor.value.avg_rating;
+    return rating ? Number(rating).toFixed(2) : "0.00";
+    });
+
+    const reviewCountText = computed(() => {
+    const count = professor.value.review_count || 0;
+    if (count === 1) return '1 review';
+    return `${count} reviews`;
+    });
+
+    const sortedReviews = computed(() => {
+    if (!reviews.value) return [];
+    return [...reviews.value].sort((a, b) => {
+        if (a.is_owner && !b.is_owner) return -1;
+        if (!a.is_owner && b.is_owner) return 1;
+        return b.review_id - a.review_id;
+    });
+});
+
     watch(() => route.params.professorId, () => {
         professor_reviewed.value = false
         fetchProfessor()
@@ -125,37 +166,68 @@
                 <!--SEARCH FILTERS-->
                 <SearchFilters />
                 <!--SIMILAR PROFESSORS' CARDS-->
-                <h1 class="text-2xl font-bold text-left mt-[30px] mb-[10px]">Similar Professors</h1>
-                <ul class="grid grid-cols-1 gap-2.5">
-                    <li  v-for="prof in professors" :key="prof.professor_id" @click="goToProf(prof.professor_id)"
-                    class="cursor-pointer">
-                        <ProfCard
-                        :lname="prof.l_name"
-                        :fname="prof.f_name"
-                        :avgScore="prof.avg_rating || 0"
-                        :numReviews="prof.review_count"
-                        :tags="prof.tags"
-                        :is_favorited="prof.is_favorited"
-                        :favoriteCount="prof.favorite_count"
-                        />
-                    </li>
-                </ul>
+                <h2 class="text-xl font-bold text-left mt-8 mb-4 text-primary tracking-tight">
+                    Similar Professors
+                </h2>
+
+                <ul class="grid grid-cols-1 gap-3">
+                    <template v-if="professors && professors.length > 0">
+                        <li 
+                            v-for="prof in professors" 
+                            :key="prof.professor_id" 
+                            @click="goToProf(prof.professor_id)"
+                            class="cursor-pointer transition-transform duration-200 hover:scale-[1.02] active:scale-100"
+                        >
+                            <ProfCard
+                                :lname="prof.l_name"
+                                :fname="prof.f_name"
+                                :institutions="prof.institutions"
+                                :avgScore="Number(prof.avg_rating) || 0"
+                                :numReviews="prof.review_count"
+                                :tags="prof.tags"
+                                :is_favorited="prof.is_favorited"
+                                :favoriteCount="prof.favorite_count"
+                                :showHeart="false"
+                            />
+                        </li>
+                    </template>
+    <div v-else class="bg-surface border border-dashed border-gray-300 rounded-xl p-8 text-center">
+        <p class="text-sm text-text-muted italic">No similar professors found.</p>
+    </div>
+</ul>
             </div>
 
-            <!--RIGHT DIV: contains hardcoded data-->
+            <!--RIGHT DIV-->
             <div>
                 <!--PROFESSOR CARD-->
                 <h1 class="text-5xl font-bold text-left">{{ professor.f_name }} {{ professor.l_name }}</h1>
                 <div class="bg-card shadow-md rounded-xl p-[18px] flex justify-between items-start mt-2.5">
                     <div class="flex flex-col gap-2 text-left">
                         <h3 class="text-2xl"><span class="font-bold">{{ professor.institutions?.map(i => i.name).join(', ') || 'Unknown Institution' }}</span> </h3>
-                        <p class="text-sm flex items-center gap-[2px]"><img src="../assets/Star.svg" class="h-[16px]"> 
-                            {{professor.avg_rating}} ({{ professor.review_count }} review/s)</p>
-                        <div class="text-sm flex flex-wrap gap-1 items-center"><span>Tags:</span>
-                            <span v-for="tag in professor.tags" :key="tag" class='bg-gray-200 text-[#719294] px-2 py-1 rounded-full'>
-                                {{ tag }}
-                            </span>
+                        <p class="text-sm flex items-center gap-1.5">
+                            <svg width="18" height="18" viewBox="0 0 40 38" class="fill-accent">
+                                <path d="M20,0l6.2,12.5,13.8,2-10,9.7,2.4,13.8-12.4-6.5-12.4,6.5,2.4-13.8L0,14.5l13.8-2L20,0Z"/>
+                            </svg>
+                            
+                            <span class="font-bold text-text-main">{{ formattedAvgRating }}</span>
+                            
+                            <span class="text-text-muted">({{ reviewCountText }})</span>
+                        </p>
+                        <div class="text-sm flex flex-wrap gap-2 items-center">
+                            <div class="text-sm flex flex-wrap gap-2 items-center mt-2">
+                                <span class="font-bold text-text-main">Tags:</span>
+                                
+                                <template v-if="professor.tags && professor.tags.length > 0">
+                                    <span v-for="tag in professor.tags" :key="tag" 
+                                        class="bg-surface text-primary border border-gray-100 px-3 py-0.5 rounded-full text-[11px] font-bold shadow-sm">
+                                        {{ tag }}
+                                    </span>
+                                </template>
+                                <span v-else class="text-text-muted italic text-xs">No tags yet</span>
+                            </div>
                         </div>
+                        <h2><span class="font-bold">Courses: {{ courses?.map(i => i.course_name).join(', ') || 
+                        'No Registered Courses' }}</span> </h2>
                     </div>
 
                     <!-- FAVORITE PROF-->
@@ -164,70 +236,10 @@
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
                     <AiOverview :professor_id="route.params.professorId"/>
                     <!--GRADE DISTRIBUTION-->
-                    <div class="bg-card shadow rounded-xl p-[18px] text-[#719294] text-left">
-                        <h3 class="text-2xl font-bold">Grade Distribution</h3>
-                        <div class="flex flex-col space-y-1.5">
-                            <!-- A -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">A</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[45%]"></div>
-                            </div>
-                            <span class="text-sm">45%</span>
-                            </div>
-                            <!-- B+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[25%]"></div>
-                            </div>
-                            <span class="text-sm">25%</span>
-                            </div>
-                            <!-- B -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[15%]"></div>
-                            </div>
-                            <span class="text-sm">15%</span>
-                            </div>
-                            <!-- C+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[8%]"></div>
-                            </div>
-                            <span class="text-sm">8%</span>
-                            </div>
-                            <!-- C -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[5%]"></div>
-                            </div>
-                            <span class="text-sm">5%</span>
-                            </div>
-                            <!-- D -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">D</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[2%]"></div>
-                            </div>
-                            <span class="text-sm">2%</span>
-                            </div>
-                            <!-- F -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">F</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[0%] opacity-40"></div>
-                            </div>
-                            <span class="text-sm">0%</span>
-                            </div>
-                        </div>
-                    </div>
+                    <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
                 <div v-if="!professor_reviewed && isAuthorized" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
-                    <ReviewFormNew @submitReview="fetchReviews"/>
+                    <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
@@ -235,10 +247,10 @@
                 </div>
                 <div>
                     <ul class="grid grid-cols-1 gap-2.5">
-                        <li v-for="review in reviews" :key="review.review_id">
+                        <li v-for="review in sortedReviews" :key="review.review_id">
                             <ReviewCard
                                 @delete="handleDelete"
-                                @edit="fetchReviews"
+                                @edit="fetchReviews(); gradeDistRef?.fetchAnalytics()"
                                 :reviewId="review.review_id"
                                 :is-owner="review.is_owner"
                                 :is-moderator="isModerator" 
@@ -247,6 +259,10 @@
                                 :grade="review.received_grade"
                                 :likes="review.helpful_count"
                                 :tags="review.read_tags"
+                                :course-code="review.course_code"
+                                :course-name="review.course_name"
+                                :semester-term="review.read_semester_term"
+                                :semester-year="review.semester_year"
                                 />
                         </li>
                     </ul>

@@ -8,7 +8,7 @@
     const isModerator = ref(false);
     const reports = ref([]);
     const domains = ref([]);
-    const me = ref();
+    const me = ref({});
 
     onMounted(() => {
         fetchUser();
@@ -18,7 +18,6 @@
     const fetchUser = async () => {
         try {
             const res = await api.get("me/");
-            console.log(res.data);
             me.value = res.data;
             isModerator.value = res.data.is_moderator;
         } catch(err) {
@@ -30,13 +29,14 @@
         try {
             const response = await api.get('institution-domains/')
             domains.value = response.data
-            console.log(response.data)
         } catch(error){
             console.log("Error with fetching domains: ", error)
         }
     }
-    const domain = ref();
+
+    const domain = ref("");
     async function createDomain() {
+        if (!domain.value) return;
         try {
             await api.post('institution-domains/', {
                 domain: domain.value
@@ -52,76 +52,119 @@
         try {
             const response = await api.get('review-reports/')
             reports.value = response.data
-            console.log(response.data)
         } catch(error){
             console.log("Error with fetching reports: ", error)
         }
     }
 </script>
 <template>
-    <Navbar/>
-    <div v-if="isModerator" class="h-screen py-10 mx-40 mb-10">
-        <h1>Moderator Dashboard</h1>
-        <p class="text-left">Managing reports, domains, and profiles for {{ me.institution }}.</p>
-        <div class="moderator-dashbaord mt-5 grid grid-cols-[50%_50%] grid-rows-[50%_50%] h-full gap-4 text-black">
-            <div class="row-span-2 overflow-hidden">
-                <h2>📢Reports</h2>
-                <p>Manage reported reviews.</p>
-                <ul class="m-2 h-full overflow-y-auto">
-                    <p v-if="reports.length === 0">No pending reports to review.</p>
-                    <li v-for="report in reports" class="my-1">
-                        <ReviewReport
-                            @resolve="fetchReports"
-                            :reportId="report.report_id"
-                            :description="report.description"
-                            :reason="report.reason"
-                            :reporter="report.reporter_name"
-                            :author="report.author"
-                            :review_id="report.review"
-                            :created_at="report.created_at"
-                        />
-                    </li>
-                </ul>
+    <div class="min-h-screen flex flex-col bg-surface font-sans overflow-x-hidden">
+        <Navbar/>
+        
+        <div v-if="isModerator" class="flex-grow p-6 md:p-12 max-w-7xl mx-auto w-full">
+            
+            <div class="mb-10 text-left">
+                <h1 class="text-5xl font-bold text-text-main tracking-tight">
+                    Moderator Dashboard<span class="text-primary">.</span>
+                </h1>
+                <p class="text-text-muted mt-2 text-lg">
+                    Managing reports and domains for <span class="font-bold text-primary">{{ me.institution || 'your institution' }}</span>.
+                </p>
             </div>
-            <div class="row-span-2">
-                <h2>📧Email Domains</h2>
-                <p class="text-black">Manage known email domains used by students.</p>
-                <form @submit.prevent="createDomain">
-                    <input placeholder="e.g. student.ateneo.edu" v-model="domain" class="outline-1 px-2">
-                    <button class="mx-2  px-2">Add Domain</button>
-                </form>
-                <ul class="m-2">
-                    <li v-for="domain in domains" class="my-1">
-                        <InstDomain
-                            @delete="fetchDomains"
-                            :domain="domain.domain"
-                            :id="domain.id"
-                        />
-                    </li>
-                </ul>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                
+                <div class="bg-card p-8 rounded-[24px] shadow-xl border border-gray-100 h-[650px] flex flex-col">
+                    <div class="mb-6 text-left">
+                        <h2 class="text-2xl font-bold text-text-main flex items-center gap-2">
+                            Reports
+                        </h2>
+                        <p class="text-sm text-text-muted mt-1">Review and resolve reported content.</p>
+                    </div>
+                    
+                    <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                        <p v-if="reports.length === 0" class="text-center py-10 text-text-muted italic">
+                            No pending reports to review.
+                        </p>
+                        <ul class="space-y-4">
+                            <li v-for="report in reports" :key="report.report_id">
+                                <ReviewReport
+                                    @resolve="fetchReports"
+                                    :reportId="report.report_id"
+                                    :description="report.description"
+                                    :reason="report.reason"
+                                    :reporter="report.reporter_name"
+                                    :author="report.author"
+                                    :review_id="report.review"
+                                    :created_at="report.created_at"
+                                />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-card p-8 rounded-[24px] shadow-xl border border-gray-100 h-[650px] flex flex-col">
+                    <div class="mb-6 text-left">
+                        <h2 class="text-2xl font-bold text-text-main flex items-center gap-2">
+                            Email Domains
+                        </h2>
+                        <p class="text-sm text-text-muted mt-1">Whitelist domains for student verification.</p>
+                    </div>
+
+                    <form @submit.prevent="createDomain" class="flex gap-2 mb-6">
+                        <input 
+                            v-model="domain"
+                            placeholder="e.g. student.ateneo.edu" 
+                            class="flex-grow bg-surface border border-gray-100 rounded-xl px-4 py-3 text-sm text-text-main outline-none focus:border-primary/50 transition-all placeholder:text-text-muted/40"
+                        >
+                        <button class="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                            Add
+                        </button>
+                    </form>
+
+                    <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                        <ul class="space-y-2">
+                            <li v-for="domainItem in domains" :key="domainItem.id">
+                                <InstDomain
+                                    @delete="fetchDomains"
+                                    :domain="domainItem.domain"
+                                    :id="domainItem.id"
+                                />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
-            <!-- <div>
-                <h2>👤Professor Profiles</h2>
-                <p>Merge, Delete, and Modify Professor Profiles.</p>
-            </div> -->
         </div>
+
+        <div v-else class="flex-grow flex flex-col items-center justify-center p-6">
+            <div class="bg-card p-10 rounded-[24px] shadow-xl border border-gray-100 text-center max-w-md">
+                <div class="text-5xl mb-4">🚫</div>
+                <h1 class="text-3xl font-bold text-text-main">Access Denied</h1>
+                <p class="text-text-muted mt-2">This dashboard is reserved for Proffable moderators only.</p>
+                <button 
+                    @click="$router.push('/')" 
+                    class="mt-8 w-full bg-primary text-white py-3 rounded-full font-bold cursor-pointer hover:brightness-110 transition-all active:scale-95 shadow-lg"
+                >
+                    Return to Homepage
+                </button>
+            </div>
         </div>
-    <div v-else>
-        <h1>You do not have permission.</h1>
     </div>
 </template>
 <style scoped>
-    @import "tailwindcss";
-    h1 {
-        @apply text-6xl font-bold text-left;
-    }
-    h2 {
-        @apply text-[30px];
-    }
-    .moderator-dashbaord > div {
-        @apply p-4 bg-white shadow-md rounded-2xl;
-    }
-    p {
-        @apply text-black;
-    }
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+}
 </style>
