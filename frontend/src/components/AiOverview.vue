@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted, onUnmounted } from 'vue'
+    import { ref, onMounted, onUnmounted, watch } from 'vue'
     import api from "@/api/axios"
 
     const props = defineProps({
@@ -9,6 +9,10 @@
     const showCredit = ref(false);
     let timer = null;
     onMounted(async () => {
+        fetchOverview();
+    })
+
+    async function fetchOverview(params) {
         try {
             const res = await api.get(`/overviews/${props.professor_id}`)
             console.log(res)
@@ -16,6 +20,10 @@
         } catch (error) {
             startTypewriter("Overview Unavailable.");
         }
+    }
+
+    watch(() => props.professor_id, (newId, oldId) => {
+        fetchOverview();
     })
 
     const startTypewriter = async (text) => {
