@@ -11,11 +11,13 @@
     import ReviewFormNew from './ReviewFormNew.vue'
     import Heart from './Heart.vue'
     import AiOverview from './AiOverview.vue'
+    import GradeDistribution from './GradeDistribution.vue'
 
     const professor = ref({})
     const route = useRoute()
     const reviews = ref([])
     const router = useRouter()
+    const gradeDistRef = ref(null)
     
     const professors = ref()
 
@@ -70,6 +72,12 @@
     const handleDelete = () => {
         professor_reviewed.value = false;
         fetchReviews();
+        gradeDistRef.value?.fetchAnalytics()
+    }
+
+    const handleReviewSubmit = () => {
+        fetchReviews()
+        gradeDistRef.value?.fetchAnalytics()
     }
 
     onMounted(()=>{
@@ -156,70 +164,10 @@
                 <div class="grid grid-cols-[2.1fr_1fr] gap-[10px] mt-2.5">
                     <AiOverview :professor_id="route.params.professorId"/>
                     <!--GRADE DISTRIBUTION-->
-                    <div class="bg-card shadow rounded-xl p-[18px] text-[#719294] text-left">
-                        <h3 class="text-2xl font-bold">Grade Distribution</h3>
-                        <div class="flex flex-col space-y-1.5">
-                            <!-- A -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">A</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[45%]"></div>
-                            </div>
-                            <span class="text-sm">45%</span>
-                            </div>
-                            <!-- B+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[25%]"></div>
-                            </div>
-                            <span class="text-sm">25%</span>
-                            </div>
-                            <!-- B -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">B</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[15%]"></div>
-                            </div>
-                            <span class="text-sm">15%</span>
-                            </div>
-                            <!-- C+ -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C+</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[8%]"></div>
-                            </div>
-                            <span class="text-sm">8%</span>
-                            </div>
-                            <!-- C -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">C</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[5%]"></div>
-                            </div>
-                            <span class="text-sm">5%</span>
-                            </div>
-                            <!-- D -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">D</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[2%]"></div>
-                            </div>
-                            <span class="text-sm">2%</span>
-                            </div>
-                            <!-- F -->
-                            <div class="flex items-center gap-3">
-                            <span class="w-8 font-bold">F</span>
-                            <div class="w-[250px] bg-[#e9e9e9] rounded-full h-4">
-                                <div class="bg-[#719294] h-4 rounded-full w-[0%] opacity-40"></div>
-                            </div>
-                            <span class="text-sm">0%</span>
-                            </div>
-                        </div>
-                    </div>
+                    <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
-                <div v-if="!professor_reviewed" class="bg-card shadow p-4 pt-2 mt-4 rounded-xl text-left">
-                    <ReviewFormNew @submitReview="fetchReviews"/>
+                <div v-if="!professor_reviewed" class="bg-white p-4 pt-2 mt-4 rounded-xl text-left">
+                    <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
                 <div class="flex justify-between items-center">
@@ -230,7 +178,7 @@
                         <li v-for="review in reviews" :key="review.review_id">
                             <ReviewCard
                                 @delete="handleDelete"
-                                @edit="fetchReviews"
+                                @edit="fetchReviews(); gradeDistRef?.fetchAnalytics()"
                                 :reviewId="review.review_id"
                                 :is-owner="review.is_owner"
                                 :is-moderator="isModerator" 
