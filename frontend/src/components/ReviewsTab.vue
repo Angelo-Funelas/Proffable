@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue"
 import { useRouter } from 'vue-router'
 import api from "@/api/axios"
+import ReviewCard from "./ReviewCard.vue"
 
 const emit = defineEmits(['message'])
 const router = useRouter()
@@ -22,39 +23,22 @@ onMounted(() => {
   fetchUserReviews()
 })
 
-const deleteReview = async (reviewId) => {
-  try {
-    await api.delete(`reviews/${reviewId}/`)
-    userReviews.value = userReviews.value.filter(
-      (review) => review.review_id !== reviewId
-    )
-    emit('message', { text: "Review deleted successfully.", type: "success" })
-  } catch (err) {
-    console.error("DELETE /reviews failed:", err.response?.status, err.response?.data || err.message)
-    emit('message', { text: "Failed to delete review.", type: "error" })
-  }
+const handleReviewDeleted = (reviewId) => {
+  userReviews.value = userReviews.value.filter(
+    (review) => review.review_id !== reviewId
+  )
+  emit('message', { text: "Review deleted successfully.", type: "success" })
 }
 
 const goToProfessorProfile = (professorId) => {
   if (!professorId) return
   router.push(`/professor/${professorId}`)
 }
-
-const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString()
-}
-
-// === STYLE TOKENS ===
-const btnSecondary =
-  'bg-card hover:bg-surface text-text-main border border-gray-200 px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer transition-colors'
-const btnDangerSmall =
-  'bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-full font-semibold text-xs cursor-pointer transition-all border-0'
 </script>
 
 <template>
-  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100">
-    <div class="mb-6 text-left">
+  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100 text-left">
+    <div class="mb-6">
       <h1
         class="text-4xl font-bold text-text-main tracking-tight max-[980px]:text-2xl"
       >
@@ -70,58 +54,33 @@ const btnDangerSmall =
       other students choose professors.
     </div>
 
-    <div v-else class="flex flex-col gap-4">
-      <article
-        v-for="review in userReviews"
-        :key="review.review_id"
-        class="bg-surface border border-gray-100 rounded-2xl p-4"
-      >
-        <div class="flex justify-between items-start gap-4">
-          <div>
-            <h3
-              class="m-0 mb-1 text-text-main font-bold text-lg cursor-pointer hover:opacity-80 transition-opacity"
-              @click="goToProfessorProfile(review.professor)"
-            >
-              {{ review.professor_name }}
-            </h3>
-            <p class="m-0 text-text-muted text-sm">
-              {{ formatDate(review.review_date) }}
-            </p>
-          </div>
-
-          <div
-            class="bg-primary text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-sm whitespace-nowrap"
-          >
-            {{ review.review_rating }}/5
-          </div>
-        </div>
-
-        <p class="mt-3 text-text-main leading-relaxed">
-          {{ review.comment_text }}
+    <div v-else class="flex flex-col gap-5">
+      <div v-for="review in userReviews" :key="review.review_id">
+        <!-- Professor link above each review card -->
+        <p
+          class="mb-2 text-sm font-bold text-primary cursor-pointer hover:underline transition-colors"
+          @click="goToProfessorProfile(review.professor)"
+        >
+          {{ review.professor_name }} &rarr;
         </p>
 
-        <div
-          class="mt-3 flex gap-4 flex-wrap text-sm text-text-muted"
-        >
-          <span>Grade: {{ review.received_grade || "N/A" }}</span>
-          <span>Helpful: {{ review.helpful_count }}</span>
-        </div>
-
-        <div class="mt-4 flex gap-3">
-          <button
-            :class="btnSecondary"
-            @click="goToProfessorProfile(review.professor)"
-          >
-            View Professor
-          </button>
-          <button
-            :class="btnDangerSmall"
-            @click="deleteReview(review.review_id)"
-          >
-            Delete
-          </button>
-        </div>
-      </article>
+        <ReviewCard
+          :reviewId="review.review_id"
+          :reviewText="review.comment_text"
+          :grade="review.received_grade"
+          :rating="review.review_rating"
+          :tags="review.tags || []"
+          :likes="review.helpful_count"
+          :isOwner="true"
+          :isModerator="false"
+          :courseCode="review.course_code || ''"
+          :courseName="review.course_name || ''"
+          :semesterTerm="review.semester_term || ''"
+          :semesterYear="review.semester_year || ''"
+          @delete="handleReviewDeleted(review.review_id)"
+          @edit="fetchUserReviews"
+        />
+      </div>
     </div>
   </div>
 </template>
