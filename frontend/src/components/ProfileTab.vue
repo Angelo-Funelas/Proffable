@@ -159,122 +159,174 @@ const deleteAccount = async () => {
     showDeleteConfirm.value = false
   }
 }
+
+// === STYLE TOKENS (shared across the tab) ===
+const fieldRow =
+  'flex items-center gap-4 max-[980px]:flex-col max-[980px]:items-stretch max-[980px]:gap-1.5'
+const fieldLabel =
+  'w-[110px] shrink-0 text-text-main font-medium text-sm max-[980px]:w-auto'
+const fieldInput =
+  'flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-text-main bg-card transition-colors min-w-0 focus:outline-none focus:border-primary disabled:bg-surface disabled:text-text-muted disabled:cursor-not-allowed'
+const passwordInput =
+  'w-full p-3 border border-gray-200 rounded-xl box-border text-text-main bg-card focus:outline-none focus:border-primary transition-colors'
+const btnPrimary =
+  'bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm shadow-md cursor-pointer transition-all active:scale-[0.98] border-0'
+const btnSecondary =
+  'bg-card hover:bg-surface text-text-main border border-gray-200 px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer transition-colors'
+const btnDanger =
+  'bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-full font-semibold text-sm cursor-pointer transition-all border-0'
+const btnGhost =
+  'bg-transparent text-text-muted hover:bg-surface border border-gray-200 px-4 py-2 rounded-full font-semibold text-sm cursor-pointer transition-colors'
+const btnGhostDanger =
+  'bg-transparent text-red-600 hover:bg-red-50 border border-red-200 px-4 py-2 rounded-full font-semibold text-sm cursor-pointer transition-colors'
 </script>
 
 <template>
-  <div class="tab-panel">
-    <div class="profile-form-layout">
+  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100">
+    <div
+      class="flex gap-8 items-start max-[980px]:flex-col-reverse max-[980px]:items-center"
+    >
       <!-- Form fields (left) -->
-      <div class="form-fields">
-        <div class="field-row">
-          <label for="username">Username</label>
+      <div class="flex-1 flex flex-col gap-4 min-w-0 max-[980px]:w-full">
+        <div :class="fieldRow">
+          <label for="username" :class="fieldLabel">Username</label>
           <input
             id="username"
             v-model="editForm.username"
             type="text"
             :disabled="!isEditing"
+            :class="fieldInput"
           />
         </div>
 
-        <div class="field-row">
-          <label for="email">Email</label>
+        <div :class="fieldRow">
+          <label for="email" :class="fieldLabel">Email</label>
           <input
             id="email"
             v-model="editForm.email"
             type="email"
             :disabled="!isEditing"
+            :class="fieldInput"
           />
         </div>
 
-        <div class="field-row">
-          <label for="f_name">First Name</label>
+        <div :class="fieldRow">
+          <label for="f_name" :class="fieldLabel">First Name</label>
           <input
             id="f_name"
             v-model="editForm.f_name"
             type="text"
             :disabled="!isEditing"
+            :class="fieldInput"
           />
         </div>
 
-        <div class="field-row">
-          <label for="m_name">Middle Name</label>
+        <div :class="fieldRow">
+          <label for="m_name" :class="fieldLabel">Middle Name</label>
           <input
             id="m_name"
             v-model="editForm.m_name"
             type="text"
             :disabled="!isEditing"
+            :class="fieldInput"
           />
         </div>
 
-        <div class="field-row">
-          <label for="l_name">Last Name</label>
+        <div :class="fieldRow">
+          <label for="l_name" :class="fieldLabel">Last Name</label>
           <input
             id="l_name"
             v-model="editForm.l_name"
             type="text"
             :disabled="!isEditing"
+            :class="fieldInput"
           />
         </div>
 
-        <div class="form-actions">
-          <button class="primary-btn" @click="toggleEdit">
+        <div class="flex gap-3 mt-2">
+          <button :class="btnPrimary" @click="toggleEdit">
             {{ isEditing ? "Save" : "Edit" }}
           </button>
-          <button
-            v-if="isEditing"
-            class="secondary-btn"
-            @click="cancelEdit"
-          >
+          <button v-if="isEditing" :class="btnSecondary" @click="cancelEdit">
             Cancel
           </button>
         </div>
       </div>
 
       <!-- Avatar (right) -->
-      <div class="avatar-column">
-        <div class="avatar-wrapper">
+      <div
+        class="flex flex-col items-center gap-2 w-[180px] shrink-0 max-[980px]:w-auto"
+      >
+        <div class="flex justify-center">
           <img
             v-if="profile.profile_picture_url"
             :src="profile.profile_picture_url"
             alt="Profile picture"
-            class="avatar-image"
+            class="w-[140px] h-[140px] rounded-full border-4 border-primary object-cover bg-gray-200"
           />
-          <div v-else class="avatar-placeholder">
+          <div
+            v-else
+            class="w-[140px] h-[140px] rounded-full border-4 border-primary bg-gray-200 flex items-center justify-center text-text-main text-3xl font-bold"
+          >
             {{ getInitials() }}
           </div>
         </div>
-        <p class="avatar-name">{{ fullName || "User Name" }}</p>
-        <p class="avatar-handle">@{{ profile.username }}</p>
+        <p
+          class="mt-2 mb-0 text-base font-bold text-text-main text-center break-words"
+        >
+          {{ fullName || "User Name" }}
+        </p>
+        <p class="m-0 text-text-muted text-sm break-words">
+          @{{ profile.username }}
+        </p>
       </div>
     </div>
 
     <!-- Secondary actions -->
-    <div class="secondary-actions">
+    <div class="flex gap-3 mt-8 pt-6 border-t border-gray-200 flex-wrap">
       <button
         v-if="profile.can_change_password"
-        class="ghost-btn"
+        :class="btnGhost"
         @click="showPasswordForm = !showPasswordForm"
       >
         {{ showPasswordForm ? "Close Password Form" : "Change Password" }}
       </button>
 
-      <button class="ghost-btn danger-ghost" @click="showDeleteConfirm = true">
+      <button :class="btnGhostDanger" @click="showDeleteConfirm = true">
         Delete Account
       </button>
     </div>
 
     <!-- Change Password panel -->
-    <div v-if="showPasswordForm" class="password-panel">
-      <label>Current Password</label>
-      <input v-model="passwordForm.current_password" type="password" />
+    <div v-if="showPasswordForm" class="mt-6 pt-6 border-t border-gray-200">
+      <label class="block mt-3 mb-1 text-text-main font-medium text-sm">
+        Current Password
+      </label>
+      <input
+        v-model="passwordForm.current_password"
+        type="password"
+        :class="passwordInput"
+      />
 
-      <label>New Password</label>
-      <input v-model="passwordForm.new_password" type="password" />
+      <label class="block mt-3 mb-1 text-text-main font-medium text-sm">
+        New Password
+      </label>
+      <input
+        v-model="passwordForm.new_password"
+        type="password"
+        :class="passwordInput"
+      />
 
-      <label>Confirm New Password</label>
-      <input v-model="passwordForm.confirm_password" type="password" />
+      <label class="block mt-3 mb-1 text-text-main font-medium text-sm">
+        Confirm New Password
+      </label>
+      <input
+        v-model="passwordForm.confirm_password"
+        type="password"
+        :class="passwordInput"
+      />
 
-      <button class="primary-btn" @click="changePassword">
+      <button :class="[btnPrimary, 'mt-4']" @click="changePassword">
         Update Password
       </button>
     </div>
@@ -284,17 +336,18 @@ const deleteAccount = async () => {
       v-if="showDeleteConfirm"
       class="fixed inset-0 flex items-center justify-center bg-black/30 z-50"
     >
-      <div class="bg-white rounded-xl p-6 w-[360px] shadow-lg text-center">
-        <h3 class="text-xl font-bold text-[#0B0D09] mb-3">Delete Account</h3>
-        <p class="text-[#444] mb-5">
-          Are you sure you want to delete your profile? This action cannot be undone.
+      <div class="bg-card rounded-2xl p-6 w-[360px] shadow-xl text-center">
+        <h3 class="text-xl font-bold text-text-main mb-3">Delete Account</h3>
+        <p class="text-text-muted mb-5">
+          Are you sure you want to delete your profile? This action cannot be
+          undone.
         </p>
 
         <div class="flex justify-center gap-3">
-          <button class="secondary-btn" @click="showDeleteConfirm = false">
+          <button :class="btnSecondary" @click="showDeleteConfirm = false">
             Cancel
           </button>
-          <button class="danger-btn" @click="deleteAccount">
+          <button :class="btnDanger" @click="deleteAccount">
             Yes, Delete
           </button>
         </div>
@@ -302,254 +355,3 @@ const deleteAccount = async () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.tab-panel {
-  background: white;
-  border-radius: 14px;
-  padding: 2rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-}
-
-.profile-form-layout {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
-}
-
-.form-fields {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
-}
-
-.field-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.field-row label {
-  width: 110px;
-  flex-shrink: 0;
-  color: #444;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-.field-row input {
-  flex: 1;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  color: #0B0D09;
-  background: white;
-  transition: border-color 0.15s, background 0.15s;
-  min-width: 0;
-}
-
-.field-row input:disabled {
-  background: #f9fafb;
-  color: #4b5563;
-  cursor: not-allowed;
-}
-
-.field-row input:focus {
-  outline: none;
-  border-color: #719294;
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
-
-.avatar-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  width: 180px;
-  flex-shrink: 0;
-}
-
-.avatar-wrapper {
-  display: flex;
-  justify-content: center;
-}
-
-.avatar-image,
-.avatar-placeholder {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  border: 4px solid #719294;
-  object-fit: cover;
-  background: #d9d9d9;
-}
-
-.avatar-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2f2f2f;
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.avatar-name {
-  margin: 0.5rem 0 0 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #333;
-  text-align: center;
-  word-break: break-word;
-}
-
-.avatar-handle {
-  margin: 0;
-  color: #6b7280;
-  font-size: 0.9rem;
-  word-break: break-word;
-}
-
-.secondary-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  flex-wrap: wrap;
-}
-
-.ghost-btn {
-  background: transparent;
-  color: #4f6c72;
-  border: 1px solid #d1d5db;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.ghost-btn:hover {
-  background: #f3f4f6;
-}
-
-.ghost-btn.danger-ghost {
-  color: #c94b4b;
-  border-color: #f2b8b8;
-}
-
-.ghost-btn.danger-ghost:hover {
-  background: #fdeaea;
-}
-
-.password-panel {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.password-panel h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: #4f5a43;
-}
-
-.password-panel label {
-  display: block;
-  margin-top: 0.75rem;
-  margin-bottom: 0.25rem;
-  color: #444;
-}
-
-.password-panel input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  box-sizing: border-box;
-  color: #0B0D09;
-}
-
-.password-panel .primary-btn {
-  margin-top: 1rem;
-}
-
-.primary-btn,
-.secondary-btn,
-.danger-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 0.7rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: filter 0.15s, transform 0.05s, background 0.15s;
-}
-
-.primary-btn {
-  background: #719294;
-  color: white;
-}
-
-.primary-btn:hover {
-  filter: brightness(1.08);
-}
-
-.primary-btn:active {
-  transform: scale(0.98);
-}
-
-.secondary-btn {
-  background: white;
-  color: #4f6c72;
-  border: 1px solid #d1d5db;
-}
-
-.secondary-btn:hover {
-  background: #f3f4f6;
-}
-
-.danger-btn {
-  background: #c94b4b;
-  color: white;
-}
-
-.danger-btn:hover {
-  filter: brightness(1.08);
-}
-
-@media (max-width: 980px) {
-  .profile-form-layout {
-    flex-direction: column-reverse;
-    align-items: center;
-  }
-
-  .form-fields {
-    width: 100%;
-  }
-
-  .avatar-column {
-    width: auto;
-  }
-
-  .field-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.35rem;
-  }
-
-  .field-row label {
-    width: auto;
-  }
-}
-</style>

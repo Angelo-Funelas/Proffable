@@ -114,7 +114,9 @@ async function fetchReports() {
             placeholder="e.g. student.ateneo.edu"
             class="flex-grow bg-surface border border-gray-100 rounded-xl px-4 py-3 text-sm text-text-main outline-none focus:border-primary/50 transition-all placeholder:text-text-muted/40"
           >
-          <button class="bg-primary text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+          <button
+            class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all cursor-pointer border-0"
+          >
             Add
           </button>
         </form>

@@ -75,35 +75,45 @@ const selectTab = (tab) => {
   if (tab === 'moderation' && !profile.value.is_moderator) return
   activeTab.value = tab
 }
+
+// === STYLE TOKENS ===
+const tabClass = (isActive) => [
+  'px-4 py-3 rounded-xl text-sm font-semibold text-left cursor-pointer lowercase transition-all max-[980px]:flex-1 max-[980px]:text-center',
+  isActive
+    ? 'bg-primary text-white border border-primary shadow-md'
+    : 'bg-card text-text-main border border-gray-100 hover:bg-surface',
+]
 </script>
 
 <template>
   <div>
     <Navbar />
 
-    <main class="profile-page">
+    <main
+      class="flex gap-6 p-8 bg-surface min-h-[calc(100vh-80px)] items-start max-[980px]:flex-col"
+    >
       <!-- LEFT SIDEBAR : TAB NAVIGATION -->
-      <aside class="profile-sidebar">
-        <nav class="tab-nav" aria-label="Profile navigation">
+      <aside class="w-[220px] shrink-0 max-[980px]:w-full">
+        <nav
+          class="bg-card rounded-[24px] p-3 flex flex-col gap-2 shadow-xl border border-gray-100 max-[980px]:flex-row max-[980px]:flex-wrap"
+          aria-label="Profile navigation"
+        >
           <button
-            class="tab-btn"
-            :class="{ 'tab-btn-active': activeTab === 'profile' }"
+            :class="tabClass(activeTab === 'profile')"
             @click="selectTab('profile')"
           >
             profile
           </button>
 
           <button
-            class="tab-btn"
-            :class="{ 'tab-btn-active': activeTab === 'favorites' }"
+            :class="tabClass(activeTab === 'favorites')"
             @click="selectTab('favorites')"
           >
             favorites
           </button>
 
           <button
-            class="tab-btn"
-            :class="{ 'tab-btn-active': activeTab === 'reviews' }"
+            :class="tabClass(activeTab === 'reviews')"
             @click="selectTab('reviews')"
           >
             reviews
@@ -111,8 +121,7 @@ const selectTab = (tab) => {
 
           <button
             v-if="profile.is_moderator"
-            class="tab-btn"
-            :class="{ 'tab-btn-active': activeTab === 'moderation' }"
+            :class="tabClass(activeTab === 'moderation')"
             @click="selectTab('moderation')"
           >
             moderation
@@ -121,12 +130,16 @@ const selectTab = (tab) => {
       </aside>
 
       <!-- RIGHT CONTENT -->
-      <section class="profile-content">
+      <section class="flex-1 min-w-0 flex flex-col gap-6">
         <div
           v-if="message"
           ref="messageBannerRef"
-          class="message-banner"
-          :class="messageType === 'error' ? 'message-banner-error' : 'message-banner-success'"
+          class="px-4 py-3 rounded-xl font-semibold border"
+          :class="
+            messageType === 'error'
+              ? 'bg-red-50 text-red-700 border-red-200'
+              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+          "
         >
           {{ message }}
         </div>
@@ -160,101 +173,3 @@ const selectTab = (tab) => {
     </main>
   </div>
 </template>
-
-<style scoped>
-.profile-page {
-  display: flex;
-  gap: 1.5rem;
-  padding: 2rem;
-  background: #f5f5f5;
-  min-height: calc(100vh - 80px);
-  align-items: flex-start;
-}
-
-.profile-sidebar {
-  width: 220px;
-  flex-shrink: 0;
-}
-
-.tab-nav {
-  background: white;
-  border-radius: 14px;
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-}
-
-.tab-btn {
-  border: 1px solid #d1d5db;
-  background: #fff;
-  color: #374151;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-  text-transform: lowercase;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.tab-btn:hover {
-  background: #f3f4f6;
-}
-
-.tab-btn-active {
-  background: #719294;
-  color: white;
-  border-color: #719294;
-  box-shadow: inset 0 0 0 2px white;
-}
-
-.profile-content {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.message-banner {
-  padding: 0.9rem 1rem;
-  border-radius: 12px;
-  font-weight: 600;
-}
-
-.message-banner-success {
-  background: #e8f4e8;
-  color: #2f6b2f;
-  border: 1px solid #c6e2c6;
-}
-
-.message-banner-error {
-  background: #fdeaea;
-  color: #a12626;
-  border: 1px solid #f2b8b8;
-}
-
-@media (max-width: 980px) {
-  .profile-page {
-    flex-direction: column;
-  }
-
-  .profile-sidebar {
-    width: 100%;
-  }
-
-  .tab-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .tab-btn {
-    flex: 1 1 auto;
-    text-align: center;
-  }
-}
-</style>
