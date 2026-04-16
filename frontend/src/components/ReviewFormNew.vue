@@ -82,6 +82,13 @@ const toLetterGrade = (input) => {
   return 'F'
 }
 
+function jsonPrintHelper(string){
+  return string
+  .replace(/_/g, ' ') 
+  .replace(/\b\w/g, char => char.toUpperCase());
+}
+
+// Call Backend for Review
 async function submitReview() {
   const normalizedGrade = toLetterGrade(form.value.received_grade)
   try {
@@ -121,10 +128,19 @@ async function submitReview() {
       semester_term: '',      
       semester_year: '',  }
   } catch (err) {
-    // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
-    message.value = JSON.stringify(err.response?.data)
+    const errors = err.response?.data
+
+    if (errors) {
+      message.value = Object.entries(errors)
+        .map(([field, msgs]) => `${jsonPrintHelper(field)}: ${msgs.join("\n")}`)
+        .join("\n")
+    } else {
+      message.value = "Something went wrong"
+    }
   }
 }
+
+
 
 function toggleTag(id) {
   if (form.value.tags.includes(id)) {
