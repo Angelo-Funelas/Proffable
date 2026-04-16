@@ -10,6 +10,10 @@ const props = defineProps({
   review_rating: Number,
   grade_received: String,
   comment_text: String,
+  course: String,
+  semester_term: String,
+  semester_year: String,
+  tags:Array
 })
 
 const route = useRoute()
@@ -48,13 +52,24 @@ onMounted(async () => {
     ])
     tags.value = tagRes.data
     courses.value= courseRes.data
-    console.log(tags.value)
+    console.log("hi")
+    if (props.editing && props.tags) {
+      form.value.tags = props.tags.map(t => t.tag_id)
+      form.value.course = courseRes.data.find(
+        c => c.course_code = props.course
+      )?.course_id || ''
+      form.value.semester_term = SEMESTER_TERMS.find(
+        s => s.label === props.semester_term
+      )?.value || ''
+
+      form.value.semester_year = props.semester_year
+    }
+    console.log(props)
+    console.log(form.value)
   } catch (err) {
     console.error("Failed to load tags data", err)
   }
-  if (props.editing && props.tags) {
-    form.value.tags = props.tags.map(t => t.tag_id);
-  }
+  
 })
 
 // Call Backend for Review

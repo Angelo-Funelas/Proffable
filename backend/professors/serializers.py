@@ -26,11 +26,12 @@ class ProfessorSerializer(serializers.ModelSerializer):
             return fav.id if fav else None
         return None
 
-    def get_tags(self,obj):
-        tags = Tag.objects.filter(review_tag__review_id__professor=obj)\
-            .annotate(count=Count('review_tag'))\
-            .order_by('-count')[:5]
-        return [tag.tag_name for tag in tags]
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(
+            review_tag__review_id__professor=obj
+        ).annotate(count=Count('review_tag')).order_by('-count')[:5]
+
+        return TagSerializer(tags, many=True).data
 
     def get_institutions(self,obj):
         institutions = Institution.objects.filter(courses__professor_course__professor=obj).distinct()
@@ -58,7 +59,7 @@ class ReviewTagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReviewTag
-        fields = ["tag_name"]
+        fields = ["tag_id","tag_name"]
 
 
 
