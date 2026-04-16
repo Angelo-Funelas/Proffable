@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router"
 import api from "@/api/axios"
 
-const emit = defineEmits(['message'])
+const emit = defineEmits(["message"])
 const router = useRouter()
 
 const favoriteProfessors = ref([])
@@ -13,8 +13,15 @@ const fetchFavoriteProfessors = async () => {
     const res = await api.get("favorite-prof/")
     favoriteProfessors.value = res.data
   } catch (err) {
-    console.error("GET /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
-    emit('message', { text: "Failed to load favorite professors.", type: "error" })
+    console.error(
+      "GET /favorite-prof failed:",
+      err.response?.status,
+      err.response?.data || err.message
+    )
+    emit("message", {
+      text: "Failed to load favorite professors.",
+      type: "error",
+    })
   }
 }
 
@@ -28,10 +35,20 @@ const removeFavorite = async (favoriteId) => {
     favoriteProfessors.value = favoriteProfessors.value.filter(
       (prof) => prof.id !== favoriteId
     )
-    emit('message', { text: "Favorite professor removed.", type: "success" })
+    emit("message", {
+      text: "Favorite professor removed.",
+      type: "success",
+    })
   } catch (err) {
-    console.error("DELETE /favorite-prof failed:", err.response?.status, err.response?.data || err.message)
-    emit('message', { text: "Failed to remove favorite professor.", type: "error" })
+    console.error(
+      "DELETE /favorite-prof failed:",
+      err.response?.status,
+      err.response?.data || err.message
+    )
+    emit("message", {
+      text: "Failed to remove favorite professor.",
+      type: "error",
+    })
   }
 }
 
@@ -48,114 +65,109 @@ const goToProfessorProfile = (professorId) => {
 </script>
 
 <template>
-  <div class="tab-panel">
-    <h1 class="section-title">Favorite Professors</h1>
+  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100 text-left">
+    <div class="mb-6">
+      <h1
+        class="text-4xl font-bold text-text-main tracking-tight max-[980px]:text-2xl"
+      >
+        Favorite Professors<span class="text-primary">.</span>
+      </h1>
+      <p class="text-text-muted mt-2 text-lg max-[980px]:text-base">
+        Professors you've saved for quick access.
+      </p>
+    </div>
 
-    <div v-if="favoriteProfessors.length === 0" class="empty-state">
+    <div
+      v-if="favoriteProfessors.length === 0"
+      class="text-text-muted italic py-4"
+    >
       You don't have any favorite professors yet.
     </div>
 
-    <div v-else class="favorites-grid">
+    <div v-else class="flex flex-col gap-4">
       <div
         v-for="prof in favoriteProfessors"
         :key="prof.id"
-        class="favorite-card"
+        class="bg-card border border-gray-100 rounded-xl p-5 shadow-sm hover:border-primary/30 transition-all"
       >
-        <div
-          class="favorite-info clickable-info"
-          @click="goToProfessorProfile(prof.professor_id)"
-        >
-          <h3>{{ getProfessorFullName(prof) || prof.professor_name }}</h3>
-          <p>{{ prof.email || "No email available" }}</p>
-        </div>
+        <div class="flex justify-between items-start gap-4">
+          <div class="flex-1 min-w-0">
+            <h3
+              class="text-lg font-bold text-primary cursor-pointer hover:underline transition-colors truncate"
+              @click="goToProfessorProfile(prof.professor_id)"
+            >
+              {{ getProfessorFullName(prof) || prof.professor_name }}
+            </h3>
 
-        <button class="secondary-btn" @click="removeFavorite(prof.id)">
-          Remove
-        </button>
+            <p class="text-sm text-text-muted mt-0.5">
+              {{ prof.institution || prof.email || 'Faculty Member' }}
+            </p>
+
+            <div
+              v-if="prof.avg_score != null"
+              class="flex items-center gap-1.5 mt-2"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 40 38"
+                class="fill-accent"
+              >
+                <path
+                  d="M20,0l6.2,12.5,13.8,2-10,9.7,2.4,13.8-12.4-6.5-12.4,6.5,2.4-13.8L0,14.5l13.8-2L20,0Z"
+                />
+              </svg>
+              <span class="font-bold text-sm text-text-main">
+                {{ Number(prof.avg_score).toFixed(2) }}
+              </span>
+              <span class="text-text-muted text-xs">
+                ({{ prof.review_count || 0 }}
+                {{ prof.review_count === 1 ? 'review' : 'reviews' }})
+              </span>
+            </div>
+
+            <div
+              v-if="prof.courses && prof.courses.length > 0"
+              class="mt-3"
+            >
+              <span class="text-xs font-bold text-text-main">Courses:</span>
+              <div class="flex flex-wrap gap-1.5 mt-1">
+                <span
+                  v-for="course in prof.courses"
+                  :key="course.code"
+                  class="text-xs bg-surface text-primary font-semibold px-2.5 py-1 rounded-lg border border-gray-100 cursor-default"
+                  :title="course.name"
+                >
+                  {{ course.code }}
+                </span>
+              </div>
+            </div>
+
+            <div
+              v-if="prof.tags && prof.tags.length > 0"
+              class="flex flex-wrap gap-1.5 mt-3 items-center"
+            >
+              <span class="text-xs font-bold text-text-main">Tags:</span>
+              <span
+                v-for="tag in prof.tags"
+                :key="tag"
+                class="text-[11px] bg-surface text-primary font-bold px-2 py-0.5 rounded-full border border-gray-100"
+              >
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-end gap-3 shrink-0 pt-1">
+            <button
+              class="text-xs font-semibold text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+              @click="removeFavorite(prof.id)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.tab-panel {
-  background: white;
-  border-radius: 14px;
-  padding: 2rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-}
-
-.section-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #5a624f;
-  margin: 0 0 1.25rem 0;
-}
-
-.empty-state {
-  font-size: 1rem;
-  color: #6b7280;
-}
-
-.favorites-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-.favorite-card {
-  background: #fafafa;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.favorite-info h3 {
-  margin: 0 0 0.3rem 0;
-  color: #333;
-}
-
-.favorite-info p {
-  margin: 0;
-  color: #666;
-}
-
-.clickable-info {
-  cursor: pointer;
-}
-
-.clickable-info:hover {
-  opacity: 0.85;
-}
-
-.favorite-info.clickable-info {
-  flex: 1;
-}
-
-.secondary-btn {
-  background: white;
-  color: #4f6c72;
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  padding: 0.7rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.secondary-btn:hover {
-  background: #f3f4f6;
-}
-
-@media (max-width: 980px) {
-  .section-title {
-    font-size: 1.6rem;
-  }
-}
-</style>
