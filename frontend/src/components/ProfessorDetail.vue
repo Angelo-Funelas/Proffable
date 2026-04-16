@@ -220,7 +220,7 @@
                                 <template v-if="professor.tags && professor.tags.length > 0">
                                     <span v-for="tag in professor.tags" :key="tag" 
                                         class="bg-surface text-primary border border-gray-100 px-3 py-0.5 rounded-full text-[11px] font-bold shadow-sm">
-                                        {{ tag }}
+                                        {{ tag.tag_name }}
                                     </span>
                                 </template>
                                 <span v-else class="text-text-muted italic text-xs">No tags yet</span>

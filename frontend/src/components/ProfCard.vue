@@ -38,7 +38,7 @@ const props = defineProps({
                 <template v-if="tags && tags.length > 0">
                     <span v-for="tag in tags" :key="tag" 
                         class="bg-surface text-primary px-2 py-0.5 rounded-full border border-gray-100 font-bold">
-                        {{ tag }}
+                        {{ tag.tag_name }}
                     </span>
                 </template>
                 <span v-else class="text-text-muted italic">None</span>
