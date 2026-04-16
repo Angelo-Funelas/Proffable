@@ -166,9 +166,9 @@ const fieldRow =
 const fieldLabel =
   'w-[110px] shrink-0 text-text-main font-medium text-sm max-[980px]:w-auto'
 const fieldInput =
-  'flex-1 px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-text-main bg-card transition-colors min-w-0 focus:outline-none focus:border-primary disabled:bg-surface disabled:text-text-muted disabled:cursor-not-allowed'
+  'flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-text-main bg-surface transition-colors min-w-0 focus:outline-none focus:border-primary focus:bg-card disabled:bg-card disabled:border-gray-200 disabled:text-text-muted disabled:cursor-not-allowed'
 const passwordInput =
-  'w-full p-3 border border-gray-200 rounded-xl box-border text-text-main bg-card focus:outline-none focus:border-primary transition-colors'
+  'w-full p-3 border border-gray-300 rounded-xl box-border text-text-main bg-surface focus:outline-none focus:border-primary focus:bg-card transition-colors'
 const btnPrimary =
   'bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-semibold text-sm shadow-md cursor-pointer transition-all active:scale-[0.98] border-0'
 const btnSecondary =
@@ -182,7 +182,7 @@ const btnGhostDanger =
 </script>
 
 <template>
-  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100">
+  <div class="bg-card rounded-[24px] p-8 shadow-xl border border-gray-100 text-left">
     <div
       class="flex gap-8 items-start max-[980px]:flex-col-reverse max-[980px]:items-center"
     >
