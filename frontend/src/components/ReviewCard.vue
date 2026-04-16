@@ -116,10 +116,10 @@ const handleEdit = (rating, grade_received, comment_text) => {
     review_data.value.rating = rating;
     review_data.value.grade_received = grade_received;
     review_data.value.reviewText = comment_text;
-    review_data.value.semesterTerm = semesterTerm;
-    review_data.value.semesterYear = semesterYear;
-    review_data.value.courseCode = courseCode;
-    review_data.value.courseName = courseName;
+    review_data.value.semesterTerm = props.semesterTerm;
+    review_data.value.semesterYear = props.semesterYear;
+    review_data.value.courseCode = props.courseCode;
+    review_data.value.courseName = props.courseName;
     isEditing.value = false;
     emit('edit');
 }

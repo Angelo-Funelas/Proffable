@@ -74,13 +74,6 @@ onMounted(async () => {
 
 // Call Backend for Review
 async function submitReview() {
-  console.log({
-      professor: route.params.professorId,
-      review_rating: form.value.review_rating,
-      comment_text: form.value.comment_text,
-      received_grade: form.value.received_grade,
-      tags: form.value.tags,
-    })
   try {
     if (props.editing) {
       await api.put(`reviews/${props.reviewId}/`, {
