@@ -41,22 +41,25 @@ onMounted(async () => {
   }
 })
 
-// Call Backend for Review
+const toLetterGrade = (input) => {
+  const n = parseFloat(input)
+  if (isNaN(n)) return input
+  if (n >= 90) return 'A'
+  if (n >= 80) return 'B'
+  if (n >= 70) return 'C'
+  if (n >= 60) return 'D'
+  return 'F'
+}
+
 async function submitReview() {
-  console.log({
-      professor: route.params.professorId,
-      review_rating: form.value.review_rating,
-      comment_text: form.value.comment_text,
-      received_grade: form.value.received_grade,
-      tags: form.value.tags,
-    })
+  const normalizedGrade = toLetterGrade(form.value.received_grade)
   try {
     if (props.editing) {
       await api.put(`reviews/${props.reviewId}/`, {
         professor: route.params.professorId,
         review_rating: form.value.review_rating,
         comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade,
+        received_grade: normalizedGrade,
         tags: form.value.tags,
       })
       message.value = 'Edited Review!'
@@ -65,7 +68,7 @@ async function submitReview() {
         professor: route.params.professorId,
         review_rating: form.value.review_rating,
         comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade,
+        received_grade: normalizedGrade,
         tags: form.value.tags,
       })
       message.value = 'Submitted Review!'
