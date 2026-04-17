@@ -16,12 +16,13 @@ from django.db.models.functions import Concat
 from django.db import transaction
 from django.db.models import Count, Q
 from django.db.models.functions import Lower
-# Create your views here.
+from .pagination import StandardResultsSetPagination
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
     permission_classes = [IsModeratorOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['f_name', 'l_name']
