@@ -10,6 +10,10 @@ const props = defineProps({
   review_rating: Number,
   grade_received: String,
   comment_text: String,
+  course: String,
+  semester_term: String,
+  semester_year: String,
+  tags:Array
 })
 
 const route = useRoute()
@@ -48,35 +52,56 @@ onMounted(async () => {
     ])
     tags.value = tagRes.data
     courses.value= courseRes.data
-    console.log(tags.value)
+    console.log("hi")
+    if (props.editing && props.tags) {
+      form.value.tags = props.tags.map(t => t.tag_id)
+      form.value.course = courseRes.data.find(
+        c => c.course_code = props.course
+      )?.course_id || ''
+      form.value.semester_term = SEMESTER_TERMS.find(
+        s => s.label === props.semester_term
+      )?.value || ''
+
+      form.value.semester_year = props.semester_year
+    }
+    console.log(props)
+    console.log(form.value)
   } catch (err) {
     console.error("Failed to load tags data", err)
   }
-  if (props.editing && props.tags) {
-    form.value.tags = props.tags.map(t => t.tag_id);
-  }
+  
 })
+
+const toLetterGrade = (input) => {
+  const n = parseFloat(input)
+  if (isNaN(n)) return input
+  if (n >= 90) return 'A'
+  if (n >= 80) return 'B'
+  if (n >= 70) return 'C'
+  if (n >= 60) return 'D'
+  return 'F'
+}
+
+function jsonPrintHelper(string){
+  return string
+  .replace(/_/g, ' ') 
+  .replace(/\b\w/g, char => char.toUpperCase());
+}
 
 // Call Backend for Review
 async function submitReview() {
-  console.log({
-      professor: route.params.professorId,
-      review_rating: form.value.review_rating,
-      comment_text: form.value.comment_text,
-      received_grade: form.value.received_grade,
-      tags: form.value.tags,
-    })
+  const normalizedGrade = toLetterGrade(form.value.received_grade)
   try {
     if (props.editing) {
       await api.put(`reviews/${props.reviewId}/`, {
         professor: route.params.professorId,
         review_rating: form.value.review_rating,
         comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade,
+        received_grade: normalizedGrade,
         tags: form.value.tags,
-        course: form.value.course,          
-        semester_term: form.value.semester_term,  
-        semester_year: form.value.semester_year,  
+        course: form.value.course,
+        semester_term: form.value.semester_term,
+        semester_year: form.value.semester_year,
       })
       message.value = 'Edited Review!'
     } else {
@@ -84,7 +109,7 @@ async function submitReview() {
         professor: route.params.professorId,
         review_rating: form.value.review_rating,
         comment_text: form.value.comment_text,
-        received_grade: form.value.received_grade,
+        received_grade: normalizedGrade,
         tags: form.value.tags,
         course: form.value.course,            
         semester_term: form.value.semester_term,  
@@ -103,10 +128,19 @@ async function submitReview() {
       semester_term: '',      
       semester_year: '',  }
   } catch (err) {
-    // REPLACE LATER WITH "something went wrong :(" FOR TESTING PURPOSES
-    message.value = JSON.stringify(err.response?.data)
+    const errors = err.response?.data
+
+    if (errors) {
+      message.value = Object.entries(errors)
+        .map(([field, msgs]) => `${jsonPrintHelper(field)}: ${msgs.join("\n")}`)
+        .join("\n")
+    } else {
+      message.value = "Something went wrong"
+    }
   }
 }
+
+
 
 function toggleTag(id) {
   if (form.value.tags.includes(id)) {

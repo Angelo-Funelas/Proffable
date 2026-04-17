@@ -92,15 +92,19 @@ const toggleHelpful = async () => {
 
 const review_data = ref({
   reviewId: null,
-  semester: '',
   subject: '',
   reviewText: '',
   grade: '',
   rating: 0,
   tags: [],
   likes: 0,
+  semesterTerm: '',
+  semesterYear: '',
+  courseCode: '',
+  courseName: '',
   isOwner: false,
 })
+
 
 watch(() => props, (newProps) => {
   review_data.value = {
@@ -112,6 +116,10 @@ const handleEdit = (rating, grade_received, comment_text) => {
     review_data.value.rating = rating;
     review_data.value.grade_received = grade_received;
     review_data.value.reviewText = comment_text;
+    review_data.value.semesterTerm = props.semesterTerm;
+    review_data.value.semesterYear = props.semesterYear;
+    review_data.value.courseCode = props.courseCode;
+    review_data.value.courseName = props.courseName;
     isEditing.value = false;
     emit('edit');
 }
@@ -301,10 +309,14 @@ const handleDelete = async () => {
             @cancelReview="isEditing = false"
             @submitReview="handleEdit"
             :reviewId="reviewId"
-            :editing="isEditing"
+            :editing="true"
             :review_rating="rating"
             :comment_text="reviewText"
             :grade_received="grade"
+            :course="courseCode"
+            :semester_term="semesterTerm"
+            :semester_year="semesterYear"
+            :tags="tags"
         />
     </div>
   </div>
