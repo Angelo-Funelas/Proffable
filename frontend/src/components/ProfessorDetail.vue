@@ -182,7 +182,7 @@
                                 :lname="prof.l_name"
                                 :fname="prof.f_name"
                                 :institutions="prof.institutions"
-                                :avgScore="Number(prof.avg_rating) || 0"
+                                :avgScore="prof.avg_rating || 0"
                                 :numReviews="prof.review_count"
                                 :tags="prof.tags"
                                 :is_favorited="prof.is_favorited"

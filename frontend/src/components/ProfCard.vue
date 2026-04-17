@@ -29,7 +29,7 @@ const props = defineProps({
                 <svg width="16" height="16" viewBox="0 0 40 38" class="fill-accent">
                     <path d="M20,0l6.2,12.5,13.8,2-10,9.7,2.4,13.8-12.4-6.5-12.4,6.5,2.4-13.8L0,14.5l13.8-2L20,0Z"/>
                 </svg>
-                <span class="font-bold">{{ Number(avgScore).toFixed(2) }}</span>
+                <span class="font-bold">{{ avgScore ? Number(avgScore).toFixed(2) : "0.00"  }}</span>
                 <span class="text-text-muted text-xs">({{ numReviews }} reviews)</span>
             </p>
 
