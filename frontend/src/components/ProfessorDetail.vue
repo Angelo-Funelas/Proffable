@@ -153,6 +153,7 @@
         fetchReviews()
         fetchSimilar()
         checkModStatus()
+        fetchCourses()
     })
 </script>
 
@@ -182,7 +183,7 @@
                                 :lname="prof.l_name"
                                 :fname="prof.f_name"
                                 :institutions="prof.institutions"
-                                :avgScore="Number(prof.avg_rating) || 0"
+                                :avgScore="prof.avg_rating || 0"
                                 :numReviews="prof.review_count"
                                 :tags="prof.tags"
                                 :is_favorited="prof.is_favorited"
@@ -238,7 +239,7 @@
                     <!--GRADE DISTRIBUTION-->
                     <GradeDistribution ref="gradeDistRef" :professorId="professor.professor_id" />
                 </div>
-                <div v-if="!professor_reviewed && isAuthorized" class="bg-card shadow-lg mt-4 text-left rounded-2xl p-8 border border-gray-100">
+                <div v-if="isAuthorized" class="bg-card shadow-lg mt-4 text-left rounded-2xl p-8 border border-gray-100">
                     <ReviewFormNew @submitReview="handleReviewSubmit"/>
                 </div>
                 <!--REVIEW CARDS-->
