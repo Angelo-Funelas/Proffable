@@ -42,6 +42,7 @@ onMounted(async () => {
       api.get('institutions/'),
       api.get('courses/')
     ])
+    console.log(instRes, courseRes)
     institutions.value = instRes.data
     courses.value = courseRes.data
   } catch (err) {

@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import api from "@/api/axios"
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
 import { useRoute, useRouter } from 'vue-router'
 import Navbar from './Navbar.vue'
+import Pagination from './Pagination.vue'
 
 const professors = ref([])
+const totalProfessors = ref(0)
+const currentPage = ref(1)
+const pageSize = 10
+const totalPages = computed(() => Math.ceil(totalProfessors.value / pageSize))
+
 const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
@@ -17,12 +23,15 @@ async function fetchProfessors(filters = {}) {
         search: filters.q || route.query.q || '',
         institution: filters.institution || route.query.institution || '',
         course: filters.course || route.query.course || '',
-        min_rating: filters.min_rating || route.query.min_rating || undefined
+        min_rating: filters.min_rating || route.query.min_rating || undefined,
+        page: filters.page || route.query.page || 1
     }
 
     try {
         const response = await api.get('professors/', { params })
-        professors.value = response.data
+        professors.value = response.data.results
+        totalProfessors.value = response.data.count
+        currentPage.value = Number(params.page)
     } catch(error) {
         console.error("Fetch error:", error)
     } finally {
@@ -32,6 +41,9 @@ async function fetchProfessors(filters = {}) {
 
 watch(() => route.query, (newQuery) => {
     fetchProfessors(newQuery)
+}, { immediate: true })
+watch(() => currentPage.value, (newPageValue) => {
+    fetchProfessors({page: newPageValue})
 }, { immediate: true })
 
 const goToProf = (professorId) => {
@@ -55,7 +67,7 @@ const goToProf = (professorId) => {
                 
                 <p v-if="!isLoading" class="text-left mt-2 ml-1 text-text-muted font-medium">
                     <span v-if="professors.length > 0">
-                        {{ professors.length }} results found 
+                        {{ totalProfessors }} results found 
                         <span v-if="route.query.q">for "{{ route.query.q }}"</span>
                     </span>
                     <span v-else>No results found for your search.</span>
@@ -82,6 +94,7 @@ const goToProf = (professorId) => {
                     />
                 </li>
             </ul>
+            <Pagination :pages="totalPages" :currentPage="currentPage" @switchPage="currentPage = $event"/>
         </section>
     </main>
 </div> 
