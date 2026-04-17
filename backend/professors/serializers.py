@@ -4,6 +4,7 @@ ProfessorCourse, Course, ReviewReport, Tag, ReviewTag, FavoriteProf
 from django.db.models import Count
 import re
 
+
 class ProfessorSerializer(serializers.ModelSerializer):
     avg_rating = serializers.FloatField(read_only=True)    
     review_count = serializers.IntegerField(read_only=True)
@@ -33,7 +34,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
 
         return TagSerializer(tags, many=True).data
 
-    def get_institutions(self,obj):
+    def get_institutions(self, obj):
         institutions = Institution.objects.filter(courses__professor_course__professor=obj).distinct()
         return InstitutionSerializer(institutions, many=True).data
     
@@ -43,15 +44,17 @@ class ProfessorSerializer(serializers.ModelSerializer):
                   "avg_rating", "review_count", "favorite_count", "is_favorited", 
                   "favorite_id", "tags", "institutions"]
 
+
 class ProfessorOverviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfessorOverview
         fields = ['id', 'professor', 'last_updated', 'overview']
 
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields=["tag_id","tag_name"]
+        fields = ["tag_id", "tag_name"]
 
 
 class ReviewTagSerializer(serializers.ModelSerializer):
@@ -60,7 +63,6 @@ class ReviewTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewTag
         fields = ["tag_id","tag_name"]
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -98,7 +100,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "professor_f_name", "professor_m_name", "professor_l_name", "is_owner",
             "review_rating", "comment_text", "review_date", "received_grade", 
             "helpful_count", "tags", "read_tags", "course", "course_code", "course_name",
-            "semester_term", "semester_year", 'read_semester_term'
+            "semester_term", "semester_year", "read_semester_term"
         ]
         extra_kwargs = {
             'student': {'read_only': True}
@@ -119,7 +121,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             for tag in tags:
                 ReviewTag.objects.create(review_id=instance, tag_id=tag)
         return review
-    
+
     def validate_semester_year(self, value):
         if not re.match(r"^\d{4}-\d{4}$", value):
             raise serializers.ValidationError("Format must be YYYY-YYYY e.g. 2024-2025.")
@@ -127,11 +129,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         if int(end) - int(start) != 1:
             raise serializers.ValidationError("Year range must be consecutive e.g. 2024-2025.")
         return value
-    
+
     def validate(self, data):
-        student   = self.context["request"].user
+        student = self.context["request"].user
         professor = data.get("professor")
-        course    = data.get("course")
+        course = data.get("course")
         semester_term = data.get("semester_term")
         semester_year = data.get("semester_year")
 
@@ -198,7 +200,13 @@ class FavoriteProfSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     professor_name = serializers.StringRelatedField(source="professor", read_only=True)
     student_name = serializers.StringRelatedField(source="student", read_only=True)
-    professor_id = serializers.PrimaryKeyRelatedField(source="professor", queryset=Professor.objects.all(), write_only=True)
+
+    # FIX: remove write_only=True so professor_id is included in GET responses too
+    professor_id = serializers.PrimaryKeyRelatedField(
+        source="professor",
+        queryset=Professor.objects.all()
+    )
+
     f_name = serializers.ReadOnlyField(source="professor.f_name")
     m_name = serializers.ReadOnlyField(source="professor.m_name")
     l_name = serializers.ReadOnlyField(source="professor.l_name")
@@ -207,12 +215,12 @@ class FavoriteProfSerializer(serializers.ModelSerializer):
     class Meta:
         model = FavoriteProf
         fields = [
-            'id',
-            'professor_id',
-            'professor_name',
-            'student_name',
-            'f_name',
-            'm_name',
-            'l_name',
-            'email',
+            "id",
+            "professor_id",
+            "professor_name",
+            "student_name",
+            "f_name",
+            "m_name",
+            "l_name",
+            "email",
         ]
