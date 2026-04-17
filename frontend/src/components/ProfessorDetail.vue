@@ -153,6 +153,7 @@
         fetchReviews()
         fetchSimilar()
         checkModStatus()
+        fetchCourses()
     })
 </script>
 
