@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 357 642.13">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke-linecap: square;
+        stroke-width: 12px;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6 {
+        fill: none;
+      }
+
+      .cls-1, .cls-2, .cls-4, .cls-5 {
+        stroke: #000;
+      }
+
+      .cls-1, .cls-2, .cls-4, .cls-5, .cls-6 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-7 {
+        fill: #000;
+      }
+
+      .cls-7, .cls-8, .cls-3 {
+        stroke-width: 0px;
+      }
+
+      .cls-8 {
+        fill: blue;
+      }
+
+      .cls-2 {
+        stroke-width: 4px;
+      }
+
+      .cls-2, .cls-4, .cls-5, .cls-6 {
+        stroke-linecap: round;
+      }
+
+      .cls-4, .cls-6 {
+        stroke-width: 42px;
+      }
+
+      .cls-5 {
+        stroke-width: 80px;
+      }
+
+      .cls-6 {
+        stroke: blue;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <path class="cls-8" d="M218,157c53.49,0,97,43.51,97,97s-43.51,97-97,97-97-43.51-97-97,43.51-97,97-97M218,115c-76.77,0-139,62.23-139,139s62.23,139,139,139,139-62.23,139-139-62.23-139-139-139h0Z"/>
+    <line class="cls-4" x1="33" y1="100" x2="243" y2="21"/>
+    <path class="cls-7" d="M253.55,118.08l-161.06,60.59c-5.13,1.93-10.9-.19-13.56-4.99l-29.74-53.7c-3.27-5.9-.54-13.32,5.78-15.7L232.75,37.41c6.31-2.37,13.26,1.41,14.69,8l13.02,59.99c1.16,5.36-1.78,10.76-6.91,12.69Z"/>
+    <line class="cls-6" x1="99.96" y1="264" x2="99.96" y2="494.89"/>
+    <line class="cls-5" x1="100" y1="491.82" x2="100" y2="602.13"/>
+    <path class="cls-3" d="M89,101c-.27,24.35-20.09,44-44.5,44S.27,125.35,0,101h89Z"/>
+    <path class="cls-7" d="M143.14,33.99l.06.17-29.43,11.07-.06-.17c-3.06-8.13,1.05-17.19,9.18-20.25,8.13-3.06,17.19,1.05,20.25,9.18Z"/>
+    <line class="cls-2" x1="28" y1="124" x2="28" y2="171"/>
+    <line class="cls-1" x1="28" y1="167" x2="28" y2="220"/>
+    <circle class="cls-7" cx="27.5" cy="141.5" r="7.5"/>
+  </g>
+</svg>

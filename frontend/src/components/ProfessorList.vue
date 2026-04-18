@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import api from "@/api/axios"
 import ProfCard from './ProfCard.vue'
 import SearchFilters from './SearchFilters.vue'
 import { useRoute, useRouter } from 'vue-router'
 import Navbar from './Navbar.vue'
+import Pagination from './Pagination.vue'
 
 const professors = ref([])
+const totalProfessors = ref(0)
+const currentPage = ref(1)
+const pageSize = 10
+const totalPages = computed(() => Math.ceil(totalProfessors.value / pageSize))
+
 const isLoading = ref(false)
 const route = useRoute()
 const router = useRouter()
@@ -17,26 +23,28 @@ async function fetchProfessors(filters = {}) {
         search: filters.q || route.query.q || '',
         institution: filters.institution || route.query.institution || '',
         course: filters.course || route.query.course || '',
-        min_rating: filters.min_rating || undefined
+        min_rating: filters.min_rating || route.query.min_rating || undefined,
+        page: filters.page || route.query.page || 1
     }
 
     try {
-        console.log('params:', params)
         const response = await api.get('professors/', { params })
-        professors.value = response.data
+        professors.value = response.data.results
+        totalProfessors.value = response.data.count
+        currentPage.value = Number(params.page)
     } catch(error) {
         console.error("Fetch error:", error)
+    } finally {
+        isLoading.value = false
     }
-    isLoading.value = false
 }
 
 watch(() => route.query, (newQuery) => {
     fetchProfessors(newQuery)
 }, { immediate: true })
-
-onMounted(() => {
-    fetchProfessors()
-})
+watch(() => currentPage.value, (newPageValue) => {
+    fetchProfessors({page: newPageValue})
+}, { immediate: true })
 
 const goToProf = (professorId) => {
     router.push(`/professor/${professorId}`)
@@ -44,56 +52,50 @@ const goToProf = (professorId) => {
 </script>
 
 <template>
-<div class="min-h-screen bg-[#e8e8e8] flex flex-col">
+<div class="min-h-screen bg-surface flex flex-col overflow-x-hidden">
     <Navbar/>
-    <div class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-screen p-[64px]"> 
-        <SearchFilters />
-        <div>
-            <h1 class="text-5xl font-bold text-left mb-[10px]">Professors</h1>
-        <p v-if="isLoading">Loading professors...</p>
+    
+    <main class="grid grid-cols-[4fr_11fr] gap-x-[30px] w-full p-[64px]"> 
+        
+        <aside>
+            <SearchFilters />
+        </aside>
 
-        <ul class="grid grid-cols-1 gap-y-[10px]">
-            <li  v-for="prof in professors" :key="prof.professor_id" 
-            @click="goToProf(prof.professor_id)" class="cursor-pointer">
-                <ProfCard
-                :lname="prof.l_name"
-                :fname="prof.f_name"
-                :avgScore="prof.avg_rating || 0"
-                :numReviews="prof.review_count"
-                :favoriteCount="prof.favorite_count"
-                :is_favorited="prof.is_favorited"
-                :tags="prof.tags"
-                />
-            </li>
-        </ul>
-        </div>
-    </div>
+        <section>
+            <div class="mb-6">
+                <h1 class="text-5xl font-bold text-left text-primary tracking-tight">Professors</h1>
+                
+                <p v-if="!isLoading" class="text-left mt-2 ml-1 text-text-muted font-medium">
+                    <span v-if="professors.length > 0">
+                        {{ totalProfessors }} results found 
+                        <span v-if="route.query.q">for "{{ route.query.q }}"</span>
+                    </span>
+                    <span v-else>No results found for your search.</span>
+                </p>
+            </div>
+
+            <div v-if="isLoading" class="flex justify-center py-20">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+
+            <ul v-else class="grid grid-cols-1 gap-y-[12px]">
+                <li v-for="prof in professors" :key="prof.professor_id" 
+                    @click="goToProf(prof.professor_id)" 
+                    class="cursor-pointer transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] origin-left">
+                    <ProfCard
+                        :lname="prof.l_name"
+                        :fname="prof.f_name"
+                        :avgScore="prof.avg_rating || 0"
+                        :numReviews="prof.review_count"
+                        :favoriteCount="prof.favorite_count"
+                        :is_favorited="prof.is_favorited"
+                        :tags="prof.tags"
+                        :institutions="prof.institutions"
+                    />
+                </li>
+            </ul>
+            <Pagination :pages="totalPages" :currentPage="currentPage" @switchPage="currentPage = $event"/>
+        </section>
+    </main>
 </div> 
 </template>
-
-<style scoped>
-.navbar {
-  width: 100%;
-  background-color: #5c898d;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  padding: 0 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-}
-.logo-circle {
-  background-color: #d9d9d9;
-  border-radius: 9999px;
-  height: 2.5rem;
-  width: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-.logo-img {
-  height: 1.75rem;
-  width: 1.75rem;
-  object-fit: contain;
-}
-</style>

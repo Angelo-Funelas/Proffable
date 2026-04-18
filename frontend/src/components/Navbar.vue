@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import LogoIcon from './LogoIcon.vue'
 import api from "@/api/axios"
 
 
@@ -59,68 +60,83 @@ const logout = () => {
 </script>
 
 <template>
-  <nav class="w-full bg-gradient-to-b from-[#719294] to-[#52848A] h-16 flex items-center justify-between px-6 shadow-md">
-
-    <div
-      @click="goToHomePage"
-      class="bg-[#d9d9d9] rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-sm cursor-pointer"
-    >
-      <img src="../assets/ProffableLogo.png" alt="Logo" class="h-7 w-7 object-contain pointer-events-none" />
+  <nav class="w-full bg-white h-16 flex items-center justify-between px-8 shadow-md border-b border-gray-100 relative z-50">
+    
+    <div @click="goToHomePage" class="flex items-center cursor-pointer group select-none">
+      <LogoIcon class="h-10 transition-transform group-hover:scale-105 pointer-events-none"/>
+      <span class="text-primary font-bold text-xl tracking-tighter">roffable</span>
     </div>
-
 
     <div v-if="isAuthenticated" class="relative">
       <div
         @click="toggleDropdown"
-        class="flex items-center gap-2 cursor-pointer text-white font-semibold"
+        class="flex items-center gap-3 cursor-pointer text-text-main hover:bg-surface px-3 py-1.5 rounded-full transition-colors select-none"
       >
         <img
           v-if="user?.profile_picture_url"
           :src="user.profile_picture_url"
-          class="h-8 w-8 rounded-full object-cover"
+          class="h-8 w-8 rounded-full object-cover border border-gray-200 pointer-events-none"
         />
-
         <div
           v-else
-          class="h-8 w-8 rounded-full bg-[#d9d9d9] flex items-center justify-center text-sm text-black"
+          class="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold pointer-events-none"
         >
-          {{ user?.f_name?.[0] || "U" }}
+          {{ user?.f_name?.[0]?.toUpperCase() || "U" }}
         </div>
 
-        <span>
-          Welcome, {{ user?.f_name || "User" }}!
+        <span class="font-bold text-sm hidden md:block pointer-events-none">
+          Hi, {{ user?.f_name || "User" }}
         </span>
 
-        <span>▼</span>
+        <span class="text-[10px] text-text-muted transition-transform pointer-events-none" :class="{'rotate-180': dropdownOpen}">▼</span>
       </div>
 
-      <div
-        v-if="dropdownOpen"
-        class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md text-black"
-      >
-        <button
-          @click="goToProfile"
-          class="block w-full text-left px-4 py-2 hover:bg-gray-100"
+      <transition name="fade">
+        <div
+          v-if="dropdownOpen"
+          class="absolute right-0 mt-3 w-48 bg-card rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden z-[60]"
         >
-          Profile
-        </button>
+          <div class="px-4 py-2 border-b border-gray-50 mb-1">
+            <p class="text-[10px] font-bold text-text-muted uppercase">Account</p>
+          </div>
+          
+          <button
+            @click="goToProfile"
+            type="button"
+            class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-medium text-text-main hover:bg-surface hover:text-primary transition-all cursor-pointer !pointer-events-auto active:scale-[0.98] border-none outline-none"
+          >
+             Profile
+          </button>
 
-        <button
-          @click="logout"
-          class="block w-full text-left px-4 py-2 hover:bg-gray-100"
-        >
-          Logout
-        </button>
-      </div>
+          <button
+            @click="logout"
+            type="button"
+            class="flex items-center gap-2 w-full text-left px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer !pointer-events-auto active:scale-[0.98] border-none outline-none"
+          >
+             Logout
+          </button>
+        </div>
+      </transition>
     </div>
 
     <button
       v-else
       @click="goToLogin"
-      class="text-white font-semibold hover:opacity-80 transition"
+      type="button"
+      class="bg-accent hover:brightness-110 hover:scale-105 text-white font-bold px-6 py-2 rounded-full text-sm shadow-md transition-all active:scale-95 cursor-pointer !pointer-events-auto"
     >
       Login
     </button>
 
   </nav>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s, transform 0.2s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+</style>

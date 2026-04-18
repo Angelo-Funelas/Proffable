@@ -1,22 +1,28 @@
 from django.shortcuts import render
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.conf import settings
+import requests, threading
 
-from .serializers import ProfessorSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
+from .serializers import ProfessorSerializer, ProfessorOverviewSerializer, ReviewSerializer, InstitutionSerializer, InstitutionDomainSerializer, CourseSerializer, ReviewReportSerializer
 from .serializers import TagSerializer, FavoriteProfSerializer
-from .models import Professor, Review, Institution, InstitutionDomain, Course, ReviewReport, ReviewVote, Tag, FavoriteProf
-from rest_framework.decorators import action
+from .models import Professor, Review, Institution, InstitutionDomain, Course, ProfessorCourse, ReviewReport, ReviewVote, Tag, FavoriteProf, ProfessorOverview
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from django.db import IntegrityError
 from django.db.models import Avg, Count, Case, When, Value, BooleanField, F, CharField
 from .permissions import IsOwner, IsModeratorOrReadOnly, IsModerator
 from django.db.models.functions import Concat
-# Create your views here.
+from django.db import transaction
+from django.db.models import Count, Q
+from django.db.models.functions import Lower
+from .pagination import StandardResultsSetPagination
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all()
     serializer_class = ProfessorSerializer
     permission_classes = [IsModeratorOrReadOnly]
+    pagination_class = StandardResultsSetPagination
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['f_name', 'l_name']
@@ -56,15 +62,173 @@ class ProfessorViewSet(viewsets.ModelViewSet):
             review_tag__review_id__professor=professor
         ).values_list('tag_id', flat=True)
         
-        similar = Professor.objects.filter(
+        similar_prof_ids = Professor.objects.filter(
             reviews__review_tag__tag_id__in=tag_ids
-        ).exclude(pk=pk).annotate(
-            avg_rating=Avg("reviews__review_rating"),
-            review_count=Count("reviews", distinct=True),
-            favorite_count=Count("fave_prof", distinct=True)
-        ).distinct()[:5]
+        ).exclude(pk=pk).values_list('professor_id', flat=True).distinct()
+
+        similar = self.get_queryset().filter(professor_id__in=similar_prof_ids)[:5]
         
         return Response(ProfessorSerializer(similar, many=True, context={'request': request}).data)
+      
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny])
+    def analytics(self, request, pk=None):
+        professor = self.get_object()
+
+        valid_reviews = professor.reviews.exclude(
+            Q(received_grade__isnull=True) | 
+            Q(received_grade__exact="") | 
+            Q(received_grade__regex=r'^\s*$')
+        )
+
+        total_with_grades = valid_reviews.count()
+
+        if total_with_grades == 0:
+            return Response({
+                "distribution": [], 
+                "total_reviews": 0
+            })
+
+        grade_counts = valid_reviews.annotate(
+            normalized_grade=Lower('received_grade')
+        ).values('normalized_grade').annotate(
+            count=Count('normalized_grade')
+        ).order_by('normalized_grade')
+
+        distribution = [
+            {
+                "grade": item['normalized_grade'].upper(),
+                "count": item['count'],
+                "percentage": round((item['count'] / total_with_grades) * 100, 2)
+            }
+            for item in grade_counts
+        ]
+
+        return Response({
+            "distribution": distribution,
+            "total_reviews": total_with_grades
+        })
+
+    @action(detail=True, methods=['get'])
+    def courses(self,request, pk=None):
+        professor = self.get_object()
+        courses = Course.objects.filter(professor_course__professor=professor)
+        return Response(CourseSerializer(courses, many=True).data)
+
+
+@api_view(["POST"])
+def create_professor(request):
+    data = request.data
+    f_name = data.get("f_name", "").strip()
+    m_name = data.get("m_name", "").strip()
+    l_name = data.get("l_name", "").strip()
+    email = data.get("email", "").strip()
+    courses = data.get("courses", [])
+    if not email or "@" not in email:
+        return Response({"error": "A valid email is required."}, status=status.HTTP_400_BAD_REQUEST)
+    if not isinstance(courses, list):
+        return Response({"error": "Courses must be a list."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if Professor.objects.filter(
+        f_name__iexact=f_name, 
+        m_name__iexact=m_name, 
+        l_name__iexact=l_name, 
+        email__iexact=email
+    ).exists():
+        return Response(
+            {"error": "A professor with this exact name and email already exists."}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    domain = email.split("@")[1]
+    try:
+        domain_obj = InstitutionDomain.objects.get(domain=domain)
+        institution = domain_obj.institution
+        with transaction.atomic():
+            new_prof = Professor.objects.create(
+                f_name=f_name, 
+                m_name=m_name, 
+                l_name=l_name, 
+                email=email
+            )
+            for course_data in courses:
+                new_course, created = Course.objects.get_or_create(
+                    course_code=course_data.get("code"),
+                    institution=institution,
+                    defaults={'course_name': course_data.get("name")}
+                )
+                ProfessorCourse.objects.create(professor=new_prof, course=new_course)
+        return Response({
+            "message": "Professor and courses created successfully",
+            "professor_id": new_prof.professor_id,
+            "course_count": len(courses)
+        }, status=status.HTTP_201_CREATED)
+
+    except InstitutionDomain.DoesNotExist:
+        return Response(
+            {"error": f"The domain '{domain}' is not registered."}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"error": "An internal error occurred.", "details": str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+    
+class ProfessorOverviewViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProfessorOverview.objects.all()
+    serializer_class = ProfessorOverviewSerializer
+    
+    lookup_field = 'professor_id'
+
+PROMPT_FILE_PATH = settings.BASE_DIR / 'professors' / 'prompts' / 'system_prompt.txt'
+try:
+    with open(PROMPT_FILE_PATH, 'r', encoding='utf-8') as file:
+        SYSTEM_PROMPT = file.read().strip()
+except FileNotFoundError:
+    print(f"⚠️ Warning: Could not find prompt file at {PROMPT_FILE_PATH}")
+    
+def summarize_reviews(professor):
+    if SYSTEM_PROMPT is None: return
+    url = settings.LLM_API_URL
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": settings.LLM_API_KEY
+    }
+    payload = {
+        "model": "gemma3:12b", 
+        "messages": [],
+    }
+    sys_message = {
+        "role": "system",
+        "content": SYSTEM_PROMPT
+    }
+    payload['messages'].append(sys_message)
+    reviews = Review.objects.filter(professor=professor)
+    for review in reviews:
+        message = {
+            "role": "user",
+            "content": f"Review by Student #{review.student.id}: {review.review_rating}/5. {review.comment_text}"
+        }
+        if len(review.comment_text) > 20:
+            payload['messages'].append(message)
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        response.raise_for_status() 
+        result = response.json()
+        
+        print("🤖 Model Output:\n")
+        output = result.get("response", "No response field found.")
+        print(output)
+        ProfessorOverview.objects.update_or_create(professor=professor, defaults={'overview': output})
+        
+    except requests.exceptions.HTTPError as errh:
+        print(f"❌ HTTP Error: {errh}")
+        # Print the specific error message sent by the Express server
+        print(f"Server details: {response.json()}") 
+    except requests.exceptions.RequestException as err:
+        print(f"❌ Connection Error: {err}")
         
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
@@ -109,7 +273,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(student=self.request.user)
+            instance = serializer.save(student=self.request.user)
+            thread = threading.Thread(
+                target=summarize_reviews, 
+                args=(instance.professor,)
+            )
+            thread.start()
         except IntegrityError:
             raise serializer.ValidationError("You have already reviewed this professor.")
     
